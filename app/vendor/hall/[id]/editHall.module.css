@@ -1,0 +1,45 @@
+.page {
+  padding: 30px;
+  background: #fffaf3;
+  min-height: 100vh;
+}
+
+.title {
+  color: #6b1d2b;
+  font-size: 26px;
+  margin-bottom: 20px;
+}
+
+.card {
+  background: white;
+  padding: 24px;
+  border-radius: 14px;
+  border-left: 6px solid #6b1d2b;
+  max-width: 600px;
+}
+
+input, select, textarea {
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.saveBtn {
+  background: #6b1d2b;
+  color: #f5d28a;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.saveBtn:hover {
+  opacity: 0.9;
+}

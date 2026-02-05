@@ -1,0 +1,84 @@
+.party-page {
+  padding: 40px 60px;
+  padding-top: 140px; /* navbar spacing */
+  background: #fff7ef;
+  min-height: 100vh;
+}
+
+.page-title {
+  color: #6b1d2b;
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 30px;
+}
+
+/* GRID */
+.hall-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 25px;
+}
+
+/* CARD */
+.hall-card {
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+  transition: transform 0.25s ease;
+  cursor: pointer;
+}
+
+.hall-card:hover {
+  transform: translateY(-6px);
+}
+
+/* IMAGE */
+.hall-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+/* CONTENT */
+.hall-content {
+  padding: 16px;
+}
+
+.hall-content h3 {
+  color: #6b1d2b;
+  margin: 0;
+  font-size: 18px;
+}
+
+.location {
+  font-size: 13px;
+  color: #777;
+  margin: 6px 0;
+}
+
+.price {
+  font-size: 16px;
+  font-weight: 700;
+  color: #000;
+  margin: 10px 0;
+}
+
+.hall-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 13px;
+  margin-bottom: 14px;
+}
+
+/* BUTTON */
+.hall-btn {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #f5d28a, #e4b85c);
+  color: #3a0a12;
+  font-weight: 700;
+  cursor: pointer;
+}

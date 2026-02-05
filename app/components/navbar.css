@@ -1,0 +1,102 @@
+/* ===============================
+   NAVBAR – UTSAVAM THEME
+   =============================== */
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 14px 40px;
+  background: #6b1d2b;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 9999;
+}
+
+/* LOGO */
+.logo img {
+  height: 35px;
+  object-fit: contain;
+}
+
+/* ===============================
+   NAV LINKS
+   =============================== */
+
+.nav-links {
+  display: flex;
+  gap: 35px;
+}
+
+.nav-links a {
+  color: #f5d28a;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+}
+
+/* Hover underline animation */
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 0%;
+  height: 2px;
+  background: #f5d28a;
+  transition: width 0.3s ease;
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+.nav-links a:hover {
+  color: #ffffff;
+}
+
+/* ===============================
+   LOCATION BUTTON
+   =============================== */
+
+.location-box {
+  background: linear-gradient(135deg, #f8e3a1, #e6b65c);
+  color: #6b1d2b;
+
+  padding: 10px 22px;
+  border-radius: 22px;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease;
+}
+
+.location-box:hover {
+  transform: translateY(-1px);
+}
+
+/* Clear location button */
+.clear-location {
+  margin-left: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  color: #6b1d2b;
+  font-weight: bold;
+}
+
+.clear-location:hover {
+  color: #000;
+}

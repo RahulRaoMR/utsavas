@@ -1,0 +1,111 @@
+.loginContainer {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a050a, #5b0f22);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loginCard {
+  background: #5b0f22;
+  padding: 40px;
+  width: 360px;
+  border-radius: 14px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  text-align: center;
+}
+
+.logoImage {
+  margin: 0 auto 15px auto;
+  display: block;
+}
+
+.logo {
+  font-size: 32px;
+  font-weight: bold;
+  color: rgba(204, 176, 20, 0.9);
+  text-shadow: 0 0 10px gold;
+}
+
+.tagline {
+  color: #f5dca8;
+  margin-bottom: 25px;
+  font-size: 14px;
+}
+
+.inputField {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+}
+
+.loginBtn {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #f5d28a, #e6b65c);
+  color: #6b1d2b;
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.loginBtn:hover {
+  box-shadow: 0 0 10px gold;
+}
+
+.orText {
+  margin: 15px 0;
+  color: #f5dca8;
+}
+
+.otpBtn {
+  width: 100%;
+  padding: 12px;
+  background: #fff;
+  color: #6b1d2b;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.registerText {
+  margin-top: 12px;
+  font-size: 14px;
+  color: #fff;
+}
+
+.registerText span {
+  color: #f5d28a;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.backText {
+  margin-top: 15px;
+  color: gold;
+  cursor: pointer;
+}
+
+/* ⭐ REGISTER AS VENDOR (UTSAVAM THEME) */
+.vendorBtn {
+  margin-top: 18px;
+  width: 100%;
+  padding: 12px 0;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #f5d28a, #e6b65c);
+  color: #6b1d2b;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.vendorBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}

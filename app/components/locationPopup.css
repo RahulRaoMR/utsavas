@@ -1,0 +1,119 @@
+.location-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 10000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.location-box-popup {
+  background: #fff7ef;
+  width: 90%;
+  max-width: 420px;
+  border-radius: 16px;
+  padding: 20px;
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  right: 14px;
+  top: 12px;
+  border: none;
+  background: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.location-box-popup h2 {
+  color: #6b1d2b;
+  margin-bottom: 14px;
+}
+
+.detect-btn {
+  width: 100%;
+  padding: 12px;
+  background: #6b1d2b;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  margin-bottom: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.location-search {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-bottom: 14px;
+}
+
+.location-box-popup h4 {
+  margin: 10px 0;
+  color: #6b1d2b;
+}
+
+.location-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.location-item {
+  padding: 8px 12px;
+  background: #fff;
+  border: 1px solid #6b1d2b;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.location-item:hover {
+  background: #6b1d2b;
+  color: #fff;
+}
+
+/* ===============================
+   FORCE TEXT COLOR – FIX WHITE TEXT
+   =============================== */
+
+/* Search input text (all states) */
+.location-search,
+.location-search:focus,
+.location-search:active {
+  color: #6b1d2b !important;
+}
+
+/* Placeholder text */
+.location-search::placeholder {
+  color: #6b1d2b !important;
+  opacity: 0.8;
+}
+
+/* Popular locations heading */
+.location-box-popup h4 {
+  color: #6b1d2b !important;
+}
+
+/* Popular location chips text */
+.location-item {
+  color: #6b1d2b !important;
+  border-color: #6b1d2b !important;
+  background: #fff !important;
+}
+
+/* Prevent browser focus turning text white */
+.location-item:focus,
+.location-item:active {
+  color: #6b1d2b !important;
+}
+
+/* Hover (keep contrast) */
+.location-item:hover {
+  background: #6b1d2b !important;
+  color: #ffffff !important;
+}

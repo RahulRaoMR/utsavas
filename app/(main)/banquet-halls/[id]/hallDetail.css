@@ -1,0 +1,366 @@
+.hall-detail-page {
+  padding: 40px 60px;
+  background: #fff7ef;
+}
+
+/* TOP */
+.hall-top {
+  display: flex;
+  gap: 30px;
+  background: #fff;
+  padding: 25px;
+  border-radius: 18px;
+}
+
+.hall-image {
+  position: relative;
+}
+
+.hall-image img {
+  width: 420px;
+  height: 280px;
+  border-radius: 14px;
+  object-fit: cover;
+}
+
+.rating {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: green;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+
+.hall-info h1 {
+  color: #6b1d2b;
+  margin-top: 10px;
+}
+
+.featured {
+  background: purple;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.address {
+  margin: 8px 0;
+  color: #555;
+}
+
+.price {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.price span {
+  font-size: 14px;
+  color: #777;
+}
+
+.hall-tags {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 15px 0;
+}
+
+.call-btn {
+  padding: 12px 24px;
+  background: #ff2e63;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* TABS */
+.hall-tabs {
+  display: flex;
+  gap: 30px;
+  margin: 30px 0;
+  border-bottom: 2px solid #eee;
+}
+
+.hall-tabs span {
+  padding-bottom: 10px;
+  cursor: pointer;
+}
+
+.hall-tabs .active {
+  color: #6b1d2b;
+  border-bottom: 3px solid #6b1d2b;
+}
+
+/* CONTENT */
+.hall-content section {
+  background: #fff;
+  padding: 25px;
+  border-radius: 14px;
+  margin-bottom: 25px;
+}
+
+.check-list li,
+.pink-list li,
+.policy-list li {
+  margin: 8px 0;
+}
+
+/* ===== UTSAVAM COLOR FIX ===== */
+
+/* Tabs text */
+.hall-tabs span {
+  color: #6b1d2b;
+  font-weight: 600;
+}
+
+/* Active tab underline already exists */
+.hall-tabs .active {
+  color: #6b1d2b;
+  border-bottom: 3px solid #6b1d2b;
+}
+
+/* Section titles */
+.hall-content h2 {
+  color: #6b1d2b;
+  font-weight: 700;
+}
+
+/* Amenities / Other info / Policies lists */
+.check-list li,
+.pink-list li,
+.policy-list li {
+  color: #6b1d2b;
+  font-weight: 500;
+}
+
+/* Tick marks & icons color */
+.check-list li::marker,
+.pink-list li::marker {
+  color: #6b1d2b;
+}
+
+/* Emoji icons inside policies */
+.policy-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Card background polish */
+.hall-content section {
+  background: #ffffff;
+  border-left: 4px solid #6b1d2b;
+}
+
+/* ===============================
+   TOP SPACING FIX (IMPORTANT)
+================================ */
+.hall-detail-spacing {
+  padding-top: 40px; /* space below navbar */
+}
+.hall-detail-page {
+  padding: 30px;
+  background: #fff6ec;
+  color: #3a1a1a;
+}
+
+.loading {
+  padding: 40px;
+}
+
+.hall-top {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 30px;
+}
+
+.hall-images img {
+  width: 100%;
+  height: 380px;
+  object-fit: cover;
+  border-radius: 14px;
+}
+
+.no-image {
+  height: 380px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eee;
+  border-radius: 14px;
+}
+
+.thumbs {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.thumbs img {
+  width: 70px;
+  height: 55px;
+  object-fit: cover;
+  border-radius: 6px;
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.thumbs img.active {
+  border: 2px solid #6b1d2b;
+  opacity: 1;
+}
+
+.hall-summary {
+  background: white;
+  padding: 24px;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+
+.hall-summary h1 {
+  color: #6b1d2b;
+}
+
+.location {
+  color: #777;
+}
+
+.price {
+  color: #b8892f;
+}
+
+.price span {
+  font-size: 14px;
+}
+
+.meta {
+  display: flex;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.phone-btn {
+  background: #e63946;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.section {
+  margin-top: 40px;
+}
+
+.section h3 {
+  border-bottom: 2px solid #6b1d2b;
+  display: inline-block;
+  margin-bottom: 12px;
+}
+
+.list li {
+  margin: 8px 0;
+}
+
+.back-btn {
+  margin-top: 40px;
+  background: none;
+  border: none;
+  color: #6b1d2b;
+  cursor: pointer;
+}
+
+/* ==============================
+   FIX HALL NAME VISIBILITY
+============================== */
+
+.hall-detail-page {
+  padding-top: 40px; /* creates space from navbar */
+}
+
+/* TOP SECTION */
+.hall-top {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 40px;
+  align-items: flex-start;
+}
+
+/* IMAGE BLOCK */
+.hall-images {
+  background: #fff;
+  padding: 20px;
+  border-radius: 16px;
+}
+
+/* IMAGE */
+.main-image {
+  width: 100%;
+  height: 420px;
+  object-fit: contain;
+}
+
+/* INFO BLOCK */
+.hall-info {
+  padding-top: 10px;
+}
+
+/* 🔥 MAIN NAME FIX */
+.hall-info h1 {
+  font-size: 34px;
+  font-weight: 700;
+  color: #6b1d2b; /* UTSAVAM theme */
+  margin-bottom: 8px;
+  margin-top: 12px;   /* THIS IS THE FIX */
+}
+
+/* LOCATION */
+.location {
+  font-size: 15px;
+  color: #555;
+  margin-bottom: 16px;
+}
+
+/* PRICE */
+.price {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+/* META */
+.meta {
+  display: flex;
+  gap: 18px;
+  margin-bottom: 20px;
+  color: #444;
+}
+
+/* BUTTON */
+.contact-btn {
+  background: #e53935;
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* SECTION */
+.hall-section {
+  margin-top: 40px;
+}
+
+/* BACK */
+.back-btn {
+  margin-top: 40px;
+  background: none;
+  border: none;
+  color: #6b1d2b;
+  font-size: 15px;
+  cursor: pointer;
+}

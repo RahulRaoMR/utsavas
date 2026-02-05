@@ -1,0 +1,98 @@
+.page {
+  padding: 32px;
+  background: #fffaf3;
+  min-height: 100vh;
+}
+
+/* Header */
+.title {
+  font-size: 30px;
+  font-weight: bold;
+  color: #6b1d2b; /* UTSAVAM THEME */
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Card */
+.card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+  border-left: 6px solid #6b1d2b;
+}
+
+/* Image */
+.image {
+  width: 100%;
+  height: 340px;
+  object-fit: cover;
+  border-radius: 14px;
+  margin-bottom: 24px;
+}
+
+/* Section titles */
+.sectionTitle {
+  color: #6b1d2b;
+  font-size: 22px;
+  font-weight: bold;
+  margin-top: 24px;
+  margin-bottom: 12px;
+}
+
+/* Text */
+.text {
+  color: #6b1d2b;
+  font-size: 16px;
+  margin: 6px 0;
+}
+
+/* Feature list */
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+/* Status */
+.approved {
+  margin-top: 16px;
+  font-weight: bold;
+  color: #2e7d32;
+}
+
+/* Buttons */
+.actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 30px;
+}
+
+.backBtn {
+  background: #f5d28a;
+  color: #6b1d2b;
+  border: none;
+  padding: 14px 20px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.editBtn {
+  background: #6b1d2b;
+  color: white;
+  border: none;
+  padding: 14px 20px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.backBtn:hover,
+.editBtn:hover {
+  opacity: 0.9;
+}

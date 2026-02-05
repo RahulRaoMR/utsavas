@@ -1,0 +1,153 @@
+/* =========================
+   BASE CONTAINER
+========================= */
+
+.container {
+  min-height: 100vh;
+  background: #fffaf3;
+  padding: 30px;
+  font-family: Arial, sans-serif;
+  color: #6b1d2b;
+}
+
+/* =========================
+   TOP HEADER
+========================= */
+
+.header {
+  background: #6b1d2b;
+  color: #f5d28a;
+  padding: 20px;
+  border-radius: 10px;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+/* =========================
+   DASHBOARD CARDS
+========================= */
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  border-left: 6px solid #6b1d2b;
+}
+
+.card h3,
+.card p {
+  color: #6b1d2b !important;
+}
+
+.count {
+  font-size: 28px;
+  font-weight: bold;
+  color: #6b1d2b !important;
+}
+
+/* =========================
+   ADMIN SIDEBAR
+========================= */
+
+.adminLayout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 240px;
+  background: #6b1d2b;
+  color: #f5d28a;
+  padding: 30px 20px;
+}
+
+.sidebarHeader {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 40px;
+}
+
+.navLink {
+  display: block;
+  color: #f5d28a;
+  text-decoration: none;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.navLink:hover {
+  background: rgba(245, 210, 138, 0.15);
+}
+
+.active {
+  background: #f5d28a;
+  color: #6b1d2b !important;
+  font-weight: bold;
+}
+
+.mainContent {
+  flex: 1;
+  padding: 30px;
+}
+
+/* =========================
+   ADMIN HALL CARDS (CRITICAL)
+========================= */
+
+.hallCard {
+  background: #fff5ec;
+  border: 2px solid #6b1d2b;
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+/* 🚨 FORCE ALL TEXT */
+.hallCard *,
+.hallCard p,
+.hallCard span,
+.hallCard h3,
+.hallCard h4,
+.hallCard b {
+  color: #6b1d2b !important;
+  opacity: 1 !important;
+}
+
+/* =========================
+   STATUS COLORS
+========================= */
+
+.statusApproved {
+  color: #2e7d32 !important;
+  font-weight: bold;
+}
+
+.statusPending {
+  color: #e65100 !important;
+  font-weight: bold;
+}
+
+.statusRejected {
+  color: #b71c1c !important;
+  font-weight: bold;
+}
+
+/* =========================
+   TEXT SELECTION
+========================= */
+
+::selection {
+  background: rgba(107, 29, 43, 0.25);
+  color: #6b1d2b;
+}
+
+

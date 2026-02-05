@@ -1,0 +1,53 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #6b1d2b;
+}
+
+.card {
+  width: 100%;
+  max-width: 360px;
+  background: #7a2334;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.title {
+  text-align: center;
+  color: #f5d28a;
+  margin-bottom: 20px;
+}
+
+.input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+}
+
+.submitBtn {
+  width: 100%;
+  padding: 12px;
+  background: #f5d28a;
+  color: #6b1d2b;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.submitBtn:hover {
+  opacity: 0.9;
+}
+
+.backText {
+  margin-top: 15px;
+  text-align: center;
+  color: #f5d28a;
+  cursor: pointer;
+}

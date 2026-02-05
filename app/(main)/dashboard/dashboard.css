@@ -1,0 +1,263 @@
+@import url("https://fonts.googleapis.com/css2?family=Pacifico&display=swap");
+
+
+
+.dashboard-container {
+  background-image: url("/dashboard-bg.jpg");
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.overlay {
+  background: rgba(0, 0, 0, 0.5);
+  width: 100%;
+  height: 100%;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.title {
+  font-family: "Pacifico", cursive;
+  font-size: 48px;
+  color: gold;
+  text-align: center;
+  text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+}
+
+.subtitle {
+  color: white;
+  font-size: 20px;
+  margin-bottom: 30px;
+}
+
+.search-box {
+  width: 60%;
+  max-width: 600px;
+  padding: 15px;
+  border-radius: 30px;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  margin-bottom: 40px;
+}
+
+.card-container {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.card {
+  background: rgba(128, 0, 32, 0.85);
+  padding: 40px 60px;
+  border-radius: 20px;
+  color: gold;
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+.search-wrapper {
+  display: flex;
+  align-items: center;
+  background: #a06b15;
+  border-radius: 40px;
+  padding: 8px 10px;
+  width: 600px;
+  max-width: 90%;
+  margin: 25px auto;
+  box-shadow: 0 0 25px rgba(255, 200, 120, 0.3);
+}
+
+.search-icon {
+  font-size: 20px;
+  margin: 0 12px;
+  color: #6b1d2b;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 16px;
+  padding: 10px;
+}
+
+.search-btn {
+  background: #6b1d2b;
+  color: #fff;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.card {
+  width: 300px;
+  height: 160px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: bold;
+  color: gold;
+  text-shadow: 0 0 10px rgba(0,0,0,0.8);
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+}
+
+/* Background images */
+.wedding {
+  background-image: url("/dashboard/wedding.jpg");
+}
+
+.banquet {
+  background-image: url("/dashboard/banquet.jpg");
+}
+
+.party {
+  background-image: url("/dashboard/party.jpg");
+}
+
+.hall-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.hall-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 14px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.tag {
+  font-size: 12px;
+  color: #6b1d2b;
+  font-weight: bold;
+}
+
+/* =========================
+   MOBILE FIX (PHONE ONLY)
+   ========================= */
+@media (max-width: 768px) {
+
+  /* NAVBAR */
+  .navbar {
+    padding: 10px;
+    height: auto;
+  }
+
+  .nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 6px;
+    font-size: 13px;
+  }
+
+  /* HERO SECTION */
+  .title {
+    font-size: 32px;
+    margin-top: 10px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  /* SEARCH */
+   .search-wrapper {
+    flex-direction: row;          
+    padding: 6px 10px;
+  }
+
+   .search-input {
+    font-size: 14px;
+    padding: 8px 10px;
+  }
+.search-btn {
+    padding: 8px 18px;
+    font-size: 14px;
+  }
+
+
+  /* CATEGORY CARDS */
+  .category-container {
+    grid-template-columns: 1fr;
+    padding: 0 12px;
+  }
+
+  .category-card {
+    height: 140px;
+    font-size: 18px;
+  }
+
+  /* HALL CARDS */
+  .hall-grid {
+    grid-template-columns: 1fr;
+    padding: 0 12px;
+  }
+
+  .hall-card {
+    min-height: 160px;
+    padding: 14px;
+  }
+
+  /* REMOVE SIDE SCROLL */
+  body {
+    overflow-x: hidden;
+  }
+}
+ 
+
+.search-results {
+  position: absolute;
+  width: 100%;
+  background: #fff7ef;
+  border-radius: 12px;
+  margin-top: 8px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  z-index: 1000;
+}
+
+.search-item {
+  padding: 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0dede;
+}
+
+.search-item:hover {
+  background: #6b1d2b;
+  color: #fff;
+}
+
+.search-item p {
+  font-size: 12px;
+  opacity: 0.8;
+}

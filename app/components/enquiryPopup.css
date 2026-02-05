@@ -1,0 +1,191 @@
+/* ===== POPUP OVERLAY ===== */
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(58, 10, 18, 0.75); /* Utsavam maroon overlay */
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 3000;
+}
+
+/* ===== POPUP BOX ===== */
+.popup-box {
+  background: #5c2727;
+  width: 92%;
+  max-width: 520px;
+  padding: 28px 30px 32px;
+  border-radius: 16px;
+  position: relative;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.35);
+  animation: popupFade 0.3s ease-out;
+}
+
+/* ===== ANIMATION ===== */
+@keyframes popupFade {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ===== CLOSE BUTTON ===== */
+.close-btn {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  border: none;
+  background: none;
+  font-size: 20px;
+  color: #6b1d2b;
+  cursor: pointer;
+}
+
+/* ===== HEADINGS ===== */
+.popup-box h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #6b1d2b; /* Utsavam maroon */
+}
+
+.popup-box p {
+  margin: 6px 0 20px;
+  font-size: 14px;
+  color: #777;
+}
+
+/* ===== LABELS ===== */
+.popup-box label {
+  display: block;
+  margin-top: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #4a0f1c;
+}
+
+/* ===== ROW (CITY + LOCALITY) ===== */
+.row {
+  display: flex;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+/* ===== INPUTS & SELECT ===== */
+select,
+input[type="date"] {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #ac7a3d;
+  font-size: 14px;
+  outline: none;
+  background: #fffaf7;
+}
+
+select:focus,
+input[type="date"]:focus {
+  border-color: #d6a24c; /* gold focus */
+}
+
+/* ===== OPTIONS (GUESTS / BUDGET) ===== */
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.options button {
+  padding: 8px 16px;
+  border-radius: 22px;
+  border: 1px solid #d3bfa7;
+  background: #fffaf7;
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b1d2b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.options button:hover {
+  border-color: #d6a24c;
+  color: #d6a24c;
+  background: #fff;
+}
+
+/* OPTIONAL ACTIVE STATE (JS can toggle this later) */
+.options button.active {
+  background: linear-gradient(135deg, #6b1d2b, #9b2c3e);
+  color: #ffffff;
+  border-color: #6b1d2b;
+}
+
+/* ===== SUBMIT BUTTON ===== */
+.submit-btn {
+  margin-top: 26px;
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #3a0a12;
+  background: linear-gradient(
+    135deg,
+    #f5d28a,
+    #e4b85c
+  ); /* Utsavam gold */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  transition: all 0.25s ease;
+}
+
+.submit-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
+}
+
+/* ===== MOBILE ADJUSTMENTS ===== */
+@media (max-width: 480px) {
+  .popup-box {
+    padding: 24px 20px 26px;
+  }
+
+  .row {
+    flex-direction: column;
+  }
+}
+
+/* ===== INPUT & SELECT TEXT COLOR FIX ===== */
+
+/* Date input selected value */
+.popup-box input[type="date"] {
+  color: #6b1d2b;
+}
+
+/* Select dropdown selected value */
+.popup-box select {
+  color: #6b1d2b;
+}
+
+/* Placeholder / default option color */
+.popup-box select option[value=""] {
+  color: #999;
+}
+
+/* Fix for Chrome date icon color (optional) */
+.popup-box input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(28%) sepia(25%) saturate(1700%) hue-rotate(330deg);
+}
+
+/* When input is disabled (optional polish) */
+.popup-box select:disabled,
+.popup-box input:disabled {
+  color: #aaa;
+}
