@@ -31,7 +31,7 @@ export default function EnquiryPopup({ onClose }) {
     console.log("Enquiry Submitted:", enquiryData);
 
     // Save once (optional but recommended)
-    localStorage.setItem("utsavamEnquiry", JSON.stringify(enquiryData));
+    localStorage.setItem("utsavasEnquiry", JSON.stringify(enquiryData));
     localStorage.setItem("enquiryFilled", "true");
 
     // ✅ CLOSE POPUP → DASHBOARD SHOWS

@@ -30,7 +30,7 @@ export default function Dashboard() {
     if (!filled) setShowPopup(true);
 
     // selected location
-    const savedLocation = localStorage.getItem("utsavamLocation");
+    const savedLocation = localStorage.getItem("utsavasLocation");
     if (savedLocation) setSelectedLocation(savedLocation);
   }, []);
 
@@ -77,9 +77,9 @@ export default function Dashboard() {
       {/* DASHBOARD */}
       <div className="dashboard-container">
         <div className="overlay">
-          <h1 className="title">Welcome to UTSAVAM</h1>
+          <h1 className="title">Welcome to UTSAVAS</h1>
           <p className="subtitle">
-            Where UTSAVAM Become Memories
+            Where UTSAVAS Become Memories
           </p>
 
           {/* ================= SEARCH ================= */}

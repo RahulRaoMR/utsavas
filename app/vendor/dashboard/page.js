@@ -94,7 +94,7 @@ export default function VendorDashboard() {
     <div className={styles.page}>
       {/* ================= HEADER ================= */}
       <div className={styles.header}>
-        <div className={styles.logo}>UTSAVAM</div>
+        <div className={styles.logo}>UTSAVAS</div>
         <button className={styles.logoutBtn} onClick={handleLogout}>
           Logout
         </button>
@@ -105,7 +105,7 @@ export default function VendorDashboard() {
         <h1>Welcome, {vendor?.businessName} 👋</h1>
         <p>
           Manage your halls, booking requests, and grow your business with{" "}
-          <b>UTSAVAM</b>.
+          <b>UTSAVAS</b>.
         </p>
 
         <p className={styles.muted}>

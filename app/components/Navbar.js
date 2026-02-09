@@ -10,19 +10,19 @@ export default function Navbar() {
   const [location, setLocation] = useState("Select Location");
 
   useEffect(() => {
-    const saved = localStorage.getItem("utsavamLocation");
+    const saved = localStorage.getItem("utsavasLocation");
     if (saved) setLocation(saved);
   }, []);
 
   const handleSelectLocation = (loc) => {
     setLocation(loc);
-    localStorage.setItem("utsavamLocation", loc);
+    localStorage.setItem("utsavasLocation", loc);
   };
 
   // 🔥 CLEAR LOCATION
   const clearLocation = (e) => {
     e.stopPropagation(); // prevent popup opening
-    localStorage.removeItem("utsavamLocation");
+    localStorage.removeItem("utsavasLocation");
     setLocation("Select Location");
   };
 
@@ -37,7 +37,7 @@ export default function Navbar() {
 
       <nav className="navbar">
         <div className="logo">
-          <img src="/utsavam-logo.png" alt="UTSAVAM" />
+          <img src="/utsavas-logo.png" alt="UTSAVAS" />
         </div>
 
         <div className="nav-links">

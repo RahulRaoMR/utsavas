@@ -11,3 +11,8 @@ export default function RootLayout({
     </html>
   );
 }
+
+<link
+  href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&display=swap"
+  rel="stylesheet"
+/>

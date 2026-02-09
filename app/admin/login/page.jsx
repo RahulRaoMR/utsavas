@@ -40,7 +40,7 @@ export default function AdminLogin() {
   return (
     <div className={styles.page}>
       <div className={styles.loginCard}>
-        <h1 className={styles.title}>UTSAVAM</h1>
+        <h1 className={styles.title}>UTSAVAS</h1>
         <p className={styles.subtitle}>Super Admin Login</p>
 
         <form onSubmit={handleLogin} className={styles.form}>

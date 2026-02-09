@@ -1,0 +1,93 @@
+.hero {
+  position: relative;            /* REQUIRED */
+  height: 100vh;
+  width: 100%;
+  background-image: url("/images/utsavam-hero.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  padding-top: 160px;            /* space for navbar + search bar */
+  margin-top: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Dark overlay */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 1;
+}
+
+/* Content wrapper */
+.content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 900px;
+  color: #ffffff;
+  padding: 0 20px;
+}
+
+/* Main heading */
+.content h1 {
+  font-family: "Playfair Display", serif;
+  font-size: 58px;
+  font-weight: 500;
+  margin-bottom: 22px;
+}
+
+/* Subtitle */
+.content p {
+  font-size: 14px;
+  letter-spacing: 3px;
+  margin-bottom: 36px;
+  color: #f8f1e7;
+}
+
+/* CTA button */
+.content button {
+  background: #f5d28e;
+  color: #6b1d2b;
+  border: none;
+  padding: 15px 38px;
+  font-size: 14px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.content button:hover {
+  background: #6b1d2b;
+  color: #f5d28e;
+  border: 1px solid #f5d28e;
+}
+/* Main brand title */
+.content h1 {
+  font-family: "Playfair Display", serif;
+  font-size: 58px;
+  font-weight: 500;
+  margin-bottom: 22px;
+  color: #f5d28e; /* UTSAVAM GOLD */
+}
+
+/* Tagline: WHERE UTSAVAS BECOME MEMORIES */
+.content h2 {
+  font-size: 14px;
+  letter-spacing: 4px;
+  margin-bottom: 18px;
+  color: #f5d28e; /* UTSAVAM GOLD */
+}
+
+/* Subtitle line */
+.content p {
+  font-size: 14px;
+  letter-spacing: 3px;
+  margin-bottom: 36px;
+  color: #f5d28e; /* UTSAVAM GOLD */
+}

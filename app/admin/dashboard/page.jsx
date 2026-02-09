@@ -63,7 +63,7 @@ export default function AdminDashboard() {
     <div className={styles.container}>
       {/* ================= TOP HEADER ================= */}
       <div className={styles.topHeader}>
-        <h1 className={styles.header}>Utsavam Admin Dashboard</h1>
+        <h1 className={styles.header}>Utsavas Admin Dashboard</h1>
 
         <button
           className={styles.logoutButton}

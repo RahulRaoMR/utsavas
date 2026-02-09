@@ -10,14 +10,14 @@ export default function ServicesPage() {
       <section className="services-hero">
         <Image
           src="/services-bg.jpg"   // your background image
-          alt="UTSAVAM Services"
+          alt="UTSAVAS Services"
           fill
           className="hero-img"
         />
 
         <div className="hero-overlay">
-          <h1>UTSAVAM Services</h1>
-          <p>Where UTSAVAM Become Memories</p>
+          <h1>UTSAVAS Services</h1>
+          <p>Where UTSAVAS Become Memories</p>
         </div>
       </section>
 
@@ -32,6 +32,8 @@ export default function ServicesPage() {
           <div className="service-card">🎧 DJ & Entertainment</div>
           <div className="service-card">📸 Photography & Videography</div>
           <div className="service-card">🚗 Valet Parking</div>
+          <div className="service-card">🍸Bar Counter</div>
+          <div className="service-card">🎶Live Music Band / Concert</div>
         </div>
       </section>
 

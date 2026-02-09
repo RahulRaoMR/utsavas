@@ -122,16 +122,16 @@ export default function LoginPage() {
     <div className={styles.loginContainer}>
       <div className={styles.loginCard}>
         <Image
-          src="/utsavam-logo.png"
-          alt="UTSAVAM Logo"
+          src="/utsavas-logo.png"
+          alt="UTSAVAS Logo"
           width={120}
           height={120}
           className={styles.logoImage}
         />
 
-        <h1 className={styles.logo}>UTSAVAM</h1>
+        <h1 className={styles.logo}>UTSAVAS</h1>
         <p className={styles.tagline}>
-          Where UTSAVAM Become Memories
+          Where UTSAVAS Become Memories
         </p>
 
         {!showOTPLogin ? (

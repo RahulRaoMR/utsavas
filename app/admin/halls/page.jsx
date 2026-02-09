@@ -66,7 +66,7 @@ export default function AdminHallsPage() {
   return (
     <div className={styles.container}>
       <h1 className={styles.header}>
-        🛠 Admin – Hall Approvals (UTSAVAM)
+        🛠 Admin – Hall Approvals (UTSAVAS)
       </h1>
 
       {halls.length === 0 && <p>No halls found</p>}
@@ -109,7 +109,7 @@ export default function AdminHallsPage() {
                   style={{
                     objectFit: "cover",
                     borderRadius: 8,
-                    border: "1px solid #6b1d2b", // UTSAVAM theme
+                    border: "1px solid #6b1d2b", // UTSAVAS theme
                   }}
                 />
               ))}

@@ -109,7 +109,7 @@
   margin: 8px 0;
 }
 
-/* ===== UTSAVAM COLOR FIX ===== */
+/* ===== UTSAVAS COLOR FIX ===== */
 
 /* Tabs text */
 .hall-tabs span {
@@ -313,7 +313,7 @@
 .hall-info h1 {
   font-size: 34px;
   font-weight: 700;
-  color: #6b1d2b; /* UTSAVAM theme */
+  color: #6b1d2b; /* UTSAVAS theme */
   margin-bottom: 8px;
   margin-top: 12px;   /* THIS IS THE FIX */
 }

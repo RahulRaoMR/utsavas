@@ -35,3 +35,62 @@ body {
   margin: 0;
   padding: 0; /* ❌ removed padding-top */
 }
+
+body {
+  font-family: "Playfair Display", serif;
+}
+
+.top-nav {
+  background: #6b1d2b; /* UTSAVAM maroon */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 40px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 30px;
+  list-style: none;
+}
+
+.nav-links a {
+  color: #f5d48b;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.login-btn {
+  background: #f5d48b;
+  color: #6b1d2b;
+  padding: 8px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.search-bar {
+  display: flex;
+  gap: 16px;
+  background: white;
+  padding: 20px;
+  margin: -30px auto 40px;
+  width: 80%;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.search-bar select,
+.search-bar button {
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+
+.search-bar button {
+  background: #c71f37;
+  color: white;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+}

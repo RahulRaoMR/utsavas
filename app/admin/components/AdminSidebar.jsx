@@ -15,7 +15,7 @@ export default function AdminSidebar() {
 
   return (
     <aside className={styles.sidebar}>
-      <div className={styles.sidebarHeader}>Utsavam Admin</div>
+      <div className={styles.sidebarHeader}>Utsavas Admin</div>
 
       <nav>
         {links.map((link) => (

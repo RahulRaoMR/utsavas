@@ -52,11 +52,11 @@ export default function PaymentPage() {
         key: "rzp_test_SCPdofdl0uo5pU", // 🔑 REPLACE WITH YOUR KEY
         amount: order.amount,
         currency: "INR",
-        name: "UTSAVAM",
+        name: "UTSAVAS",
         description: "Hall Booking Payment",
         order_id: order.id,
         theme: {
-          color: "#6b1d2b", // 🔥 UTSAVAM theme
+          color: "#6b1d2b", // 🔥 UTSAVAS theme
         },
         handler: function () {
           alert("✅ Payment Successful!");

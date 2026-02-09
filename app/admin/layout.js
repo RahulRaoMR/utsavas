@@ -24,7 +24,7 @@ export default function AdminLayout({ children }) {
     <div className={styles.adminLayout}>
       {/* SIDEBAR */}
       <aside className={styles.sidebar}>
-        <div className={styles.sidebarHeader}>Utsavam Admin</div>
+        <div className={styles.sidebarHeader}>Utsavas Admin</div>
 
         <Link
           href="/admin"

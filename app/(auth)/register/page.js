@@ -10,7 +10,7 @@ export default function RegisterPage() {
   return (
     <div className={styles.loginContainer}>
       <div className={styles.loginCard}>
-        <h1 className={styles.logo}>UTSAVAM</h1>
+        <h1 className={styles.logo}>UTSAVAS</h1>
         <p className={styles.tagline}>Create your account</p>
 
         {!verified ? (

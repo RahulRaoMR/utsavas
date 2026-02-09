@@ -1,0 +1,32 @@
+.about {
+  display: flex;
+  gap: 60px;
+  padding: 100px 8%;
+  background: #fffaf2;
+  align-items: center;
+}
+
+.left img {
+  width: 100%;
+  max-width: 520px;
+  border-radius: 18px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.right {
+  max-width: 520px;
+}
+
+.right h2 {
+  font-size: 38px;
+  font-weight: 500;
+  color: #6b1d2b; /* UTSAVAM maroon */
+  margin-bottom: 24px;
+}
+
+.right p {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #444;
+  margin-bottom: 18px;
+}

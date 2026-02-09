@@ -2,7 +2,7 @@
 .popup-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(58, 10, 18, 0.75); /* Utsavam maroon overlay */
+  background: rgba(58, 10, 18, 0.75); /* Utsavas maroon overlay */
   backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
@@ -51,7 +51,7 @@
   margin: 0;
   font-size: 22px;
   font-weight: 700;
-  color: #6b1d2b; /* Utsavam maroon */
+  color: #6b1d2b; /* Utsavas maroon */
 }
 
 .popup-box p {
@@ -141,7 +141,7 @@ input[type="date"]:focus {
     135deg,
     #f5d28a,
     #e4b85c
-  ); /* Utsavam gold */
+  ); /* Utsavas gold */
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
   transition: all 0.25s ease;
 }

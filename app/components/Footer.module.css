@@ -1,0 +1,110 @@
+.footer {
+  background: #6b1d2b; /* UTSAVAM maroon */
+  color: #fff7ec;
+  padding: 80px 8%;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1.5fr;
+  gap: 60px;
+}
+
+/* LEFT BRAND */
+.brand h4 {
+  margin: 18px 0 12px;
+  font-size: 16px;
+  color: #e6c15a;
+  letter-spacing: 0.5px;
+}
+
+.brand p {
+  font-size: 14px;
+  line-height: 1.8;
+  max-width: 420px;
+  opacity: 0.95;
+}
+
+/* HEADINGS */
+.links h5,
+.contact h5 {
+  font-size: 16px;
+  margin-bottom: 18px;
+  color: #e6c15a;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* LINKS */
+.links ul {
+  list-style: none;
+  padding: 0;
+}
+
+.links li {
+  margin-bottom: 12px;
+  font-size: 14px;
+  cursor: pointer;
+  opacity: 0.9;
+  transition: all 0.3s ease;
+}
+
+.links li:hover {
+  color: #e6c15a;
+  transform: translateX(4px);
+}
+
+/* CONTACT */
+.contact p {
+  font-size: 14px;
+  margin-bottom: 14px;
+  line-height: 1.7;
+  opacity: 0.95;
+}
+
+/* SOCIAL */
+.socialTitle {
+  margin-top: 22px;
+}
+
+.socials {
+  display: flex;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.socials span {
+  width: 38px;
+  height: 38px;
+  border: 1px solid #e6c15a;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #e6c15a;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.socials span:hover {
+  background: #e6c15a;
+  color: #6b1d2b;
+  transform: scale(1.1);
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .container {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .brand p {
+    margin: 0 auto;
+  }
+
+  .socials {
+    justify-content: center;
+  }
+}

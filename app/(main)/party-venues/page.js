@@ -15,13 +15,13 @@ export default function BanquetHallsPage() {
      LOAD LOCATION + HALLS
   ===================== */
   useEffect(() => {
-    const loc = localStorage.getItem("utsavamLocation");
+    const loc = localStorage.getItem("utsavasLocation");
     if (loc) setSelectedLocation(loc);
 
     fetchHalls();
 
     const handleStorageChange = () => {
-      setSelectedLocation(localStorage.getItem("utsavamLocation"));
+      setSelectedLocation(localStorage.getItem("utsavasLocation"));
     };
 
     window.addEventListener("storage", handleStorageChange);

@@ -61,8 +61,8 @@ export default function VendorRegisterPage() {
     <div className={styles.container}>
       <div className={styles.card}>
         <Image
-          src="/utsavam-logo.png"
-          alt="UTSAVAM"
+          src="/utsavas-logo.png"
+          alt="UTSAVAS"
           width={100}
           height={100}
           className={styles.logo}
@@ -70,7 +70,7 @@ export default function VendorRegisterPage() {
 
         <h1 className={styles.title}>Register as Vendor</h1>
         <p className={styles.subtitle}>
-          Partner with UTSAVAM & grow your business
+          Partner with UTSAVAS & grow your business
         </p>
 
         <form onSubmit={handleSubmit}>

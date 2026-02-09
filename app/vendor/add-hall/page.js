@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./addHall.module.css";
+import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 
 
 
@@ -23,14 +24,6 @@ const geocodeAddress = async (query) => {
   return null;
 };
 
-const reverseGeocode = async (lat, lng) => {
-  const res = await fetch(
-    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
-  );
-  const data = await res.json();
-  return data.address || {};
-};
-
 export default function AddHallPage() {
   const router = useRouter();
 
@@ -44,6 +37,8 @@ export default function AddHallPage() {
     parkingCapacity: "",
     rooms: "",
     about: "",
+    pricePerDay: "",
+    pricePerEvent: "",
   });
 
   /* =====================
@@ -58,6 +53,26 @@ export default function AddHallPage() {
     pincode: "",
     landmark: "",
   });
+
+
+  const formatFeatureLabel = (key) => {
+  const labels = {
+    diningHall: "Dining Hall",
+    stage: "Stage",
+    powerBackup: "Power Backup",
+    ac: "Air Conditioning",
+    nonAc: "Non-AC Hall",
+    outsideFood: "Outside Food Allowed",
+    outsideDecorators: "Outside Decorators Allowed",
+    outsideDJ: "Outside DJ Allowed",
+    alcoholAllowed: "Alcohol Allowed",
+    valetParking: "Valet Parking",
+  };
+
+  return labels[key] || key;
+};
+
+
 
   /* =====================
      MAP LOCATION
@@ -101,10 +116,10 @@ export default function AddHallPage() {
     setAddress({ ...address, [e.target.name]: e.target.value });
 
   /* =====================
-     AUTO GEOCODE FROM ADDRESS
+     AUTO GEOLOCATION
   ===================== */
   useEffect(() => {
-    const timeout = setTimeout(async () => {
+    const timer = setTimeout(async () => {
       if (address.area && address.city && address.pincode) {
         const coords = await geocodeAddress(
           `${address.area}, ${address.city}, ${address.state}, ${address.pincode}`
@@ -113,8 +128,19 @@ export default function AddHallPage() {
       }
     }, 800);
 
-    return () => clearTimeout(timeout);
-  }, [address.area, address.city, address.state, address.pincode]);
+    return () => clearTimeout(timer);
+  }, [address]);
+
+  
+  /* MAP CLICK */
+  const LocationPicker = () => {
+    useMapEvents({
+      click(e) {
+        setGeoLocation(e.latlng);
+      },
+    });
+    return null;
+  };
 
   /* =====================
      SUBMIT
@@ -129,7 +155,7 @@ export default function AddHallPage() {
     }
 
     if (!geoLocation) {
-      alert("Please pin location on map");
+      alert("Location not detected");
       return;
     }
 
@@ -158,30 +184,75 @@ export default function AddHallPage() {
 
   return (
     <div className={styles.page}>
-      <h1 className={styles.title}>Add Your Wedding / Party Venue</h1>
+      <h1 className={styles.title}>Add Your Venue</h1>
       <p className={styles.subtitle}>
-        List your venue on <b>UTSAVAM</b>
+        List your venue on <b>UTSAVAS</b>
       </p>
 
       <form className={styles.form} onSubmit={handleSubmit}>
         {/* VENUE DETAILS */}
         <section className={styles.card}>
           <h2>🏛 Venue Details</h2>
-          <input name="hallName" placeholder="Hall Name" required onChange={handleChange} />
+
+          <input
+            name="hallName"
+            placeholder="Hall Name"
+            required
+            onChange={handleChange}
+          />
+
+          {/* FIXED DROPDOWN */}
           <select name="category" onChange={handleChange}>
             <option value="wedding">Wedding Hall</option>
             <option value="banquet">Banquet Hall</option>
             <option value="party">Party Venue</option>
           </select>
-          <input name="capacity" placeholder="Guest Capacity" onChange={handleChange} />
-          <input name="parkingCapacity" placeholder="Parking Capacity" onChange={handleChange} />
-          <input name="rooms" placeholder="Rooms / Green Rooms" onChange={handleChange} />
-          <textarea name="about" placeholder="About the venue" onChange={handleChange} />
+
+          <input
+            name="capacity"
+            placeholder="Guest Capacity"
+            onChange={handleChange}
+          />
+
+          <input
+            name="parkingCapacity"
+            placeholder="Parking Capacity"
+            onChange={handleChange}
+          />
+
+          <input
+            name="rooms"
+            placeholder="Rooms / Green Rooms"
+            onChange={handleChange}
+          />
+
+          {/* PRICE ROW */}
+          <div className={styles.row}>
+            <input
+              type="number"
+              name="pricePerDay"
+              placeholder="Price Per Day (₹)"
+              onChange={handleChange}
+            />
+            <input
+              type="number"
+              name="pricePerEvent"
+              placeholder="Price Per Event (₹)"
+              onChange={handleChange}
+            />
+          </div>
+
+          <textarea
+            name="about"
+            placeholder="About the venue"
+            onChange={handleChange}
+          />
         </section>
 
         {/* ADDRESS */}
         <section className={styles.card}>
           <h2>📍 Venue Address</h2>
+
           <input name="flat" placeholder="Building / Hall Name" onChange={handleAddressChange} />
           <input name="floor" placeholder="Floor (optional)" onChange={handleAddressChange} />
           <input name="area" placeholder="Area / Locality" onChange={handleAddressChange} />
@@ -191,18 +262,58 @@ export default function AddHallPage() {
           <input name="landmark" placeholder="Nearby Landmark" onChange={handleAddressChange} />
         </section>
 
-        
 
-        {/* FEATURES */}
+        {/* MAP */}
         <section className={styles.card}>
-          <h2>✨ Facilities</h2>
-          {Object.keys(features).map((key) => (
-            <label key={key}>
-              <input type="checkbox" name={key} onChange={handleCheckbox} />
-              {key}
-            </label>
-          ))}
+          <h2>🗺 Pin Venue Location</h2>
+
+          <MapContainer
+            center={geoLocation}
+            zoom={15}
+            scrollWheelZoom
+            className={styles.map}
+          >
+            <TileLayer
+  attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
+  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+/>
+    
+            <Marker
+              position={geoLocation}
+              draggable
+              eventHandlers={{
+                dragend: (e) => {
+                  setGeoLocation(e.target.getLatLng());
+                },
+              }}
+            />
+            <LocationPicker />
+          </MapContainer>
+
+          <p className={styles.mapNote}>
+            Click or drag marker to exact venue location
+          </p>
         </section>
+
+{/* FEATURES */}
+<section className={styles.card}>
+  <h2>✨ Facilities</h2>
+
+  <div className={styles.featureGrid}>
+    {Object.entries(features).map(([key, value]) => (
+      <label key={key} className={styles.featureItem}>
+        <input
+          type="checkbox"
+          name={key}
+          checked={value}
+          onChange={handleCheckbox}
+        />
+        <span>{formatFeatureLabel(key)}</span>
+      </label>
+    ))}
+  </div>
+</section>
+
 
         {/* IMAGES */}
         <section className={styles.card}>
@@ -215,6 +326,3 @@ export default function AddHallPage() {
     </div>
   );
 }
-/* =========================
-   GET PENDING HALLS
-========================= */
