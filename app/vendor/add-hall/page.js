@@ -9,7 +9,6 @@ import styles from "./addHall.module.css";
 //import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 
 
-import dynamic from "next/dynamic";
 
 const MapContainer = dynamic(
   () => import("react-leaflet").then((mod) => mod.MapContainer),
