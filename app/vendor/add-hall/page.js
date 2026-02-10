@@ -101,7 +101,11 @@ export default function AddHallPage() {
   /* =====================
      MAP LOCATION
   ===================== */
-  //const [geoLocation, setGeoLocation] = useState(null);
+ const [geoLocation, setGeoLocation] = useState({
+  lat: 10.8505,
+  lng: 76.2711,
+});
+
 
   {/* MAP */}
 <section className={styles.card}>
