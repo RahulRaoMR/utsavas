@@ -30,3 +30,34 @@
   color: #444;
   margin-bottom: 18px;
 }
+/* ===== MOBILE FIX : ABOUT / EVENT SPACES ===== */
+@media (max-width: 768px) {
+  .aboutSection {
+    flex-direction: column;
+    padding: 24px 16px;
+    text-align: center;
+  }
+
+  .title {
+    font-size: 28px;
+    line-height: 1.2;
+    margin-bottom: 16px;
+    white-space: normal;
+  }
+
+  .content,
+  .description,
+  .text {
+    column-count: 1 !important;
+    max-width: 100%;
+    font-size: 15px;
+    line-height: 1.7;
+    padding: 0;
+  }
+
+  .logo {
+    margin: 16px auto;
+    width: 120px;
+    height: auto;
+  }
+}

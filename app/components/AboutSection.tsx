@@ -11,7 +11,10 @@ export default function AboutSection() {
       </div>
 
       <div className={styles.right}>
-        <h2>Welcome to UTSAVAS Event Spaces</h2>
+        <h2 className={styles.title}>
+  Welcome to <br /> UTSAVAS Event Spaces
+</h2>
+
 
         <p>
           UTSAVAS is one of Bangalore’s most elegant and thoughtfully designed
