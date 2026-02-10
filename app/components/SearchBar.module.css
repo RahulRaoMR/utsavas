@@ -63,3 +63,19 @@
   background: #6b1d2b;
   color: #f5d28e;
 }
+
+/* ===== MOBILE SEARCH BAR FIX ===== */
+@media (max-width: 768px) {
+  .searchBar {
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    padding: 12px;
+  }
+
+  .searchBar select,
+  .searchBar button {
+    width: 100%;
+    font-size: 14px;
+  }
+}

@@ -100,3 +100,21 @@
 .clear-location:hover {
   color: #000;
 }
+
+/* ===== MOBILE NAVBAR FIX ===== */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    padding: 10px;
+  }
+
+  .navLinks {
+    display: none; /* hide desktop menu */
+  }
+
+  .mobileMenuButton {
+    display: block;
+    font-size: 24px;
+    color: #f5d38a;
+  }
+}

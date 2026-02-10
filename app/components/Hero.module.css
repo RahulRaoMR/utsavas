@@ -91,3 +91,21 @@
   margin-bottom: 36px;
   color: #f5d28e; /* UTSAVAM GOLD */
 }
+/* ===== HERO MOBILE FIX ===== */
+@media (max-width: 768px) {
+  .heroTitle {
+    font-size: 36px;
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .heroSubtitle {
+    font-size: 14px;
+    text-align: center;
+    padding: 0 16px;
+  }
+
+  .heroContainer {
+    padding: 40px 16px;
+  }
+}
