@@ -26,10 +26,11 @@ const Marker = dynamic(
   { ssr: false }
 );
 
-const useMapEvents = dynamic(
-  () => import("react-leaflet").then((mod) => mod.useMapEvents),
+const LocationPicker = dynamic(
+  () => import("./LocationPicker"),
   { ssr: false }
 );
+
 
 
 /* =====================
