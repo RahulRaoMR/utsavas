@@ -3,29 +3,29 @@ export const dynamic = "force-dynamic";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import dynamic from "next/dynamic";
+import Dynamic from "next/dynamic"; 
 import styles from "./addHall.module.css";
 
-//import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 
 
 
-const MapContainer = dynamic(
+const MapContainer = Dynamic(
   () => import("react-leaflet").then((mod) => mod.MapContainer),
   { ssr: false }
 );
 
-const TileLayer = dynamic(
+
+const TileLayer = Dynamic(
   () => import("react-leaflet").then((mod) => mod.TileLayer),
   { ssr: false }
 );
 
-const Marker = dynamic(
+const Marker = Dynamic(
   () => import("react-leaflet").then((mod) => mod.Marker),
   { ssr: false }
 );
 
-const LocationPicker = dynamic(
+const LocationPicker = Dynamic(
   () => import("./LocationPicker"),
   { ssr: false }
 );
