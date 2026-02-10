@@ -1,10 +1,35 @@
 "use client";
+export const dynamic = "force-dynamic";
+
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import styles from "./addHall.module.css";
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+
+//import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 
 
+import dynamic from "next/dynamic";
+
+const MapContainer = dynamic(
+  () => import("react-leaflet").then((mod) => mod.MapContainer),
+  { ssr: false }
+);
+
+const TileLayer = dynamic(
+  () => import("react-leaflet").then((mod) => mod.TileLayer),
+  { ssr: false }
+);
+
+const Marker = dynamic(
+  () => import("react-leaflet").then((mod) => mod.Marker),
+  { ssr: false }
+);
+
+const useMapEvents = dynamic(
+  () => import("react-leaflet").then((mod) => mod.useMapEvents),
+  { ssr: false }
+);
 
 
 /* =====================
@@ -76,7 +101,45 @@ export default function AddHallPage() {
   /* =====================
      MAP LOCATION
   ===================== */
-  const [geoLocation, setGeoLocation] = useState(null);
+  //const [geoLocation, setGeoLocation] = useState(null);
+
+  {/* MAP */}
+<section className={styles.card}>
+  <h2>🗺 Pin Venue Location</h2>
+
+  {geoLocation && (
+    <MapContainer
+      center={geoLocation}
+      zoom={15}
+      scrollWheelZoom
+      className={styles.map}
+    >
+      <TileLayer
+        attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      />
+
+      <Marker
+        position={geoLocation}
+        draggable
+        eventHandlers={{
+          dragend: (e) => {
+            setGeoLocation(e.target.getLatLng());
+          },
+        }}
+      />
+
+      <LocationPicker />
+    </MapContainer>
+  )}
+
+  {!geoLocation && (
+    <p className={styles.mapNote}>
+      Enter address to load map…
+    </p>
+  )}
+</section>
+
 
   /* =====================
      FEATURES
