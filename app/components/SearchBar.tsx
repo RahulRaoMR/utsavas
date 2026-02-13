@@ -7,8 +7,16 @@ export default function SearchBar() {
   const router = useRouter();
 
   const handleSearch = () => {
-    // 👉 redirect to dashboard page
-    router.push("/dashboard");
+    // ✅ check if user is logged in
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      // ❌ not logged in → go to login page
+      router.push("/login");
+    } else {
+      // ✅ already logged in → go to dashboard
+      router.push("/dashboard");
+    }
   };
 
   return (
@@ -24,41 +32,24 @@ export default function SearchBar() {
       {/* LOCATION */}
       <select className={styles.input}>
         <option value="">Select Location</option>
-
-        {/* Central & East Bangalore */}
         <option>Indiranagar</option>
         <option>Whitefield</option>
         <option>MG Road</option>
         <option>Ulsoor</option>
         <option>Marathahalli</option>
         <option>KR Puram</option>
-
-        {/* South Bangalore */}
         <option>Jayanagar</option>
         <option>JP Nagar</option>
         <option>Banashankari</option>
         <option>BTM Layout</option>
         <option>Electronic City</option>
         <option>Bannerghatta Road</option>
-
-        {/* North Bangalore */}
         <option>Hebbal</option>
         <option>Yelahanka</option>
         <option>Devanahalli</option>
-        <option>Jakkur</option>
-
-        {/* West Bangalore */}
         <option>Rajajinagar</option>
         <option>Malleswaram</option>
-        <option>Vijayanagar</option>
-        <option>Yeshwanthpur</option>
-
-        {/* Popular Event Areas */}
         <option>Sarjapur Road</option>
-        <option>Hennur Road</option>
-        <option>Kanakapura Road</option>
-        <option>Mysore Road</option>
-        <option>Tumkur Road</option>
       </select>
 
       {/* VENUE TYPE */}

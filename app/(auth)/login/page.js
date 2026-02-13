@@ -25,55 +25,43 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // 🔐 Setup reCAPTCHA
+  // 🔐 Setup reCAPTCHA (FIXED VERSION)
   useEffect(() => {
-    if (typeof window === "undefined") return;
+  if (typeof window === "undefined") return;
 
-    if (!window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(
-        auth,
-        "recaptcha-container",
-        {
-          size: "invisible",
-        }
-      );
-    }
-  }, []);
+  if (!window.recaptchaVerifier) {
+    window.recaptchaVerifier = new RecaptchaVerifier(
+      auth,
+      "recaptcha-container",
+      {
+        size: "invisible",
+      }
+    );
+
+    window.recaptchaVerifier.render();
+  }
+}, []);
 
   // =========================
   // ✅ EMAIL LOGIN
   // =========================
   const handleEmailLogin = async () => {
     const trimmedEmail = email.trim();
-    const trimmedPassword = password;
 
-    if (!trimmedEmail || !trimmedPassword) {
+    if (!trimmedEmail || !password) {
       alert("Please enter email and password");
       return;
     }
 
     try {
-      await signInWithEmailAndPassword(
-        auth,
-        trimmedEmail,
-        trimmedPassword
-      );
+      await signInWithEmailAndPassword(auth, trimmedEmail, password);
 
-      // 🔥 IMPORTANT: reset enquiry popup after login
       localStorage.removeItem("enquiryFilled");
 
       alert("Login successful!");
       router.push("/dashboard");
     } catch (error) {
-      if (error.code === "auth/invalid-email") {
-        alert("Invalid email format");
-      } else if (error.code === "auth/user-not-found") {
-        alert("User not found");
-      } else if (error.code === "auth/wrong-password") {
-        alert("Wrong password");
-      } else {
-        alert(error.message);
-      }
+      alert(error.message);
     }
   };
 
@@ -86,16 +74,19 @@ export default function LoginPage() {
 
     try {
       const appVerifier = window.recaptchaVerifier;
+
       const result = await signInWithPhoneNumber(
         auth,
         phone,
         appVerifier
       );
+
       setConfirmationResult(result);
       setOtpSent(true);
       alert("OTP sent successfully!");
     } catch (error) {
-      alert("Failed to send OTP");
+      console.error(error);
+      alert(error.message);
     }
 
     setLoading(false);
@@ -105,15 +96,19 @@ export default function LoginPage() {
   // ✅ VERIFY OTP
   // =========================
   const verifyOTP = async () => {
+    if (!confirmationResult) {
+      alert("Please request OTP first");
+      return;
+    }
+
     try {
       await confirmationResult.confirm(otp);
 
-      // 🔥 IMPORTANT: reset enquiry popup after login
       localStorage.removeItem("enquiryFilled");
 
       alert("Login successful!");
       router.push("/dashboard");
-    } catch {
+    } catch (error) {
       alert("Invalid OTP");
     }
   };
@@ -178,7 +173,6 @@ export default function LoginPage() {
               </span>
             </p>
 
-            {/* ⭐ REGISTER AS VENDOR */}
             <button
               className={styles.vendorBtn}
               onClick={() => router.push("/vendor-register")}

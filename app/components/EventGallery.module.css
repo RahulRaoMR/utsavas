@@ -69,3 +69,42 @@
     columns: 1;
   }
 }
+
+/* ===== PHONE OPTIMIZATION (<= 480px) ===== */
+@media (max-width: 480px) {
+
+  .gallery {
+    padding: 60px 20px;
+  }
+
+  .subtitle {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+  }
+
+  .gallery h2 {
+    font-size: 26px;
+    margin-bottom: 12px;
+  }
+
+  .desc {
+    font-size: 14px;
+    line-height: 1.7;
+    margin-bottom: 30px;
+  }
+
+  .grid {
+    columns: 1;
+    column-gap: 0;
+  }
+
+  .item {
+    margin-bottom: 16px;
+    border-radius: 14px;
+  }
+
+  .item img {
+    border-radius: 14px;
+  }
+}

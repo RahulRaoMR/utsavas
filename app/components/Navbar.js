@@ -8,6 +8,7 @@ import LocationPopup from "./LocationPopup";
 export default function Navbar() {
   const [showLocation, setShowLocation] = useState(false);
   const [location, setLocation] = useState("Select Location");
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem("utsavasLocation");
@@ -19,9 +20,8 @@ export default function Navbar() {
     localStorage.setItem("utsavasLocation", loc);
   };
 
-  // 🔥 CLEAR LOCATION
   const clearLocation = (e) => {
-    e.stopPropagation(); // prevent popup opening
+    e.stopPropagation();
     localStorage.removeItem("utsavasLocation");
     setLocation("Select Location");
   };
@@ -36,32 +36,55 @@ export default function Navbar() {
       )}
 
       <nav className="navbar">
+        {/* LOGO */}
         <div className="logo">
-          <img src="/utsavas-logo.png" alt="UTSAVAS" />
+          <Link href="/dashboard">
+            <img src="/utsavas-logo.png" alt="UTSAVAS" />
+          </Link>
         </div>
 
+        {/* DESKTOP LINKS */}
         <div className="nav-links">
-          <Link href="/wedding-halls">Wedding Halls</Link>
-          <Link href="/banquet-halls">Banquet Halls</Link>
-          <Link href="/party-venues">Party Venues</Link>
+          <Link href="/">Home</Link>
+          <Link href="/dashboard">Venues</Link>
           <Link href="/services">Services</Link>
+          <Link href="/contact">Contact</Link>
         </div>
 
-        {/* LOCATION BOX */}
+        {/* LOCATION */}
         <div
           className="location-box"
           onClick={() => setShowLocation(true)}
         >
           📍 {location}
-
-          {/* ❌ Clear button (only show if location selected) */}
           {location !== "Select Location" && (
             <span className="clear-location" onClick={clearLocation}>
               ✖
             </span>
           )}
         </div>
+
+        {/* HAMBURGER (MOBILE ONLY) */}
+        <div
+          className={`hamburger ${menuOpen ? "active" : ""}`}
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
       </nav>
+
+      {/* MOBILE MENU */}
+      {menuOpen && (
+        <div className="mobile-menu">
+          <Link href="/" onClick={() => setMenuOpen(false)}>Home</Link>
+          <Link href="/wedding-halls" onClick={() => setMenuOpen(false)}>Venues</Link>
+          <Link href="/services" onClick={() => setMenuOpen(false)}>Services</Link>
+          <Link href="/contact" onClick={() => setMenuOpen(false)}>Contact</Link>
+          <Link href="/login" onClick={() => setMenuOpen(false)}>Login</Link>
+        </div>
+      )}
     </>
   );
 }

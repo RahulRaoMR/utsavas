@@ -109,3 +109,68 @@
     padding: 40px 16px;
   }
 }
+
+/* ===== HERO MOBILE OPTIMIZATION ===== */
+@media (max-width: 768px) {
+
+  .hero {
+    height: 85vh;
+    padding-top: 120px;
+    background-position: center;
+  }
+
+  .content {
+    padding: 0 16px;
+  }
+
+  .content h1 {
+    font-size: 36px;
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+
+  .content h2 {
+    font-size: 12px;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+  }
+
+  .content p {
+    font-size: 13px;
+    letter-spacing: 2px;
+    margin-bottom: 24px;
+  }
+
+  .content button {
+    padding: 12px 28px;
+    font-size: 13px;
+  }
+}
+
+/* ===== EXTRA SMALL PHONES (<=480px) ===== */
+@media (max-width: 480px) {
+
+  .hero {
+    height: 75vh;
+    padding-top: 100px;
+  }
+
+  .content h1 {
+    font-size: 28px;
+  }
+
+  .content h2 {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+  }
+
+  .content p {
+    font-size: 12px;
+    letter-spacing: 1.5px;
+  }
+
+  .content button {
+    padding: 10px 22px;
+    font-size: 12px;
+  }
+}

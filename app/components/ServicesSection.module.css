@@ -46,3 +46,104 @@
   color: #555;
   line-height: 1.6;
 }
+
+/* ===== SERVICES MOBILE OPTIMIZATION ===== */
+@media (max-width: 768px) {
+
+  .services {
+    padding: 70px 20px;
+    text-align: center;
+  }
+
+  .services h2 {
+    font-size: 28px;
+    margin-bottom: 35px;
+  }
+
+  .grid {
+    gap: 20px;
+  }
+
+  .card {
+    padding: 22px;
+    border-radius: 16px;
+  }
+
+  .icon {
+    font-size: 24px;
+  }
+
+  .card h3 {
+    font-size: 16px;
+  }
+
+  .card p {
+    font-size: 13px;
+    line-height: 1.6;
+  }
+}
+
+/* ===== SERVICES MOBILE OPTIMIZATION ===== */
+@media (max-width: 768px) {
+
+  .services {
+    padding: 70px 20px;
+    text-align: center;
+  }
+
+  .services h2 {
+    font-size: 28px;
+    margin-bottom: 35px;
+  }
+
+  .grid {
+    gap: 20px;
+  }
+
+  .card {
+    padding: 22px;
+    border-radius: 16px;
+  }
+
+  .icon {
+    font-size: 24px;
+  }
+
+  .card h3 {
+    font-size: 16px;
+  }
+
+  .card p {
+    font-size: 13px;
+    line-height: 1.6;
+  }
+}
+
+
+@media (max-width: 480px) {
+
+  .services {
+    padding: 60px 16px;
+  }
+
+  .services h2 {
+    font-size: 24px;
+    margin-bottom: 28px;
+  }
+
+  .card {
+    padding: 18px;
+  }
+
+  .icon {
+    font-size: 22px;
+  }
+
+  .card h3 {
+    font-size: 15px;
+  }
+
+  .card p {
+    font-size: 12.5px;
+  }
+}

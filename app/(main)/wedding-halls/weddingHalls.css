@@ -156,3 +156,135 @@
   cursor: pointer;
   font-size: 16px;
 }
+
+
+/* =================================
+   WEDDING PAGE MOBILE (≤768px)
+================================= */
+@media (max-width: 768px) {
+
+  .wedding-page {
+    padding: 30px 20px;
+    padding-top: 110px;
+  }
+
+  .page-title {
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+
+  .hall-card-grid {
+    gap: 18px;
+  }
+
+  .hall-card img {
+    height: 160px;
+  }
+
+  .hall-content {
+    padding: 14px;
+  }
+
+  .hall-content h3 {
+    font-size: 16px;
+  }
+
+  .location {
+    font-size: 12px;
+  }
+
+  .price {
+    font-size: 15px;
+  }
+
+  .hall-meta {
+    font-size: 12px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .hall-btn {
+    padding: 9px;
+    font-size: 14px;
+    border-radius: 8px;
+  }
+}
+
+
+@media (max-width: 768px) {
+
+  .hall-detail-page {
+    padding: 16px;
+  }
+
+  .hall-image-wrapper {
+    height: 260px;
+    border-radius: 12px;
+  }
+
+  .hall-info h1 {
+    font-size: 22px;
+  }
+
+  .price {
+    font-size: 18px;
+  }
+
+  .meta {
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 13px;
+  }
+
+  .contact-btn {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .hall-section h3 {
+    font-size: 18px;
+  }
+
+  .back-btn {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .wedding-page {
+    padding: 25px 16px;
+    padding-top: 100px;
+  }
+
+  .page-title {
+    font-size: 20px;
+  }
+
+  .hall-card img {
+    height: 140px;
+  }
+
+  .hall-image-wrapper {
+    height: 220px;
+  }
+
+  .hall-info h1 {
+    font-size: 20px;
+  }
+
+  .price {
+    font-size: 16px;
+  }
+
+  .hall-btn {
+    font-size: 13px;
+    padding: 8px;
+  }
+
+  .contact-btn {
+    font-size: 13px;
+    padding: 8px;
+  }
+}

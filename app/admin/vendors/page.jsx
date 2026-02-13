@@ -21,8 +21,8 @@ export default function AdminVendorsPage() {
       const data = await res.json();
       setVendors(Array.isArray(data) ? data : []);
     } catch (err) {
-      console.error("Failed to load admin data", err);
-      alert("Failed to load admin data");
+      console.error(err);
+      alert("Failed to load vendor data");
       setVendors([]);
     } finally {
       setLoading(false);
@@ -37,25 +37,64 @@ export default function AdminVendorsPage() {
      APPROVE / REJECT VENDOR
   ===================== */
   const updateStatus = async (id, status) => {
-    if (!confirm(`Are you sure you want to ${status} this vendor?`)) return;
+    const confirmAction = confirm(
+      `Are you sure you want to ${status.toUpperCase()} this vendor?`
+    );
+    if (!confirmAction) return;
 
     try {
-      await fetch(`http://localhost:5000/api/vendor/status/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ status }),
-      });
+      const res = await fetch(
+        `http://localhost:5000/api/vendor/status/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status }),
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error("Failed to update status");
+      }
 
       fetchVendors(); // refresh list
     } catch (err) {
+      console.error(err);
       alert("Failed to update vendor status");
     }
   };
 
+  /* =====================
+     DELETE VENDOR (OPTIONAL)
+  ===================== */
+  const deleteVendor = async (id) => {
+    const confirmDelete = confirm("Delete this vendor permanently?");
+    if (!confirmDelete) return;
+
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/vendor/delete/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error("Delete failed");
+      }
+
+      fetchVendors();
+    } catch (err) {
+      alert("Failed to delete vendor");
+    }
+  };
+
+  /* =====================
+     LOADING STATE
+  ===================== */
   if (loading) {
-    return <p className={styles.loading}>Loading...</p>;
+    return <p className={styles.loading}>Loading vendors...</p>;
   }
 
   return (
@@ -68,9 +107,21 @@ export default function AdminVendorsPage() {
         <div key={vendor._id} className={styles.card}>
           <h3>{vendor.businessName}</h3>
 
-          <p><b>Owner:</b> {vendor.ownerName}</p>
-          <p><b>Email:</b> {vendor.email}</p>
-          <p><b>Phone:</b> {vendor.phone}</p>
+          <p>
+            <b>Owner:</b> {vendor.ownerName}
+          </p>
+          <p>
+            <b>Email:</b> {vendor.email}
+          </p>
+          <p>
+            <b>Phone:</b> {vendor.phone}
+          </p>
+          <p>
+            <b>City:</b> {vendor.city}
+          </p>
+          <p>
+            <b>Service:</b> {vendor.serviceType}
+          </p>
 
           <p>
             <b>Status:</b>{" "}
@@ -103,6 +154,16 @@ export default function AdminVendorsPage() {
               </button>
             </div>
           )}
+
+          {/* DELETE (ADMIN ONLY) */}
+          <div style={{ marginTop: 10 }}>
+            <button
+              className={styles.deleteButton}
+              onClick={() => deleteVendor(vendor._id)}
+            >
+              🗑 Delete Vendor
+            </button>
+          </div>
         </div>
       ))}
     </div>

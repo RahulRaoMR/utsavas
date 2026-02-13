@@ -1,63 +1,56 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import "./dashboard.css";
 import EnquiryPopup from "../../components/EnquiryPopup";
 import { useRouter } from "next/navigation";
+import Footer from "../../components/Footer";
 
 export default function Dashboard() {
   const router = useRouter();
+  const searchRef = useRef(null);
 
-  /* =========================
-     STATE
-  ========================= */
-  const [halls, setHalls] = useState([]);
   const [search, setSearch] = useState("");
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(null);
 
-  /* =========================
-     FETCH HALLS
-  ========================= */
   useEffect(() => {
-    fetch("http://localhost:5000/api/halls")
-      .then((res) => res.json())
-      .then((data) => setHalls(data))
-      .catch((err) => console.error(err));
-
-    // enquiry popup
     const filled = localStorage.getItem("enquiryFilled");
     if (!filled) setShowPopup(true);
 
-    // selected location
     const savedLocation = localStorage.getItem("utsavasLocation");
     if (savedLocation) setSelectedLocation(savedLocation);
   }, []);
 
-  /* =========================
-     FILTERED SEARCH RESULTS
-  ========================= */
-  const filteredHalls = halls.filter((hall) => {
-    const matchesSearch = hall.hallName
-      ?.toLowerCase()
-      .includes(search.toLowerCase());
+  useEffect(() => {
+    if (!search.trim()) {
+      setResults([]);
+      return;
+    }
 
-    const matchesLocation = selectedLocation
-      ? hall.address?.area
-          ?.toLowerCase()
-          .includes(selectedLocation.toLowerCase()) ||
-        hall.address?.city
-          ?.toLowerCase()
-          .includes(selectedLocation.toLowerCase())
-      : true;
+    const delay = setTimeout(async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(
+          `http://localhost:5000/api/halls/search?q=${search}`
+        );
+        const data = await res.json();
+        setResults(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error(err);
+        setResults([]);
+      } finally {
+        setLoading(false);
+      }
+    }, 300);
 
-    return matchesSearch && matchesLocation;
-  });
+    return () => clearTimeout(delay);
+  }, [search]);
 
-  /* =========================
-     OPEN HALL PAGE
-  ========================= */
   const openHall = (hall) => {
+    setResults([]);
     if (hall.category === "wedding") {
       router.push(`/wedding-halls/${hall._id}`);
     } else if (hall.category === "banquet") {
@@ -67,14 +60,30 @@ export default function Dashboard() {
     }
   };
 
+  const handleSearchSubmit = () => {
+    if (results.length > 0) {
+      openHall(results[0]);
+    }
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (searchRef.current && !searchRef.current.contains(e.target)) {
+        setResults([]);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
     <>
-      {/* ENQUIRY POPUP */}
       {showPopup && (
         <EnquiryPopup onClose={() => setShowPopup(false)} />
       )}
 
-      {/* DASHBOARD */}
       <div className="dashboard-container">
         <div className="overlay">
           <h1 className="title">Welcome to UTSAVAS</h1>
@@ -82,8 +91,7 @@ export default function Dashboard() {
             Where UTSAVAS Become Memories
           </p>
 
-          {/* ================= SEARCH ================= */}
-          <div className="search-wrapper">
+          <div className="search-wrapper" ref={searchRef}>
             <span className="search-icon">🔍</span>
 
             <input
@@ -92,14 +100,21 @@ export default function Dashboard() {
               className="search-input"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) =>
+                e.key === "Enter" && handleSearchSubmit()
+              }
             />
 
-            <button className="search-btn">Search</button>
+            <button
+              className="search-btn"
+              onClick={handleSearchSubmit}
+            >
+              Search
+            </button>
 
-            {/* SEARCH DROPDOWN */}
-            {search && filteredHalls.length > 0 && (
+            {results.length > 0 && (
               <div className="search-results">
-                {filteredHalls.slice(0, 6).map((hall) => (
+                {results.slice(0, 6).map((hall) => (
                   <div
                     key={hall._id}
                     className="search-item"
@@ -114,9 +129,14 @@ export default function Dashboard() {
                 ))}
               </div>
             )}
+
+            {loading && (
+              <div className="search-results">
+                <div className="search-item">Searching…</div>
+              </div>
+            )}
           </div>
 
-          {/* ================= CATEGORY CARDS ================= */}
           <div className="card-container">
             <div
               className="card wedding"
@@ -139,25 +159,11 @@ export default function Dashboard() {
               Party Venues
             </div>
           </div>
-
-          {/* ================= PREVIEW HALLS ================= */}
-          <div className="hall-grid">
-            {filteredHalls.slice(0, 3).map((hall) => (
-              <div
-                key={hall._id}
-                className="hall-card"
-                onClick={() => openHall(hall)}
-              >
-                <h3>{hall.hallName}</h3>
-                <p>
-                  {hall.address?.area},{" "}
-                  {hall.address?.city}
-                </p>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
+
+      {/* ✅ FOOTER IS NOW ADDED PROPERLY */}
+      <Footer />
     </>
   );
 }

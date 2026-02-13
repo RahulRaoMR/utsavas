@@ -37,21 +37,6 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      {/* 🔽 CONTACT SECTION (THIS WAS MISSING) */}
-      <section className="services-contact">
-        <h2>Contact Us</h2>
-        <p className="help-text">Need any help? Reach out to us</p>
-
-        <p className="contact-item">
-          Email :{" "}
-          <a href="mailto:care@Talme.com">care@Talme.com</a>
-        </p>
-
-        <p className="contact-item">
-          Phone :{" "}
-          <a href="tel:8124222266">8124222266</a>
-        </p>
-      </section>
     </div>
   );
 }

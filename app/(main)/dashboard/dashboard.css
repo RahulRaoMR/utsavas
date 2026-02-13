@@ -261,3 +261,38 @@
   font-size: 12px;
   opacity: 0.8;
 }
+
+.search-wrapper {
+  position: relative;
+  width: 600px;
+  margin: 20px auto;
+}
+
+.search-results {
+  position: absolute;
+  top: 55px;
+  width: 100%;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  z-index: 1000;
+}
+
+.search-item {
+  padding: 12px 16px;
+  cursor: pointer;
+}
+
+.search-item:hover {
+  background: #f3f3f3;
+}
+
+.search-item strong {
+  display: block;
+  color: #6b1d2b;
+}
+
+.search-item p {
+  font-size: 13px;
+  color: #666;
+}

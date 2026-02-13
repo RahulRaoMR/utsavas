@@ -109,3 +109,46 @@
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
+
+/* ===== LOGIN MOBILE OPTIMIZATION ===== */
+@media (max-width: 768px) {
+
+  .loginContainer {
+    padding: 20px;
+  }
+
+  .loginCard {
+    width: 100%;
+    max-width: 400px;
+    padding: 30px 24px;
+  }
+
+  .logo {
+    font-size: 26px;
+  }
+
+  .tagline {
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+
+  .inputField {
+    padding: 11px;
+    font-size: 14px;
+  }
+
+  .loginBtn,
+  .otpBtn,
+  .vendorBtn {
+    padding: 11px;
+    font-size: 14px;
+  }
+
+  .registerText {
+    font-size: 13px;
+  }
+
+  .backText {
+    font-size: 13px;
+  }
+}

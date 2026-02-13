@@ -86,6 +86,12 @@ export default function BookingPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // ✅ Safety check
+    if (!hallId) {
+      alert("Hall ID missing");
+      return;
+    }
+
     if (!form.checkIn || !form.checkOut) {
       alert("Please select check-in and check-out dates");
       return;
@@ -96,6 +102,17 @@ export default function BookingPage() {
       return;
     }
 
+    // ✅ Debug log
+    console.log("Booking Data:", {
+      hallId,
+      checkIn: form.checkIn,
+      checkOut: form.checkOut,
+      eventType: form.eventType,
+      guests: form.guests,
+      customerName: form.name,
+      phone: form.phone,
+    });
+
     setLoading(true);
 
     try {
@@ -105,12 +122,12 @@ export default function BookingPage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            hallId,
+            hallId: hallId,
             checkIn: form.checkIn,
             checkOut: form.checkOut,
             eventType: form.eventType,
-            guests: form.guests,
-            name: form.name,
+            guests: Number(form.guests), // ✅ ensure number
+            customerName: form.name,
             phone: form.phone,
           }),
         }

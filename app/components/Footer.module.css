@@ -108,3 +108,101 @@
     justify-content: center;
   }
 }
+
+.contactTitleLink {
+  text-decoration: none;
+  color: #f5d28a;
+}
+
+.contactTitleLink:hover {
+  color: #ffffff;
+}
+
+.contactLink {
+  text-decoration: none;
+  color: #ffffff;
+}
+
+.contactLink:hover {
+  text-decoration: underline;
+  color: #f5d28a;
+}
+
+.socials a {
+  font-size: 20px;
+  margin-right: 15px;
+  text-decoration: none;
+  color: #f5d28a;
+  transition: 0.3s ease;
+}
+
+.socials a:hover {
+  color: #ffffff;
+}
+
+
+
+/* ===============================
+   FOOTER MOBILE FIX
+=============================== */
+
+@media (max-width: 768px) {
+
+  .brand {
+    text-align: center;
+  }
+
+  .brand img {
+    width: 130px !important;
+    height: auto !important;
+    margin: 0 auto 20px auto;
+    display: block;
+  }
+
+  .brand h4 {
+    font-size: 18px;
+  }
+
+  .brand p {
+    font-size: 14px;
+    padding: 0 10px;
+  }
+
+}
+
+/* ===============================
+   LANDSCAPE MOBILE FIX
+=============================== */
+
+@media (max-width: 900px) and (orientation: landscape) {
+
+  .container {
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    text-align: left;
+  }
+
+  .brand {
+    text-align: left;
+  }
+
+  .brand img {
+    width: 150px !important;
+    height: auto !important;
+    margin: 0 0 15px 0;
+  }
+
+  .links {
+    margin-top: 0;
+  }
+
+  .contact {
+    grid-column: span 2;
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  .socials {
+    justify-content: center;
+  }
+}

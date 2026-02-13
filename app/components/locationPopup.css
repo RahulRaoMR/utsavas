@@ -117,3 +117,60 @@
   background: #6b1d2b !important;
   color: #ffffff !important;
 }
+
+/* ===== MOBILE OPTIMIZATION (<= 480px) ===== */
+@media (max-width: 480px) {
+
+  .location-overlay {
+    padding: 16px;
+    align-items: flex-start;
+    overflow-y: auto;
+  }
+
+  .location-box-popup {
+    width: 100%;
+    max-width: 100%;
+    padding: 18px 16px 20px;
+    border-radius: 14px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .location-box-popup h2 {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+
+  .detect-btn {
+    padding: 11px;
+    font-size: 14px;
+    border-radius: 8px;
+  }
+
+  .location-search {
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 8px;
+  }
+
+  .location-box-popup h4 {
+    font-size: 14px;
+    margin: 8px 0;
+  }
+
+  .location-list {
+    gap: 8px;
+  }
+
+  .location-item {
+    font-size: 12px;
+    padding: 7px 12px;
+    border-radius: 18px;
+  }
+
+  .close-btn {
+    font-size: 16px;
+    top: 10px;
+    right: 12px;
+  }
+}

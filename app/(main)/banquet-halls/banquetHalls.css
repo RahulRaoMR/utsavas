@@ -82,3 +82,53 @@
   font-weight: 700;
   cursor: pointer;
 }
+
+
+/* ===== BANQUET PAGE MOBILE ===== */
+@media (max-width: 768px) {
+
+  .banquet-page {
+    padding: 30px 20px;
+    padding-top: 110px; /* smaller navbar spacing */
+  }
+
+  .page-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .hall-card-grid {
+    gap: 18px;
+  }
+
+  .hall-card img {
+    height: 160px;
+  }
+
+  .hall-content {
+    padding: 14px;
+  }
+
+  .hall-content h3 {
+    font-size: 16px;
+  }
+
+  .location {
+    font-size: 12px;
+  }
+
+  .price {
+    font-size: 15px;
+  }
+
+  .hall-meta {
+    font-size: 12px;
+    gap: 8px;
+  }
+
+  .hall-btn {
+    padding: 9px;
+    font-size: 14px;
+    border-radius: 8px;
+  }
+}

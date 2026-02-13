@@ -61,3 +61,32 @@
     height: auto;
   }
 }
+
+/* ===== MOBILE RESPONSIVE FIX : ABOUT SECTION ===== */
+@media (max-width: 768px) {
+  .about {
+    flex-direction: column;
+    padding: 50px 20px;
+    gap: 30px;
+    text-align: center;
+  }
+
+  .left img {
+    max-width: 100%;
+    border-radius: 14px;
+  }
+
+  .right {
+    max-width: 100%;
+  }
+
+  .right h2 {
+    font-size: 26px;
+    margin-bottom: 16px;
+  }
+
+  .right p {
+    font-size: 15px;
+    line-height: 1.7;
+  }
+}

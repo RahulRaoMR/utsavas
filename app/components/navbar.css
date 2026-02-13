@@ -6,10 +6,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   padding: 14px 40px;
   background: #6b1d2b;
-
   position: fixed;
   top: 0;
   left: 0;
@@ -24,7 +22,7 @@
 }
 
 /* ===============================
-   NAV LINKS
+   DESKTOP NAV LINKS
    =============================== */
 
 .nav-links {
@@ -37,8 +35,8 @@
   text-decoration: none;
   font-size: 15px;
   font-weight: 600;
-  cursor: pointer;
   position: relative;
+  transition: 0.3s ease;
 }
 
 /* Hover underline animation */
@@ -68,18 +66,14 @@
 .location-box {
   background: linear-gradient(135deg, #f8e3a1, #e6b65c);
   color: #6b1d2b;
-
   padding: 10px 22px;
   border-radius: 22px;
-
   font-size: 14px;
   font-weight: 700;
-
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 6px;
-
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   transition: transform 0.2s ease;
 }
@@ -88,33 +82,86 @@
   transform: translateY(-1px);
 }
 
-/* Clear location button */
 .clear-location {
-  margin-left: 8px;
-  font-size: 14px;
-  cursor: pointer;
-  color: #6b1d2b;
+  margin-left: 6px;
   font-weight: bold;
+  cursor: pointer;
 }
 
-.clear-location:hover {
-  color: #000;
+/* ===============================
+   HAMBURGER (Hidden on Desktop)
+   =============================== */
+
+.hamburger {
+  display: none;
+  font-size: 26px;
+  color: #f5d28a;
+  cursor: pointer;
 }
 
-/* ===== MOBILE NAVBAR FIX ===== */
+/* ===============================
+   MOBILE NAVBAR (<=768px)
+   =============================== */
+
 @media (max-width: 768px) {
+
   .navbar {
-    flex-direction: column;
-    padding: 10px;
+    padding: 12px 18px;
   }
 
-  .navLinks {
-    display: none; /* hide desktop menu */
+  /* Hide desktop links */
+  .nav-links {
+    display: none;
   }
 
-  .mobileMenuButton {
+  /* Hide location box on mobile */
+  .location-box {
+    display: none;
+  }
+
+  /* Show hamburger */
+  .hamburger {
     display: block;
-    font-size: 24px;
-    color: #f5d38a;
+  }
+
+  /* Mobile dropdown menu */
+  .mobile-menu {
+    position: fixed;
+    top: 65px;
+    left: 0;
+    width: 100%;
+    background: #6b1d2b;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 25px;
+    z-index: 9999;
+    animation: slideDown 0.3s ease;
+  }
+
+  .mobile-menu a {
+    color: #f5d28a;
+    font-size: 18px;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .mobile-menu a:hover {
+    color: #ffffff;
+  }
+}
+
+/* ===============================
+   Slide Animation
+   =============================== */
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

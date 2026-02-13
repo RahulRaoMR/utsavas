@@ -4,24 +4,19 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "../admin.module.css";
 
+
 export default function AdminDashboard() {
   const router = useRouter();
 
-  /* ======================
-     DASHBOARD STATS STATE
-  ====================== */
   const [stats, setStats] = useState({
     totalVendors: 0,
     totalHalls: 0,
     pendingHalls: 0,
-    pendingVendors: 0, // ✅ ADDED
+    pendingVendors: 0,
   });
 
   const [loading, setLoading] = useState(true);
 
-  /* ======================
-     FETCH DASHBOARD STATS
-  ====================== */
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -35,7 +30,7 @@ export default function AdminDashboard() {
           totalVendors: data.totalVendors || 0,
           totalHalls: data.totalHalls || 0,
           pendingHalls: data.pendingHalls || 0,
-          pendingVendors: data.pendingVendors || 0, // ✅ ADDED
+          pendingVendors: data.pendingVendors || 0,
         });
       } catch (err) {
         console.error("Failed to load dashboard stats", err);
@@ -47,9 +42,6 @@ export default function AdminDashboard() {
     fetchStats();
   }, []);
 
-  /* ======================
-     LOGOUT
-  ====================== */
   const handleLogout = () => {
     localStorage.removeItem("admin");
     router.push("/admin/login");
@@ -60,41 +52,45 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className={styles.container}>
-      {/* ================= TOP HEADER ================= */}
-      <div className={styles.topHeader}>
-        <h1 className={styles.header}>Utsavas Admin Dashboard</h1>
+    <div>
+      <div className={styles.container}>
+        {/* TOP HEADER */}
+        <div className={styles.topHeader}>
+          <h1 className={styles.header}>Utsavas Admin Dashboard</h1>
 
-        <button
-          className={styles.logoutButton}
-          onClick={handleLogout}
-        >
-          Logout
-        </button>
+          <button
+            className={styles.logoutButton}
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+        </div>
+
+        {/* STATS CARDS */}
+        <div className={styles.cardGrid}>
+          <div className={styles.card}>
+            <h3>Total Vendors</h3>
+            <p className={styles.count}>{stats.totalVendors}</p>
+          </div>
+
+          <div className={styles.card}>
+            <h3>Pending Vendors</h3>
+            <p className={styles.count}>{stats.pendingVendors}</p>
+          </div>
+
+          <div className={styles.card}>
+            <h3>Total Halls</h3>
+            <p className={styles.count}>{stats.totalHalls}</p>
+          </div>
+
+          <div className={styles.card}>
+            <h3>Pending Halls</h3>
+            <p className={styles.count}>{stats.pendingHalls}</p>
+          </div>
+        </div>
       </div>
 
-      {/* ================= STATS CARDS ================= */}
-      <div className={styles.cardGrid}>
-        <div className={styles.card}>
-          <h3>Total Vendors</h3>
-          <p className={styles.count}>{stats.totalVendors}</p>
-        </div>
-
-        <div className={styles.card}>
-          <h3>Pending Vendors</h3>
-          <p className={styles.count}>{stats.pendingVendors}</p>
-        </div>
-
-        <div className={styles.card}>
-          <h3>Total Halls</h3>
-          <p className={styles.count}>{stats.totalHalls}</p>
-        </div>
-
-        <div className={styles.card}>
-          <h3>Pending Halls</h3>
-          <p className={styles.count}>{stats.pendingHalls}</p>
-        </div>
-      </div>
+    
     </div>
   );
 }

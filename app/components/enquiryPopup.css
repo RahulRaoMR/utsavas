@@ -189,3 +189,65 @@ input[type="date"]:focus {
 .popup-box input:disabled {
   color: #aaa;
 }
+
+/* ===== PHONE OPTIMIZATION (<= 480px) ===== */
+@media (max-width: 480px) {
+
+  .popup-overlay {
+    padding: 16px;
+    align-items: flex-start;
+    overflow-y: auto;
+  }
+
+  .popup-box {
+    width: 100%;
+    max-width: 100%;
+    padding: 20px 16px 24px;
+    border-radius: 14px;
+  }
+
+  .popup-box h2 {
+    font-size: 20px;
+  }
+
+  .popup-box p {
+    font-size: 13px;
+  }
+
+  .popup-box label {
+    font-size: 13px;
+  }
+
+  .row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  select,
+  input[type="date"] {
+    font-size: 14px;
+    padding: 12px;
+    border-radius: 10px;
+  }
+
+  .options {
+    gap: 8px;
+  }
+
+  .options button {
+    font-size: 12px;
+    padding: 7px 14px;
+  }
+
+  .submit-btn {
+    padding: 12px;
+    font-size: 15px;
+    border-radius: 10px;
+  }
+
+  .close-btn {
+    font-size: 18px;
+    top: 12px;
+    right: 12px;
+  }
+}

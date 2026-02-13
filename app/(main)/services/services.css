@@ -143,3 +143,131 @@
     font-size: 16px;
   }
 }
+
+
+/* =================================
+   SERVICES PAGE MOBILE (≤768px)
+================================= */
+@media (max-width: 768px) {
+
+  .services-page {
+    padding-top: 80px;
+  }
+
+  /* HERO */
+  .services-hero {
+    height: 260px;
+  }
+
+  .hero-overlay h1 {
+    font-size: 28px;
+  }
+
+  .hero-overlay p {
+    font-size: 15px;
+  }
+
+  /* CONTENT */
+  .services-content {
+    padding: 35px 20px;
+  }
+
+  .services-content h2 {
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+
+  /* GRID */
+  .services-grid {
+    gap: 18px;
+  }
+
+  .service-card {
+    padding: 18px;
+    font-size: 15px;
+    border-radius: 12px;
+  }
+
+  /* CONTACT SECTION */
+  .services-contact {
+    margin-top: 60px;
+    padding: 40px 20px;
+  }
+
+  .services-contact h2 {
+    font-size: 24px;
+  }
+
+  .services-contact .help-text {
+    font-size: 14px;
+  }
+
+  .services-contact .contact-item {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .services-hero {
+    height: 220px;
+  }
+
+  .hero-overlay h1 {
+    font-size: 22px;
+  }
+
+  .hero-overlay p {
+    font-size: 13px;
+  }
+
+  .services-content h2 {
+    font-size: 20px;
+  }
+
+  .service-card {
+    font-size: 14px;
+    padding: 16px;
+  }
+
+  .services-contact h2 {
+    font-size: 20px;
+  }
+
+  .services-contact .contact-item {
+    font-size: 14px;
+  }
+}
+
+
+@media (max-width: 480px) {
+
+  .services-hero {
+    height: 220px;
+  }
+
+  .hero-overlay h1 {
+    font-size: 22px;
+  }
+
+  .hero-overlay p {
+    font-size: 13px;
+  }
+
+  .services-content h2 {
+    font-size: 20px;
+  }
+
+  .service-card {
+    font-size: 14px;
+    padding: 16px;
+  }
+
+  .services-contact h2 {
+    font-size: 20px;
+  }
+
+  .services-contact .contact-item {
+    font-size: 14px;
+  }
+}

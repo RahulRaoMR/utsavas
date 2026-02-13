@@ -133,8 +133,7 @@ export default function AddHallPage() {
         }}
       />
 
-      <LocationPicker />
-    </MapContainer>
+      <LocationPicker setGeoLocation={setGeoLocation} />    </MapContainer>
   )}
 
   {!geoLocation && (
@@ -198,16 +197,7 @@ export default function AddHallPage() {
   }, [address]);
 
   
-  /* MAP CLICK */
-  const LocationPicker = () => {
-    useMapEvents({
-      click(e) {
-        setGeoLocation(e.latlng);
-      },
-    });
-    return null;
-  };
-
+  
   /* =====================
      SUBMIT
   ===================== */
@@ -315,18 +305,19 @@ export default function AddHallPage() {
           />
         </section>
 
-        {/* ADDRESS */}
-        <section className={styles.card}>
-          <h2>📍 Venue Address</h2>
+       {/* ADDRESS */}
+<section className={styles.card}>
+  <h2>📍 Venue Address</h2>
 
-          <input name="flat" placeholder="Building / Hall Name" onChange={handleAddressChange} />
-          <input name="floor" placeholder="Floor (optional)" onChange={handleAddressChange} />
-          <input name="area" placeholder="Area / Locality" onChange={handleAddressChange} />
-          <input name="city" placeholder="City" onChange={handleAddressChange} />
-          <input name="state" placeholder="State" onChange={handleAddressChange} />
-          <input name="pincode" placeholder="Pincode" onChange={handleAddressChange} />
-          <input name="landmark" placeholder="Nearby Landmark" onChange={handleAddressChange} />
-        </section>
+  <input name="flat" placeholder="Building / Hall Name" onChange={handleAddressChange} />
+  <input name="floor" placeholder="Floor (optional)" onChange={handleAddressChange} />
+  <input name="area" placeholder="Area / Locality" onChange={handleAddressChange} />
+  <input name="city" placeholder="City" onChange={handleAddressChange} />
+  <input name="state" placeholder="State" onChange={handleAddressChange} />
+  <input name="pincode" placeholder="Pincode" onChange={handleAddressChange} />
+  <input name="landmark" placeholder="Nearby Landmark" onChange={handleAddressChange} />
+</section>
+
 
 
         {/* MAP */}

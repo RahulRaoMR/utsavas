@@ -8,9 +8,8 @@ export default function TopNavBar() {
       <ul className="nav-links">
         <li><Link href="/">Home</Link></li>
         <li><Link href="/dashboard">Venues</Link></li>
-        <li><Link href="/location">Location</Link></li>
-        <li><Link href="/vendor">Vendors</Link></li>
-        <li><Link href="/services">Contact Us</Link></li>
+        <Link href="/services">Services</Link>
+        <li><Link href="/contact">Contact Us</Link></li>
       </ul>
 
       <Link href="/login" className="login-btn">

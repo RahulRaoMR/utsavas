@@ -1,0 +1,256 @@
+/* =========================
+   CONTACT PAGE
+========================= */
+
+.contact-page {
+  background: #fff7ef;
+  min-height: 100vh;
+  padding-top: 90px;
+  font-family: "Poppins", sans-serif;
+}
+
+/* =========================
+   HERO SECTION
+========================= */
+
+.contact-hero {
+  height: 340px;
+  background: linear-gradient(
+      rgba(107, 29, 43, 0.88),
+      rgba(107, 29, 43, 0.88)
+    ),
+    url("/services-bg.jpg");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.contact-overlay {
+  text-align: center;
+  color: #f5d28a;
+  padding: 20px;
+}
+
+/* ✨ GOLD GLOW HEADING */
+.gold-glow {
+  color: #f5d28a;
+  text-shadow:
+    0 0 5px rgba(245, 210, 138, 0.6),
+    0 0 10px rgba(245, 210, 138, 0.4),
+    0 0 20px rgba(245, 210, 138, 0.3);
+}
+
+.contact-overlay h1 {
+  font-size: 42px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.contact-overlay p {
+  font-size: 18px;
+  margin-top: 12px;
+  opacity: 0.9;
+}
+
+/* =========================
+   CONTACT CONTENT
+========================= */
+
+.contact-container {
+  padding: 80px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+/* PREMIUM CARD */
+.contact-card {
+  position: relative;
+  background: #ffffff;
+  padding: 50px;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 650px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+  border-left: 6px solid #6b1d2b;
+  transition: all 0.4s ease;
+  overflow: hidden;
+}
+
+/* ✨ GOLD BORDER EFFECT */
+.contact-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  padding: 2px;
+  background: linear-gradient(
+    45deg,
+    #f5d28a,
+    #e6b65c,
+    #f5d28a
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ✨ HOVER GLOW */
+.contact-card:hover {
+  box-shadow:
+    0 0 25px rgba(245, 210, 138, 0.35),
+    0 25px 60px rgba(0,0,0,0.18);
+  transform: translateY(-5px);
+}
+
+.contact-card h2 {
+  color: #6b1d2b;
+  margin-bottom: 35px;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+/* Contact Items */
+
+.contact-item {
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+  margin-bottom: 25px;
+  font-size: 17px;
+  color: #6b1d2b;
+  line-height: 1.6;
+}
+
+.contact-item span {
+  font-size: 22px;
+}
+
+.contact-item a {
+  color: #6b1d2b;
+  font-weight: 600;
+  text-decoration: none;
+  word-break: break-word;
+}
+
+.contact-item a:hover {
+  text-decoration: underline;
+}
+
+/* =========================
+   PREMIUM BUTTON (Optional)
+========================= */
+
+.gold-btn {
+  background: linear-gradient(135deg, #f5d28a, #e6b65c);
+  color: #6b1d2b;
+  padding: 12px 28px;
+  border-radius: 30px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 20px;
+}
+
+.gold-btn:hover {
+  box-shadow: 0 0 15px rgba(245, 210, 138, 0.6);
+  transform: translateY(-2px);
+}
+
+/* =========================
+   TABLET RESPONSIVE
+========================= */
+
+@media (max-width: 992px) {
+
+  .contact-overlay h1 {
+    font-size: 34px;
+  }
+
+  .contact-overlay p {
+    font-size: 16px;
+  }
+
+  .contact-card {
+    padding: 35px;
+  }
+}
+
+/* =========================
+   MOBILE RESPONSIVE
+========================= */
+
+@media (max-width: 768px) {
+
+  .contact-page {
+    padding-top: 80px;
+  }
+
+  .contact-hero {
+    height: 250px;
+  }
+
+  .contact-overlay h1 {
+    font-size: 26px;
+  }
+
+  .contact-overlay p {
+    font-size: 14px;
+  }
+
+  .contact-container {
+    padding: 40px 16px;
+  }
+
+  .contact-card {
+    padding: 25px 20px;
+    border-left: 4px solid #6b1d2b;
+    border-radius: 16px;
+  }
+
+  .contact-card h2 {
+    font-size: 22px;
+    margin-bottom: 25px;
+  }
+
+  .contact-item {
+    font-size: 14px;
+    gap: 10px;
+  }
+
+  .contact-item span {
+    font-size: 18px;
+  }
+}
+
+/* =========================
+   SMALL MOBILE (≤480px)
+========================= */
+
+@media (max-width: 480px) {
+
+  .contact-overlay h1 {
+    font-size: 22px;
+  }
+
+  .contact-overlay p {
+    font-size: 13px;
+  }
+
+  .contact-card {
+    padding: 20px 16px;
+  }
+
+  .contact-card h2 {
+    font-size: 18px;
+  }
+
+  .contact-item {
+    font-size: 13px;
+  }
+}
