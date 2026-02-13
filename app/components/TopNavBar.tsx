@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import "./topnavbar.css";
+
 
 export default function TopNavBar() {
   return (
@@ -8,7 +10,7 @@ export default function TopNavBar() {
       <ul className="nav-links">
         <li><Link href="/">Home</Link></li>
         <li><Link href="/dashboard">Venues</Link></li>
-        <Link href="/services">Services</Link>
+        <li><Link href="/services">Services</Link></li>
         <li><Link href="/contact">Contact Us</Link></li>
       </ul>
 

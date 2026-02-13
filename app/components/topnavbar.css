@@ -1,0 +1,63 @@
+/* ===== TOP NAV ===== */
+
+.top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  background: #6b1d2b; /* UTSAVAM theme */
+  flex-wrap: nowrap;
+}
+
+/* ===== LINKS ===== */
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+.nav-links li {
+  list-style: none;
+}
+
+.nav-links a {
+  color: #f5d27a;
+  text-decoration: none;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+/* ===== LOGIN BUTTON ===== */
+
+.login-btn {
+  background: #e6c27a;
+  color: #6b1d2b;
+  padding: 8px 16px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* ===== MOBILE FIX ===== */
+
+@media (max-width: 768px) {
+  .nav-links {
+    gap: 10px;
+  }
+
+  .nav-links a {
+    font-size: 13px;
+  }
+
+  .login-btn {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+}
