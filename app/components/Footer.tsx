@@ -82,8 +82,7 @@ export default function Footer() {
 
           <h5 className={styles.socialTitle}>Social Links</h5>
           <div className={styles.socials}>
-            <span>f</span>
-
+            
             {/* Instagram */}
             <a
               href="https://www.instagram.com/utsavas?igsh=OWliZDVxMjVvOGJ0"
@@ -110,7 +109,7 @@ export default function Footer() {
   >
     🐦
   </a>  
-  
+
   {/* Facebook */}
   <a
     href="https://www.facebook.com/profile.php?id=61587886567668"
@@ -120,8 +119,7 @@ export default function Footer() {
     f
   </a>
 
-            <span>💬</span>
-            <span>📌</span>
+            
           </div>
         </div>
 
