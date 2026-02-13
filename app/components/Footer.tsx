@@ -8,7 +8,8 @@ import { useRouter } from "next/navigation";
 export default function Footer() {
   const router = useRouter();
 
-  const handleRedirect = (path) => { 
+  // ✅ FIX: added type for path
+  const handleRedirect = (path: string) => {
     if (typeof window === "undefined") return;
 
     const token = window.localStorage.getItem("token");
@@ -57,17 +58,23 @@ export default function Footer() {
         {/* Contact */}
         <div className={styles.contact}>
           <Link href="/contact" className={styles.contactTitleLink}>
-    <h5>Get in Touch</h5>
-  </Link>
+            <h5>Get in Touch</h5>
+          </Link>
 
-          <p>📧{" "}
-    <Link href="/contact" className={styles.contactLink}>
-      utsavas26@gmail.com
-    </Link></p>
-          <p>📞{" "}
-    <Link href="/contact" className={styles.contactLink}>
-      +91 1234567890
-    </Link></p>
+          <p>
+            📧{" "}
+            <Link href="/contact" className={styles.contactLink}>
+              utsavas26@gmail.com
+            </Link>
+          </p>
+
+          <p>
+            📞{" "}
+            <Link href="/contact" className={styles.contactLink}>
+              +91 1234567890
+            </Link>
+          </p>
+
           <p>
             📍 285/A, 14th Main Rd, Siddanna Layout, Banashankari Stage II,
             Banashankari, Bengaluru, Karnataka 560070
@@ -76,6 +83,7 @@ export default function Footer() {
           <h5 className={styles.socialTitle}>Social Links</h5>
           <div className={styles.socials}>
             <span>f</span>
+
             {/* Instagram */}
             <a
               href="https://www.instagram.com/utsavas?igsh=OWliZDVxMjVvOGJ0"
@@ -84,6 +92,7 @@ export default function Footer() {
             >
               📷
             </a>
+
             {/* YouTube */}
             <a
               href="https://www.youtube.com/channel/UCvnp8ihWb7QzbDASj8AKyyQ"
@@ -92,6 +101,25 @@ export default function Footer() {
             >
               ▶️
             </a>
+
+            {/* Twitter / X */}
+  <a
+    href="https://x.com/utsavas26"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    🐦
+  </a>  
+  
+  {/* Facebook */}
+  <a
+    href="https://www.facebook.com/profile.php?id=61587886567668"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    f
+  </a>
+
             <span>💬</span>
             <span>📌</span>
           </div>
