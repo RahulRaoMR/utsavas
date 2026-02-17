@@ -25,8 +25,7 @@ export default function SearchBar() {
       <select className={styles.input}>
         <option value="">City</option>
         <option>Bangalore</option>
-        <option>Kochi</option>
-        <option>Chennai</option>
+    
       </select>
 
       {/* LOCATION */}

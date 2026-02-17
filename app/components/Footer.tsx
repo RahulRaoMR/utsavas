@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 export default function Footer() {
   const router = useRouter();
 
-  const handleRedirect = (path) => {
+  const handleRedirect = (path: string) => {
     if (typeof window === "undefined") return;
 
     const token = window.localStorage.getItem("token");
