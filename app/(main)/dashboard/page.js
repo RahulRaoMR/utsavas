@@ -16,14 +16,28 @@ export default function Dashboard() {
   const [showPopup, setShowPopup] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(null);
 
+  /* ===================================
+     🔒 AUTH GUARD (VERY IMPORTANT)
+  =================================== */
   useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      router.replace("/login"); // 🚀 prevents back navigation
+      return;
+    }
+
+    // existing popup logic
     const filled = localStorage.getItem("enquiryFilled");
     if (!filled) setShowPopup(true);
 
     const savedLocation = localStorage.getItem("utsavasLocation");
     if (savedLocation) setSelectedLocation(savedLocation);
-  }, []);
+  }, [router]);
 
+  /* ===================================
+     🔍 SEARCH API
+  =================================== */
   useEffect(() => {
     if (!search.trim()) {
       setResults([]);
@@ -49,8 +63,12 @@ export default function Dashboard() {
     return () => clearTimeout(delay);
   }, [search]);
 
+  /* ===================================
+     🏛 OPEN HALL
+  =================================== */
   const openHall = (hall) => {
     setResults([]);
+
     if (hall.category === "wedding") {
       router.push(`/wedding-halls/${hall._id}`);
     } else if (hall.category === "banquet") {
@@ -66,6 +84,9 @@ export default function Dashboard() {
     }
   };
 
+  /* ===================================
+     🖱 CLICK OUTSIDE SEARCH
+  =================================== */
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (searchRef.current && !searchRef.current.contains(e.target)) {
@@ -162,7 +183,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* ✅ FOOTER IS NOW ADDED PROPERLY */}
       <Footer />
     </>
   );

@@ -73,24 +73,16 @@
   margin-top: 12px;
 }
 
-.socials span {
-  width: 38px;
-  height: 38px;
-  border: 1px solid #e6c15a;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: #e6c15a;
-  font-size: 16px;
-  transition: all 0.3s ease;
+.socials a {
+  font-size: 20px;
+  margin-right: 15px;
+  text-decoration: none;
+  color: #f5d28a;
+  transition: 0.3s ease;
 }
 
-.socials span:hover {
-  background: #e6c15a;
-  color: #6b1d2b;
-  transform: scale(1.1);
+.socials a:hover {
+  color: #ffffff;
 }
 
 /* RESPONSIVE */
@@ -128,26 +120,11 @@
   color: #f5d28a;
 }
 
-.socials a {
-  font-size: 20px;
-  margin-right: 15px;
-  text-decoration: none;
-  color: #f5d28a;
-  transition: 0.3s ease;
-}
-
-.socials a:hover {
-  color: #ffffff;
-}
-
-
-
 /* ===============================
    FOOTER MOBILE FIX
 =============================== */
 
 @media (max-width: 768px) {
-
   .brand {
     text-align: center;
   }
@@ -167,7 +144,6 @@
     font-size: 14px;
     padding: 0 10px;
   }
-
 }
 
 /* ===============================
@@ -175,7 +151,6 @@
 =============================== */
 
 @media (max-width: 900px) and (orientation: landscape) {
-
   .container {
     grid-template-columns: 1fr 1fr;
     gap: 30px;
@@ -204,5 +179,44 @@
 
   .socials {
     justify-content: center;
+  }
+}
+
+/* =================================
+   ⭐ PREMIUM FOOTER BOTTOM
+================================= */
+
+.footerBottom {
+  width: 100%;
+  margin-top: 60px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(230, 194, 122, 0.35);
+  text-align: center;
+}
+
+.footerTagline {
+  color: #e6c27a;
+  font-size: 14px;
+  margin: 0;
+  line-height: 1.7;
+  letter-spacing: 0.3px;
+}
+
+.footerCopy {
+  color: #f3d19c;
+  font-size: 13px;
+  margin-top: 6px;
+  opacity: 0.9;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .footerTagline {
+    font-size: 12.5px;
+    padding: 0 10px;
+  }
+
+  .footerCopy {
+    font-size: 12px;
   }
 }

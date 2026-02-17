@@ -8,8 +8,7 @@ import { useRouter } from "next/navigation";
 export default function Footer() {
   const router = useRouter();
 
-  // ✅ FIX: added type for path
-  const handleRedirect = (path: string) => {
+  const handleRedirect = (path) => {
     if (typeof window === "undefined") return;
 
     const token = window.localStorage.getItem("token");
@@ -46,7 +45,7 @@ export default function Footer() {
         <div className={styles.links}>
           <h5>Quick Links</h5>
           <ul>
-            <li onClick={() => handleRedirect("/dashboard")}>Home</li>
+            <li onClick={() => handleRedirect("/")}>Home</li>
             <li onClick={() => handleRedirect("/dashboard")}>Venues</li>
             <li onClick={() => handleRedirect("/dashboard")}>Amenities</li>
             <li onClick={() => handleRedirect("/services")}>Events</li>
@@ -82,8 +81,6 @@ export default function Footer() {
 
           <h5 className={styles.socialTitle}>Social Links</h5>
           <div className={styles.socials}>
-            
-            {/* Instagram */}
             <a
               href="https://www.instagram.com/utsavas?igsh=OWliZDVxMjVvOGJ0"
               target="_blank"
@@ -92,7 +89,6 @@ export default function Footer() {
               📷
             </a>
 
-            {/* YouTube */}
             <a
               href="https://www.youtube.com/channel/UCvnp8ihWb7QzbDASj8AKyyQ"
               target="_blank"
@@ -101,28 +97,35 @@ export default function Footer() {
               ▶️
             </a>
 
-            {/* Twitter / X */}
-  <a
-    href="https://x.com/utsavas26"
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    🐦
-  </a>  
+            <a
+              href="https://x.com/utsavas26"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              🐦
+            </a>
 
-  {/* Facebook */}
-  <a
-    href="https://www.facebook.com/profile.php?id=61587886567668"
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    f
-  </a>
-
-            
+            <a
+              href="https://www.facebook.com/profile.php?id=61587886567668"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              f
+            </a>
           </div>
         </div>
+      </div>
 
+      {/* ✅ FOOTER BOTTOM — FIXED */}
+      <div className={styles.footerBottom}>
+        <p className={styles.footerTagline}>
+          Utsavas.com is part of Talme Technologies Inc., Where Every Utsavam
+          Becomes a Beautiful Memory
+        </p>
+
+        <p className={styles.footerCopy}>
+          Copyright © 2012–2026 Talme.com™. All rights reserved.
+        </p>
       </div>
     </footer>
   );

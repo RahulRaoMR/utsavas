@@ -1,116 +1,84 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import styles from "./login.module.css";
 import { useRouter } from "next/navigation";
-
-import { auth } from "@/lib/firebase";
-import {
-  RecaptchaVerifier,
-  signInWithPhoneNumber,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
 
 export default function LoginPage() {
   const router = useRouter();
 
-  const [showOTPLogin, setShowOTPLogin] = useState(false);
-  const [otpSent, setOtpSent] = useState(false);
-  const [phone, setPhone] = useState("+91");
-  const [otp, setOtp] = useState("");
-  const [confirmationResult, setConfirmationResult] = useState(null);
+  const [emailOrPhone, setEmailOrPhone] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  /* =========================
+     📱 FORMAT PHONE AUTO
+  ========================= */
+  const formatInput = (value) => {
+    // if user typing numbers only → treat as phone
+    if (/^\d+$/.test(value)) {
+      // remove non digits
+      const digits = value.replace(/\D/g, "");
 
-  // 🔐 Setup reCAPTCHA (FIXED VERSION)
-  useEffect(() => {
-  if (typeof window === "undefined") return;
+      // limit to 10 digits
+      return digits.slice(0, 10);
+    }
 
-  if (!window.recaptchaVerifier) {
-    window.recaptchaVerifier = new RecaptchaVerifier(
-      auth,
-      "recaptcha-container",
-      {
-        size: "invisible",
-      }
-    );
+    // otherwise treat as email
+    return value;
+  };
 
-    window.recaptchaVerifier.render();
-  }
-}, []);
-
-  // =========================
-  // ✅ EMAIL LOGIN
-  // =========================
-  const handleEmailLogin = async () => {
-    const trimmedEmail = email.trim();
-
-    if (!trimmedEmail || !password) {
-      alert("Please enter email and password");
+  /* =========================
+     🔐 LOGIN USER
+  ========================= */
+  const handleLogin = async () => {
+    if (!emailOrPhone || !password) {
+      alert("Please enter email/phone and password");
       return;
     }
 
     try {
-      await signInWithEmailAndPassword(auth, trimmedEmail, password);
+      setLoading(true);
 
-      localStorage.removeItem("enquiryFilled");
+      // ✅ AUTO ADD 91 IF PHONE
+      let payloadValue = emailOrPhone.trim();
 
-      alert("Login successful!");
-      router.push("/dashboard");
-    } catch (error) {
-      alert(error.message);
-    }
-  };
+      if (/^\d{10}$/.test(payloadValue)) {
+        payloadValue = "91" + payloadValue;
+      }
 
-  // =========================
-  // 📲 SEND OTP
-  // =========================
-  const sendOTP = async () => {
-    if (loading) return;
-    setLoading(true);
-
-    try {
-      const appVerifier = window.recaptchaVerifier;
-
-      const result = await signInWithPhoneNumber(
-        auth,
-        phone,
-        appVerifier
+      const res = await fetch(
+        "http://localhost:5000/api/auth/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            emailOrPhone: payloadValue,
+            password,
+          }),
+        }
       );
 
-      setConfirmationResult(result);
-      setOtpSent(true);
-      alert("OTP sent successfully!");
+      const data = await res.json();
+
+      if (data.success) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+
+        alert("Login successful ✅");
+        router.push("/dashboard");
+      } else {
+        alert(data.message || "Login failed");
+      }
     } catch (error) {
       console.error(error);
-      alert(error.message);
+      alert("Server error");
     }
 
     setLoading(false);
-  };
-
-  // =========================
-  // ✅ VERIFY OTP
-  // =========================
-  const verifyOTP = async () => {
-    if (!confirmationResult) {
-      alert("Please request OTP first");
-      return;
-    }
-
-    try {
-      await confirmationResult.confirm(otp);
-
-      localStorage.removeItem("enquiryFilled");
-
-      alert("Login successful!");
-      router.push("/dashboard");
-    } catch (error) {
-      alert("Invalid OTP");
-    }
   };
 
   return (
@@ -129,120 +97,60 @@ export default function LoginPage() {
           Where UTSAVAS Become Memories
         </p>
 
-        {!showOTPLogin ? (
-          <>
-            <input
-              type="email"
-              placeholder="Email"
-              className={styles.inputField}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+        {/* Email or Phone */}
+        <input
+          type="text"
+          placeholder="Email or Phone Number"
+          className={styles.inputField}
+          value={emailOrPhone}
+          onChange={(e) => setEmailOrPhone(formatInput(e.target.value))}
+        />
 
-            <input
-              type="password"
-              placeholder="Password"
-              className={styles.inputField}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+        {/* Password */}
+        <input
+          type="password"
+          placeholder="Password"
+          className={styles.inputField}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-            <button
-              className={styles.loginBtn}
-              onClick={handleEmailLogin}
-            >
-              Login
-            </button>
+        {/* Login Button */}
+        <button
+          className={styles.loginBtn}
+          onClick={handleLogin}
+          disabled={loading}
+        >
+          {loading ? "Logging in..." : "Login"}
+        </button>
 
-            <div className={styles.orText}>OR</div>
+        <p className={styles.registerText}>
+          Don’t have an account?{" "}
+          <span onClick={() => router.push("/register")}>
+            Register
+          </span>
+        </p>
 
-            <button
-              className={styles.otpBtn}
-              onClick={() => {
-                setShowOTPLogin(true);
-                setOtpSent(false);
-              }}
-            >
-              Login with OTP
-            </button>
+        <p
+          style={{ cursor: "pointer", color: "#e6c068" }}
+          onClick={() => router.push("/forgot-password")}
+        >
+          Forgot Password?
+        </p>
 
-            <p className={styles.registerText}>
-              Don’t have an account?{" "}
-              <span onClick={() => router.push("/register")}>
-                Register
-              </span>
-            </p>
+        <button
+          className={styles.vendorBtn}
+          onClick={() => router.push("/vendor-register")}
+        >
+          Register as Vendor
+        </button>
 
-            <button
-              className={styles.vendorBtn}
-              onClick={() => router.push("/vendor-register")}
-            >
-              Register as Vendor
-            </button>
-
-            <button
-              className={styles.vendorBtn}
-              onClick={() => router.push("/vendor/vendor-login")}
-            >
-              Login as Vendor
-            </button>
-          </>
-        ) : (
-          <>
-            <input
-              type="text"
-              placeholder="Enter Phone Number"
-              className={styles.inputField}
-              value={phone}
-              onChange={(e) => {
-                if (!e.target.value.startsWith("+91")) return;
-                setPhone(e.target.value);
-              }}
-              disabled={otpSent}
-            />
-
-            {!otpSent && (
-              <button
-                className={styles.loginBtn}
-                onClick={sendOTP}
-                disabled={loading}
-              >
-                {loading ? "Sending..." : "Send OTP"}
-              </button>
-            )}
-
-            {otpSent && (
-              <>
-                <input
-                  type="text"
-                  placeholder="Enter OTP"
-                  className={styles.inputField}
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
-                />
-
-                <button
-                  className={styles.loginBtn}
-                  onClick={verifyOTP}
-                >
-                  Verify OTP
-                </button>
-              </>
-            )}
-
-            <p
-              className={styles.backText}
-              onClick={() => {
-                setShowOTPLogin(false);
-                setOtpSent(false);
-              }}
-            >
-              ← Back to Login
-            </p>
-          </>
-        )}
-
-        <div id="recaptcha-container"></div>
+        <button
+          className={styles.vendorBtn}
+          onClick={() => router.push("/vendor/vendor-login")}
+        >
+          Login as Vendor
+        </button>
       </div>
     </div>
   );

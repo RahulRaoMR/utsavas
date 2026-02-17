@@ -33,14 +33,47 @@
   font-size: 14px;
 }
 
+/* =================================
+   ⭐ PREMIUM INPUT (UPDATED)
+================================= */
+
 .inputField {
   width: 100%;
-  padding: 12px;
+  padding: 12px 14px;
   margin-bottom: 15px;
-  border-radius: 6px;
-  border: none;
+  border-radius: 8px;
+  border: 1px solid rgba(230, 194, 122, 0.4);
   outline: none;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff7ec;
+  font-size: 14px;
+
+  /* remove default select style */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  /* ⭐ custom gold arrow */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='%23e6c27a' viewBox='0 0 16 16'%3E%3Cpath d='M1.5 5.5l6 6 6-6' stroke='%23e6c27a' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  cursor: pointer;
 }
+
+/* focus glow */
+.inputField:focus {
+  border-color: #e6c27a;
+  box-shadow: 0 0 0 2px rgba(230, 194, 122, 0.25);
+}
+
+/* dropdown options */
+.inputField option {
+  color: #000;
+  background: #fff;
+}
+
+/* ================================= */
 
 .loginBtn {
   width: 100%;
@@ -90,7 +123,7 @@
   cursor: pointer;
 }
 
-/* ⭐ REGISTER AS VENDOR (UTSAVAS THEME) */
+/* ⭐ REGISTER AS VENDOR */
 .vendorBtn {
   margin-top: 18px;
   width: 100%;
@@ -110,9 +143,11 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
-/* ===== LOGIN MOBILE OPTIMIZATION ===== */
-@media (max-width: 768px) {
+/* =================================
+   📱 MOBILE
+================================= */
 
+@media (max-width: 768px) {
   .loginContainer {
     padding: 20px;
   }

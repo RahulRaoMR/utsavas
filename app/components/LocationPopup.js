@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import "./locationPopup.css";
 
+/* ⭐ Popular quick picks */
 const POPULAR_LOCATIONS = [
   "JP Nagar",
   "Whitefield",
@@ -10,7 +12,111 @@ const POPULAR_LOCATIONS = [
   "Electronic City",
 ];
 
+/* ⭐ Full Bangalore areas list */
+const ALL_LOCATIONS = [
+  "Indiranagar",
+  "Whitefield",
+  "MG Road",
+  "Ulsoor",
+  "Marathahalli",
+  "KR Puram",
+  "Jayanagar",
+  "JP Nagar",
+  "Banashankari",
+  "BTM Layout",
+  "Electronic City",
+  "Bannerghatta Road",
+  "Hebbal",
+  "Yelahanka",
+  "Devanahalli",
+  "Rajajinagar",
+  "Malleswaram",
+  "Sarjapur Road",
+  // Core Areas
+  "Indiranagar",
+  "Whitefield",
+  "MG Road",
+  "Ulsoor",
+  "Marathahalli",
+  "KR Puram",
+  "Jayanagar",
+  "JP Nagar",
+  "Banashankari",
+  "BTM Layout",
+  "Electronic City",
+  "Bannerghatta Road",
+  "Hebbal",
+  "Yelahanka",
+  "Devanahalli",
+  "Rajajinagar",
+  "Malleswaram",
+  "Sarjapur Road",
+  "Bellandur",
+  "HSR Layout",
+  "Koramangala",
+  "Frazer Town",
+  "Basavanagudi",
+  "Vijayanagar",
+  "Kengeri",
+  "Nagarbhavi",
+  "Yeshwanthpur",
+  "Peenya",
+  "Bommanahalli",
+  "Hennur",
+  "Thanisandra",
+  "RT Nagar",
+
+  // 🔥 Major  Stations (Purple + Green focus)
+  "MG Road ",
+  "Indiranagar ",
+  "Halasuru ",
+  "Trinity ",
+  "Cubbon Park ",
+  "Vidhana Soudha ",
+  "Sir M Visvesvaraya Station",
+  "Majestic ",
+  "City Railway Station ",
+  "Magadi Road ",
+  "Hosahalli ",
+  "Vijayanagar ",
+  "Attiguppe ",
+  "Deepanjali Nagar ",
+  "Mysore Road ",
+  "Baiyappanahalli ",
+  "Swami Vivekananda Road ",
+  "Garudacharpalya ",
+  "Mahadevapura ",
+  "KR Puram ",
+  "Benniganahalli ",
+
+  // 🟢 Green Line key stations
+  "Yeshwanthpur ",
+  "Sandal Soap Factory ",
+  "Mahalakshmi ",
+  "Rajajinagar ",
+  "Kuvempu Road ",
+  "Srirampura ",
+  "Sampige Road ",
+  "Chickpete ",
+  "National College ",
+  "Lalbagh ",
+  "South End Circle ",
+  "Jayanagar ",
+  "Rashtreeya Vidyalaya Road ",
+  "Banashankari ",
+  "JP Nagar ",
+  "Yelachenahalli ",
+];
+
 export default function LocationPopup({ onClose, onSelect }) {
+  const [search, setSearch] = useState("");
+
+  /* ⭐ Filter logic */
+  const filteredLocations = ALL_LOCATIONS.filter((loc) =>
+    loc.toLowerCase().includes(search.toLowerCase())
+  );
+
+  /* ⭐ Auto detect location */
   const detectLocation = () => {
     if (!navigator.geolocation) {
       alert("Geolocation not supported");
@@ -47,7 +153,9 @@ export default function LocationPopup({ onClose, onSelect }) {
   return (
     <div className="location-overlay">
       <div className="location-box-popup">
-        <button className="close-btn" onClick={onClose}>✕</button>
+        <button className="close-btn" onClick={onClose}>
+          ✕
+        </button>
 
         <h2>📍 Select your location</h2>
 
@@ -56,16 +164,20 @@ export default function LocationPopup({ onClose, onSelect }) {
           📡 Use my current location
         </button>
 
-        {/* SEARCH (for next phase) */}
+        {/* ⭐ SEARCH INPUT */}
         <input
           type="text"
           placeholder="Search city or area"
           className="location-search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
         />
 
         <h4>Popular locations</h4>
+
+        {/* ⭐ RESULTS */}
         <div className="location-list">
-          {POPULAR_LOCATIONS.map((loc) => (
+          {(search ? filteredLocations : POPULAR_LOCATIONS).map((loc) => (
             <div
               key={loc}
               className="location-item"
@@ -77,6 +189,11 @@ export default function LocationPopup({ onClose, onSelect }) {
               📍 {loc}
             </div>
           ))}
+
+          {/* ⭐ No results message */}
+          {search && filteredLocations.length === 0 && (
+            <div className="location-item">No locations found</div>
+          )}
         </div>
       </div>
     </div>
