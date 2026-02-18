@@ -8,39 +8,63 @@ export default function VendorBookingsPage() {
   const router = useRouter();
   const [bookings, setBookings] = useState([]);
 
-  useEffect(() => {
-    const vendor = JSON.parse(localStorage.getItem("vendor"));
+  /* =========================
+     FETCH BOOKINGS
+  ========================= */
+  const fetchBookings = async () => {
+    try {
+      const vendor = JSON.parse(localStorage.getItem("vendor"));
 
-    if (!vendor) {
-      router.push("/login");
-      return;
+      if (!vendor) {
+        router.push("/login");
+        return;
+      }
+
+      const res = await fetch(
+        `http://localhost:5000/api/bookings/vendor/${vendor._id}`
+      );
+
+      const data = await res.json();
+      setBookings(data);
+    } catch (err) {
+      console.error("Fetch bookings error ❌", err);
     }
+  };
 
-    fetch(`http://localhost:5000/api/bookings/vendor/${vendor._id}`)
-      .then((res) => res.json())
-      .then((data) => setBookings(data))
-      .catch((err) => console.error(err));
+  useEffect(() => {
+    fetchBookings();
   }, [router]);
 
   /* =========================
      UPDATE BOOKING STATUS
   ========================= */
-  const updateStatus = async (id, status) => {
+  const updateStatus = async (bookingId, status) => {
     try {
-      await fetch(`http://localhost:5000/api/bookings/status/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
-      });
+      console.log("Updating:", bookingId, status);
 
-      // Update UI instantly
-      setBookings((prev) =>
-        prev.map((b) =>
-          b._id === id ? { ...b, status } : b
-        )
+      const res = await fetch(
+        `http://localhost:5000/api/bookings/status/${bookingId}`,
+        {
+          method: "PATCH", // ⭐ IMPORTANT
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status }),
+        }
       );
+
+      const data = await res.json();
+      console.log("Status update response:", data);
+
+      if (!res.ok) {
+        alert(data.message || "Failed to update status");
+        return;
+      }
+
+      // ✅ BEST PRACTICE — refetch from server
+      fetchBookings();
     } catch (error) {
-      console.error("Error updating booking status", error);
+      console.error("Error updating booking status ❌", error);
     }
   };
 
@@ -86,7 +110,7 @@ export default function VendorBookingsPage() {
               <p>
                 <span>Status:</span>{" "}
                 <strong className={styles.status}>
-                  {booking.status.toUpperCase()}
+                  {booking.status?.toUpperCase()}
                 </strong>
               </p>
             </div>

@@ -2,6 +2,8 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
 import styles from "./booking.module.css";
 
 export default function BookingPage() {
@@ -10,7 +12,14 @@ export default function BookingPage() {
 
   const [hall, setHall] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [bookedRanges, setBookedRanges] = useState([]);
+
+  /* ⭐ AIRBNB RANGE STATE */
+  const [dateRange, setDateRange] = useState([null, null]);
+  const [checkInDate, checkOutDate] = dateRange;
+
+  /* 🔥 separate by status */
+  const [approvedRanges, setApprovedRanges] = useState([]);
+  const [pendingRanges, setPendingRanges] = useState([]);
 
   const [form, setForm] = useState({
     checkIn: "",
@@ -51,7 +60,17 @@ export default function BookingPage() {
           `http://localhost:5000/api/bookings/hall/${hallId}`
         );
         const data = await res.json();
-        setBookedRanges(data);
+
+        const approved = [];
+        const pending = [];
+
+        data.forEach((b) => {
+          if (b.status === "approved") approved.push(b);
+          if (b.status === "pending") pending.push(b);
+        });
+
+        setApprovedRanges(approved);
+        setPendingRanges(pending);
       } catch (error) {
         console.error("Error fetching booked dates:", error);
       }
@@ -60,24 +79,76 @@ export default function BookingPage() {
     if (hallId) fetchBookedDates();
   }, [hallId]);
 
+  /* ===================================
+     🔄 CALENDAR → INPUT SYNC
+  =================================== */
+  useEffect(() => {
+    if (checkInDate) {
+      const inDate = checkInDate.toISOString().split("T")[0];
+      setForm((prev) => ({ ...prev, checkIn: inDate }));
+    }
+
+    if (checkOutDate) {
+      const outDate = checkOutDate.toISOString().split("T")[0];
+      setForm((prev) => ({ ...prev, checkOut: outDate }));
+    }
+  }, [checkInDate, checkOutDate]);
+
   /* =========================
-     HELPER: CHECK DATE IS BOOKED
+     HELPERS
   ========================= */
-  const isDateBooked = (date) => {
-    return bookedRanges.some((b) => {
+
+  const isDateApproved = (date) => {
+    return approvedRanges.some((b) => {
       const checkIn = new Date(b.checkIn);
       const checkOut = new Date(b.checkOut);
       const selected = new Date(date);
-
       return selected >= checkIn && selected <= checkOut;
     });
   };
 
+  const isDatePending = (date) => {
+    return pendingRanges.some((b) => {
+      const checkIn = new Date(b.checkIn);
+      const checkOut = new Date(b.checkOut);
+      const selected = new Date(date);
+      return selected >= checkIn && selected <= checkOut;
+    });
+  };
+
+  /* 🎨 calendar coloring */
+  const getTileClassName = ({ date }) => {
+    const d = date.toISOString().split("T")[0];
+
+    if (isDateApproved(d)) return styles.booked;
+    if (isDatePending(d)) return styles.pending;
+    return styles.available;
+  };
+
   /* =========================
-     HANDLE INPUT CHANGE
+     INPUT → CALENDAR SYNC
   ========================= */
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    if (name === "checkIn") {
+      setDateRange([
+        value ? new Date(value) : null,
+        checkOutDate,
+      ]);
+    }
+
+    if (name === "checkOut") {
+      setDateRange([
+        checkInDate,
+        value ? new Date(value) : null,
+      ]);
+    }
   };
 
   /* =========================
@@ -86,32 +157,17 @@ export default function BookingPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // ✅ Safety check
-    if (!hallId) {
-      alert("Hall ID missing");
+    if (isDateApproved(form.checkIn) || isDateApproved(form.checkOut)) {
+      alert("❌ These dates are already fully booked.");
       return;
     }
 
-    if (!form.checkIn || !form.checkOut) {
-      alert("Please select check-in and check-out dates");
-      return;
+    if (isDatePending(form.checkIn) || isDatePending(form.checkOut)) {
+      const proceed = confirm(
+        "⚠️ These dates have pending requests. Continue?"
+      );
+      if (!proceed) return;
     }
-
-    if (isDateBooked(form.checkIn) || isDateBooked(form.checkOut)) {
-      alert("Selected dates are already booked. Please choose another date.");
-      return;
-    }
-
-    // ✅ Debug log
-    console.log("Booking Data:", {
-      hallId,
-      checkIn: form.checkIn,
-      checkOut: form.checkOut,
-      eventType: form.eventType,
-      guests: form.guests,
-      customerName: form.name,
-      phone: form.phone,
-    });
 
     setLoading(true);
 
@@ -126,7 +182,7 @@ export default function BookingPage() {
             checkIn: form.checkIn,
             checkOut: form.checkOut,
             eventType: form.eventType,
-            guests: Number(form.guests), // ✅ ensure number
+            guests: Number(form.guests),
             customerName: form.name,
             phone: form.phone,
           }),
@@ -155,14 +211,42 @@ export default function BookingPage() {
       {/* HEADER */}
       <div className={styles.header}>
         <h1>{hall.hallName}</h1>
-        <p>
-          {hall.address
-            ? `${hall.address.area}, ${hall.address.city}, ${hall.address.state} - ${hall.address.pincode}`
-            : "Address not available"}
-        </p>
       </div>
 
-      {/* BOOKING CARD */}
+      {/* ⭐ AIRBNB RANGE CALENDAR */}
+      <div className={styles.calendarBox}>
+        <h3>Availability Calendar</h3>
+
+        <Calendar
+          selectRange={true}
+          onChange={setDateRange}
+          value={dateRange}
+          tileClassName={getTileClassName}
+          tileDisabled={({ date }) => {
+            const d = date.toISOString().split("T")[0];
+            return isDateApproved(d);
+          }}
+        />
+
+        {/* ⭐ nights counter */}
+        {checkInDate && checkOutDate && (
+          <p
+            style={{
+              marginTop: 10,
+              fontWeight: 600,
+              color: "#6b1d2b",
+            }}
+          >
+            {Math.ceil(
+              (checkOutDate - checkInDate) /
+                (1000 * 60 * 60 * 24)
+            )}{" "}
+            nights selected
+          </p>
+        )}
+      </div>
+
+      {/* BOOKING FORM */}
       <form
         className={`${styles.card} ${styles.form}`}
         onSubmit={handleSubmit}

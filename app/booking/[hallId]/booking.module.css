@@ -49,7 +49,7 @@
 }
 
 /* =========================
-   FORM WRAPPER (IMPORTANT)
+   FORM WRAPPER
 ========================= */
 .form {
   display: block;
@@ -119,4 +119,120 @@
   text-align: center;
   font-size: 16px;
   color: #6b1d2b;
+}
+
+/* =====================================
+   📅 CALENDAR — UTSAVAM PREMIUM FIX
+===================================== */
+
+.calendarBox {
+  max-width: 520px;
+  margin: 28px auto 16px;
+  padding: 26px;
+  background: linear-gradient(180deg, #ffffff, #fff7ec);
+  border-radius: 26px;
+  box-shadow: 0 20px 48px rgba(107, 29, 43, 0.15);
+  border: 1px solid #f1e4d3;
+}
+
+/* calendar base */
+.calendarBox :global(.react-calendar) {
+  width: 100%;
+  border: none;
+  font-family: inherit;
+  background: transparent;
+}
+
+/* navigation */
+.calendarBox :global(.react-calendar__navigation button) {
+  color: #6b1d2b;
+  font-weight: 700;
+  background: transparent;
+  font-size: 16px;
+}
+
+/* weekday names */
+.calendarBox :global(.react-calendar__month-view__weekdays) {
+  font-size: 12px;
+  color: #8b5e3c;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+/* base tile */
+.calendarBox :global(.react-calendar__tile) {
+  border-radius: 12px;
+  padding: 12px 6px;
+  transition: all 0.18s ease;
+  font-weight: 600;
+  color: #5a2a2a;
+}
+
+/* hover */
+.calendarBox :global(.react-calendar__tile:hover) {
+  background: #fdf2e3;
+  transform: translateY(-1px);
+}
+
+/* today */
+.calendarBox :global(.react-calendar__tile--now) {
+  background: #fff3cd;
+  color: #6b1d2b;
+  font-weight: 700;
+}
+
+/* selected */
+.calendarBox :global(.react-calendar__tile--active) {
+  background: #6b1d2b !important;
+  color: #f5d28a !important;
+  border-radius: 12px;
+  font-weight: 700;
+  box-shadow: 0 8px 18px rgba(107, 29, 43, 0.35);
+}
+
+/* =====================================
+   📊 STATUS COLORS
+===================================== */
+
+.booked {
+  background: #c62828 !important;
+  color: #ffffff !important;
+  border-radius: 12px !important;
+  font-weight: 700;
+}
+
+.pending {
+  background: #ffb300 !important;
+  color: #2d2d2d !important;
+  border-radius: 12px !important;
+  font-weight: 700;
+}
+
+.available {
+  background: rgba(107, 29, 43, 0.08);
+  color: #5a2a2a !important;
+  border-radius: 12px;
+}
+
+/* =====================================
+   🔥 CRITICAL FIX — RANGE OVERRIDE
+===================================== */
+
+/* force booked/pending above range */
+.calendarBox :global(.react-calendar__tile.booked) {
+  background: #c62828 !important;
+  color: #ffffff !important;
+}
+
+.calendarBox :global(.react-calendar__tile.pending) {
+  background: #ffb300 !important;
+  color: #2d2d2d !important;
+}
+
+/* prevent range fade */
+.calendarBox
+  :global(.react-calendar__tile--range.booked),
+.calendarBox
+  :global(.react-calendar__tile--range.pending) {
+  opacity: 1 !important;
 }
