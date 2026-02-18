@@ -17,23 +17,15 @@ export default function Dashboard() {
   const [selectedLocation, setSelectedLocation] = useState(null);
 
   /* ===================================
-     🔒 AUTH GUARD (VERY IMPORTANT)
+     ✅ POPUP + LOCATION (PUBLIC — NO LOGIN)
   =================================== */
   useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      router.replace("/login"); // 🚀 prevents back navigation
-      return;
-    }
-
-    // existing popup logic
     const filled = localStorage.getItem("enquiryFilled");
     if (!filled) setShowPopup(true);
 
     const savedLocation = localStorage.getItem("utsavasLocation");
     if (savedLocation) setSelectedLocation(savedLocation);
-  }, [router]);
+  }, []);
 
   /* ===================================
      🔍 SEARCH API

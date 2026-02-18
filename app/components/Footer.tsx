@@ -16,7 +16,7 @@ export default function Footer() {
     if (token) {
       router.push(path);
     } else {
-    
+     /// router.push(`/login?redirect=${encodeURIComponent(path)}`);///
     }
   };
 

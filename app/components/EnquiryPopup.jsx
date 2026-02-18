@@ -6,7 +6,7 @@ import "./enquiryPopup.css";
 export default function EnquiryPopup({ onClose }) {
   // 🔹 STATES
   const [city, setCity] = useState("Bangalore");
-  const [area, setArea] = useState("Devanahalli");
+  ///const [area, setArea] = useState("Devanahalli");///
   const [guests, setGuests] = useState("");
   const [budget, setBudget] = useState("");
   const [date, setDate] = useState("");

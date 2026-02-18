@@ -30,6 +30,24 @@ export default function HallDetailPage() {
     fetchHall();
   }, [id]);
 
+  /* ===================================
+     🔐 SMART BOOKING AUTH
+  =================================== */
+  const handleBookNow = () => {
+    const token =
+      typeof window !== "undefined"
+        ? localStorage.getItem("token")
+        : null;
+
+    if (token) {
+      // ✅ user logged in → proceed
+      router.push(`/booking/${hall._id}`);
+    } else {
+      // ❌ not logged → go to login
+      router.push("/login");
+    }
+  };
+
   if (loading) return <p style={{ padding: 20 }}>Loading hall details...</p>;
   if (!hall) return <p style={{ padding: 20 }}>Hall not found</p>;
 
@@ -40,7 +58,6 @@ export default function HallDetailPage() {
 
   return (
     <div className="hall-detail-page hall-detail-spacing">
-
       <div className="hall-top">
         {/* IMAGE */}
         <div className="hall-images">
@@ -115,20 +132,14 @@ export default function HallDetailPage() {
 
       {/* ================= ACTION BUTTONS ================= */}
       <div className="hall-actions">
-  <button className="back-btn" onClick={() => router.back()}>
-    ← Back
-  </button>
+        <button className="back-btn" onClick={() => router.back()}>
+          ← Back
+        </button>
 
-  <button
-    className="book-btn"
-     onClick={() => router.push(`/booking/${hall._id}`)}
-  >
-    Book Now
-  </button>
-</div>
-
+        <button className="book-btn" onClick={handleBookNow}>
+          Book Now
+        </button>
+      </div>
     </div>
   );
 }
-
-
