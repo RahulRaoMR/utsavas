@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function Footer() {
-  const router = useRouter();
+  const router = useRouter(); 
 
   const handleRedirect = (path: string) => {
     if (typeof window === "undefined") return;
@@ -16,7 +16,7 @@ export default function Footer() {
     if (token) {
       router.push(path);
     } else {
-      router.push(`/login?redirect=${encodeURIComponent(path)}`);
+    
     }
   };
 
