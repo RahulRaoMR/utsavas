@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { connectDB } from "@/lib/mongodb";
+import connectDB from "@/lib/mongodb"; // ✅ FIXED (no curly braces)
 import Vendor from "@/models/Vendor";
 import bcrypt from "bcryptjs";
 
-export const runtime = "nodejs"; // ⭐ IMPORTANT FIX
+export const runtime = "nodejs"; // ✅ required for mongoose
 
 export async function POST(req) {
   try {
@@ -12,6 +12,7 @@ export async function POST(req) {
     await connectDB();
 
     const vendor = await Vendor.findOne({ email });
+
     if (!vendor) {
       return NextResponse.json(
         { message: "Invalid email or password" },
@@ -20,6 +21,7 @@ export async function POST(req) {
     }
 
     const isMatch = await bcrypt.compare(password, vendor.password);
+
     if (!isMatch) {
       return NextResponse.json(
         { message: "Invalid email or password" },

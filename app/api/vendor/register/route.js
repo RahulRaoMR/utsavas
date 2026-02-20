@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import connectDB from "@/lib/mongodb";
+import connectDB from "@/lib/mongodb"; // ✅ default import
 import Vendor from "@/models/Vendor";
+
+export const runtime = "nodejs"; // ⭐ REQUIRED for mongoose on Vercel
 
 export async function POST(req) {
   try {
@@ -18,7 +20,15 @@ export async function POST(req) {
       password,
     } = body;
 
-    // Check existing vendor
+    // ✅ basic validation
+    if (!businessName || !email || !password) {
+      return NextResponse.json(
+        { message: "Required fields missing" },
+        { status: 400 }
+      );
+    }
+
+    // ✅ check existing vendor
     const existingVendor = await Vendor.findOne({ email });
     if (existingVendor) {
       return NextResponse.json(
@@ -27,8 +37,10 @@ export async function POST(req) {
       );
     }
 
+    // ✅ hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // ✅ create vendor
     const vendor = await Vendor.create({
       businessName,
       ownerName,
@@ -41,7 +53,10 @@ export async function POST(req) {
     });
 
     return NextResponse.json(
-      { message: "Vendor registered successfully", vendor },
+      {
+        message: "Vendor registered successfully",
+        vendor,
+      },
       { status: 201 }
     );
   } catch (error) {
