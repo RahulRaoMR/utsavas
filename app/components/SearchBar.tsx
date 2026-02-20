@@ -15,7 +15,9 @@ export default function SearchBar() {
   });
 
   // ✅ handle dropdown change
-  const handleChange = (e) => {
+  const handleChange = (
+  e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+) => {
     setFilters((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,

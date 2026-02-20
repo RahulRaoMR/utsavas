@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import connectDB from "@/lib/mongodb"
+import connectDB from "@/lib/mongodb";
 import Vendor from "@/models/Vendor";
 
 /* ======================
@@ -7,7 +7,7 @@ import Vendor from "@/models/Vendor";
 ====================== */
 export async function GET() {
   try {
-    await dbConnect();
+    await connectDB();
 
     const vendors = await Vendor.find({}, { businessName: 1 });
 
@@ -26,7 +26,7 @@ export async function GET() {
 ====================== */
 export async function POST(req) {
   try {
-    await dbConnect();
+    await connectDB();
 
     const body = await req.json();
 
@@ -73,7 +73,7 @@ export async function POST(req) {
 ====================== */
 export async function DELETE(req) {
   try {
-    await dbConnect();
+    await connectDB();
 
     const { id } = await req.json();
 
