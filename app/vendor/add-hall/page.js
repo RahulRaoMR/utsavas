@@ -3,17 +3,16 @@ export const dynamic = "force-dynamic";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Dynamic from "next/dynamic"; 
+import Dynamic from "next/dynamic";
 import styles from "./addHall.module.css";
 
-
-
-
+/* =====================
+   LEAFLET DYNAMIC IMPORTS
+===================== */
 const MapContainer = Dynamic(
   () => import("react-leaflet").then((mod) => mod.MapContainer),
   { ssr: false }
 );
-
 
 const TileLayer = Dynamic(
   () => import("react-leaflet").then((mod) => mod.TileLayer),
@@ -29,8 +28,6 @@ const LocationPicker = Dynamic(
   () => import("./LocationPicker"),
   { ssr: false }
 );
-
-
 
 /* =====================
    GEOCODING (OSM)
@@ -63,6 +60,7 @@ export default function AddHallPage() {
     about: "",
     pricePerDay: "",
     pricePerEvent: "",
+    pricePerPlate: "", 
   });
 
   /* =====================
@@ -78,86 +76,96 @@ export default function AddHallPage() {
     landmark: "",
   });
 
+  /* =====================
+     🔥 FEATURES (FINAL CLEAN)
+  ===================== */
+  const [features, setFeatures] = useState({
+    // ⭐ Wedding Facilities
+    diningHall: false,
+    stage: false,
+    powerBackup: false,
+    airConditioning: false,
+    nonAcHall: false,
+    outsideFoodAllowed: false,
+    outsideDecoratorsAllowed: false,
+    outsideDjAllowed: false,
+    alcoholAllowed: false,
+    valetParking: false,
 
+    // ⭐ Hotel Amenities
+    parking: false,
+    restaurant: false,
+    roomService: false,
+    frontDesk24: false,
+    fitnessCentre: false,
+    nonSmokingRooms: false,
+    airportShuttle: false,
+    spaWellness: false,
+    hotTub: false,
+    freeWifi: false,
+    evCharging: false,
+    wheelchairAccessible: false,
+    swimmingPool: false,
+
+    // ⭐ Meals
+    selfCatering: false,
+    breakfastIncluded: false,
+    allMealsIncluded: false,
+    breakfastDinnerIncluded: false,
+
+    // ⭐ Policies
+    acceptsOnlinePayments: false,
+    freeCancellation: false,
+  });
+
+  /* =====================
+     LABEL FORMATTER
+  ===================== */
   const formatFeatureLabel = (key) => {
-  const labels = {
-    diningHall: "Dining Hall",
-    stage: "Stage",
-    powerBackup: "Power Backup",
-    ac: "Air Conditioning",
-    nonAc: "Non-AC Hall",
-    outsideFood: "Outside Food Allowed",
-    outsideDecorators: "Outside Decorators Allowed",
-    outsideDJ: "Outside DJ Allowed",
-    alcoholAllowed: "Alcohol Allowed",
-    valetParking: "Valet Parking",
+    const labels = {
+      diningHall: "Dining Hall",
+      stage: "Stage",
+      powerBackup: "Power Backup",
+      airConditioning: "Air Conditioning",
+      nonAcHall: "Non-AC Hall",
+      outsideFoodAllowed: "Outside Food Allowed",
+      outsideDecoratorsAllowed: "Outside Decorators Allowed",
+      outsideDjAllowed: "Outside DJ Allowed",
+      alcoholAllowed: "Alcohol Allowed",
+      valetParking: "Valet Parking",
+
+      parking: "Parking",
+      restaurant: "Restaurant",
+      roomService: "Room Service",
+      frontDesk24: "24-hour Front Desk",
+      fitnessCentre: "Fitness Centre",
+      nonSmokingRooms: "Non-smoking Rooms",
+      airportShuttle: "Airport Shuttle",
+      spaWellness: "Spa & Wellness Centre",
+      hotTub: "Hot Tub/Jacuzzi",
+      freeWifi: "Free WiFi",
+      evCharging: "EV Charging Station",
+      wheelchairAccessible: "Wheelchair Accessible",
+      swimmingPool: "Swimming Pool",
+
+      selfCatering: "Self Catering",
+      breakfastIncluded: "Breakfast Included",
+      allMealsIncluded: "All Meals Included",
+      breakfastDinnerIncluded: "Breakfast & Dinner Included",
+
+      acceptsOnlinePayments: "Accepts Online Payments",
+      freeCancellation: "Free Cancellation",
+    };
+
+    return labels[key] || key;
   };
-
-  return labels[key] || key;
-};
-
-
 
   /* =====================
      MAP LOCATION
   ===================== */
- const [geoLocation, setGeoLocation] = useState({
-  lat: 10.8505,
-  lng: 76.2711,
-});
-
-
-  {/* MAP */}
-<section className={styles.card}>
-  <h2>🗺 Pin Venue Location</h2>
-
-  {geoLocation && (
-    <MapContainer
-      center={geoLocation}
-      zoom={15}
-      scrollWheelZoom
-      className={styles.map}
-    >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-
-      <Marker
-        position={geoLocation}
-        draggable
-        eventHandlers={{
-          dragend: (e) => {
-            setGeoLocation(e.target.getLatLng());
-          },
-        }}
-      />
-
-      <LocationPicker setGeoLocation={setGeoLocation} />    </MapContainer>
-  )}
-
-  {!geoLocation && (
-    <p className={styles.mapNote}>
-      Enter address to load map…
-    </p>
-  )}
-</section>
-
-
-  /* =====================
-     FEATURES
-  ===================== */
-  const [features, setFeatures] = useState({
-    diningHall: false,
-    stage: false,
-    powerBackup: false,
-    ac: false,
-    nonAc: false,
-    outsideFood: false,
-    outsideDecorators: false,
-    outsideDJ: false,
-    alcoholAllowed: false,
-    valetParking: false,
+  const [geoLocation, setGeoLocation] = useState({
+    lat: 10.8505,
+    lng: 76.2711,
   });
 
   /* =====================
@@ -196,32 +204,37 @@ export default function AddHallPage() {
     return () => clearTimeout(timer);
   }, [address]);
 
-  
-  
   /* =====================
-     SUBMIT
+     🚀 SUBMIT (FIXED)
   ===================== */
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const vendor = JSON.parse(localStorage.getItem("vendor"));
-    if (!vendor?._id) {
-      alert("Vendor not logged in");
-      return;
-    }
+  console.log("FORM STATE:", form); 
 
-    if (!geoLocation) {
-      alert("Location not detected");
-      return;
-    }
+  const vendor = JSON.parse(localStorage.getItem("vendor"));
+  if (!vendor?._id) {
+    alert("Vendor not logged in");
+    return;
+  }
 
-    const formData = new FormData();
+  const formData = new FormData();
+    // ✅ numbers converted properly
+    formData.append("hallName", form.hallName);
+    formData.append("category", form.category);
+    formData.append("capacity", Number(form.capacity) || 0);
+    formData.append("parkingCapacity", Number(form.parkingCapacity) || 0);
+    formData.append("rooms", Number(form.rooms) || 0);
+    formData.append("pricePerDay", form.pricePerDay ? Number(form.pricePerDay) : 0);
+    formData.append("pricePerEvent", form.pricePerEvent ? Number(form.pricePerEvent) : 0);
+    formData.append("pricePerPlate", form.pricePerPlate ? Number(form.pricePerPlate) : 0);
+    formData.append("about", form.about);
 
-    Object.entries(form).forEach(([k, v]) => formData.append(k, v));
     formData.append("address", JSON.stringify(address));
     formData.append("location", JSON.stringify(geoLocation));
     formData.append("features", JSON.stringify(features));
     formData.append("vendorId", vendor._id);
+
     images.forEach((img) => formData.append("images", img));
 
     const res = await fetch("http://localhost:5000/api/halls/add", {
@@ -237,13 +250,12 @@ export default function AddHallPage() {
     alert("Hall added successfully! Waiting for admin approval.");
     router.push("/vendor/dashboard");
   };
-
+  /* =====================
+     UI
+  ===================== */
   return (
     <div className={styles.page}>
       <h1 className={styles.title}>Add Your Venue</h1>
-      <p className={styles.subtitle}>
-        List your venue on <b>UTSAVAS</b>
-      </p>
 
       <form className={styles.form} onSubmit={handleSubmit}>
         {/* VENUE DETAILS */}
@@ -257,7 +269,6 @@ export default function AddHallPage() {
             onChange={handleChange}
           />
 
-          {/* FIXED DROPDOWN */}
           <select name="category" onChange={handleChange}>
             <option value="wedding">Wedding Hall</option>
             <option value="banquet">Banquet Hall</option>
@@ -282,22 +293,31 @@ export default function AddHallPage() {
             onChange={handleChange}
           />
 
-          {/* PRICE ROW */}
-          <div className={styles.row}>
-            <input
-              type="number"
-              name="pricePerDay"
-              placeholder="Price Per Day (₹)"
-              onChange={handleChange}
-            />
-            <input
-              type="number"
-              name="pricePerEvent"
-              placeholder="Price Per Event (₹)"
-              onChange={handleChange}
-            />
-          </div>
+         <div className={styles.row}>
+  <input
+    type="number"
+    name="pricePerDay"
+    placeholder="Price Per Day (₹)"
+    value={form.pricePerDay}
+    onChange={handleChange}
+  />
 
+  <input
+    type="number"
+    name="pricePerEvent"
+    placeholder="Price Per Event (₹)"
+    value={form.pricePerEvent}
+    onChange={handleChange}
+  />
+
+  <input
+    type="number"
+    name="pricePerPlate"
+    placeholder="Price Per Plate (₹)"
+    value={form.pricePerPlate}
+    onChange={handleChange}
+  />
+</div>
           <textarea
             name="about"
             placeholder="About the venue"
@@ -305,20 +325,18 @@ export default function AddHallPage() {
           />
         </section>
 
-       {/* ADDRESS */}
-<section className={styles.card}>
-  <h2>📍 Venue Address</h2>
+        {/* ADDRESS */}
+        <section className={styles.card}>
+          <h2>📍 Venue Address</h2>
 
-  <input name="flat" placeholder="Building / Hall Name" onChange={handleAddressChange} />
-  <input name="floor" placeholder="Floor (optional)" onChange={handleAddressChange} />
-  <input name="area" placeholder="Area / Locality" onChange={handleAddressChange} />
-  <input name="city" placeholder="City" onChange={handleAddressChange} />
-  <input name="state" placeholder="State" onChange={handleAddressChange} />
-  <input name="pincode" placeholder="Pincode" onChange={handleAddressChange} />
-  <input name="landmark" placeholder="Nearby Landmark" onChange={handleAddressChange} />
-</section>
-
-
+          <input name="flat" placeholder="Building / Hall Name" onChange={handleAddressChange} />
+          <input name="floor" placeholder="Floor (optional)" onChange={handleAddressChange} />
+          <input name="area" placeholder="Area / Locality" onChange={handleAddressChange} />
+          <input name="city" placeholder="City" onChange={handleAddressChange} />
+          <input name="state" placeholder="State" onChange={handleAddressChange} />
+          <input name="pincode" placeholder="Pincode" onChange={handleAddressChange} />
+          <input name="landmark" placeholder="Nearby Landmark" onChange={handleAddressChange} />
+        </section>
 
         {/* MAP */}
         <section className={styles.card}>
@@ -331,10 +349,10 @@ export default function AddHallPage() {
             className={styles.map}
           >
             <TileLayer
-  attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
-  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-/>
-    
+              attribution='&copy; OpenStreetMap'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+
             <Marker
               position={geoLocation}
               draggable
@@ -344,33 +362,30 @@ export default function AddHallPage() {
                 },
               }}
             />
-            <LocationPicker />
-          </MapContainer>
 
-          <p className={styles.mapNote}>
-            Click or drag marker to exact venue location
-          </p>
+            {/* ✅ FIXED */}
+            <LocationPicker setGeoLocation={setGeoLocation} />
+          </MapContainer>
         </section>
 
-{/* FEATURES */}
-<section className={styles.card}>
-  <h2>✨ Facilities</h2>
+        {/* FEATURES */}
+        <section className={styles.card}>
+          <h2>✨ Facilities & Amenities</h2>
 
-  <div className={styles.featureGrid}>
-    {Object.entries(features).map(([key, value]) => (
-      <label key={key} className={styles.featureItem}>
-        <input
-          type="checkbox"
-          name={key}
-          checked={value}
-          onChange={handleCheckbox}
-        />
-        <span>{formatFeatureLabel(key)}</span>
-      </label>
-    ))}
-  </div>
-</section>
-
+          <div className={styles.featureGrid}>
+            {Object.entries(features).map(([key, value]) => (
+              <label key={key} className={styles.featureItem}>
+                <input
+                  type="checkbox"
+                  name={key}
+                  checked={value}
+                  onChange={handleCheckbox}
+                />
+                <span>{formatFeatureLabel(key)}</span>
+              </label>
+            ))}
+          </div>
+        </section>
 
         {/* IMAGES */}
         <section className={styles.card}>

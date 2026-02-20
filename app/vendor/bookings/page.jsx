@@ -1,51 +1,60 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import styles from "../vendorDashboard.module.css";
 
 export default function VendorBookingsPage() {
   const router = useRouter();
   const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   /* =========================
-     FETCH BOOKINGS
+     FETCH BOOKINGS (MEMOIZED)
   ========================= */
-  const fetchBookings = async () => {
+  const fetchBookings = useCallback(async () => {
     try {
-      const vendor = JSON.parse(localStorage.getItem("vendor"));
+      const vendorData =
+        typeof window !== "undefined"
+          ? localStorage.getItem("vendor")
+          : null;
 
-      if (!vendor) {
+      if (!vendorData) {
         router.push("/login");
         return;
       }
+
+      const vendor = JSON.parse(vendorData);
 
       const res = await fetch(
         `http://localhost:5000/api/bookings/vendor/${vendor._id}`
       );
 
       const data = await res.json();
-      setBookings(data);
+      setBookings(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("Fetch bookings error ❌", err);
+    } finally {
+      setLoading(false);
     }
-  };
+  }, [router]);
 
+  /* =========================
+     RUN ONLY ONCE ✅
+  ========================= */
   useEffect(() => {
     fetchBookings();
-  }, [router]);
+  }, [fetchBookings]);
 
   /* =========================
      UPDATE BOOKING STATUS
   ========================= */
   const updateStatus = async (bookingId, status) => {
     try {
-      console.log("Updating:", bookingId, status);
-
       const res = await fetch(
         `http://localhost:5000/api/bookings/status/${bookingId}`,
         {
-          method: "PATCH", // ⭐ IMPORTANT
+          method: "PATCH",
           headers: {
             "Content-Type": "application/json",
           },
@@ -54,14 +63,13 @@ export default function VendorBookingsPage() {
       );
 
       const data = await res.json();
-      console.log("Status update response:", data);
 
       if (!res.ok) {
         alert(data.message || "Failed to update status");
         return;
       }
 
-      // ✅ BEST PRACTICE — refetch from server
+      // ✅ refresh list once
       fetchBookings();
     } catch (error) {
       console.error("Error updating booking status ❌", error);
@@ -72,17 +80,19 @@ export default function VendorBookingsPage() {
     <div className={styles.container}>
       <h1 className={styles.header}>Booking Requests</h1>
 
-      {bookings.length === 0 && (
+      {loading && <p style={{ marginTop: 20 }}>Loading...</p>}
+
+      {!loading && bookings.length === 0 && (
         <p style={{ marginTop: 20 }}>No booking requests yet.</p>
       )}
 
       <div className={styles.cardGrid}>
         {bookings.map((booking) => (
           <div key={booking._id} className={styles.card}>
-            {/* LEFT CONTENT */}
+            {/* LEFT */}
             <div className={styles.cardLeft}>
               <h3 className={styles.hallName}>
-                {booking.hall?.hallName}
+                {booking.hall?.hallName || "Hall"}
               </h3>
 
               <p>
@@ -115,7 +125,7 @@ export default function VendorBookingsPage() {
               </p>
             </div>
 
-            {/* RIGHT ACTIONS */}
+            {/* RIGHT */}
             {booking.status === "pending" && (
               <div className={styles.cardActions}>
                 <button

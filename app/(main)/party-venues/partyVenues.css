@@ -1,30 +1,49 @@
-.party-page {
+/* =================================
+   UTSAVAM — WEDDING PAGE BASE
+================================= */
+
+.wedding-page {
   padding: 40px 60px;
-  padding-top: 140px; /* navbar spacing */
+  padding-top: 140px;
   background: #fff7ef;
   min-height: 100vh;
 }
 
 .page-title {
   color: #6b1d2b;
-  font-size: 30px;
-  font-weight: 700;
+  font-size: 28px;
   margin-bottom: 30px;
 }
 
-/* GRID */
+/* =================================
+   🔥 NEW — FLIPKART LAYOUT
+================================= */
+
+.wedding-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 24px;
+}
+
+/* =================================
+   GRID
+================================= */
+
 .hall-card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 25px;
 }
 
-/* CARD */
+/* =================================
+   CARD
+================================= */
+
 .hall-card {
   background: #ffffff;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
   transition: transform 0.25s ease;
   cursor: pointer;
 }
@@ -33,14 +52,20 @@
   transform: translateY(-6px);
 }
 
-/* IMAGE */
+/* =================================
+   IMAGE
+================================= */
+
 .hall-card img {
   width: 100%;
   height: 180px;
   object-fit: cover;
 }
 
-/* CONTENT */
+/* =================================
+   CONTENT
+================================= */
+
 .hall-content {
   padding: 16px;
 }
@@ -57,6 +82,15 @@
   margin: 6px 0;
 }
 
+/* 🔥 IMPORTANT — price used by filter */
+
+.hall-price {
+  font-size: 16px;
+  font-weight: 700;
+  color: #6b1d2b;
+  margin: 8px 0;
+}
+
 .price {
   font-size: 16px;
   font-weight: 700;
@@ -71,7 +105,10 @@
   margin-bottom: 14px;
 }
 
-/* BUTTON */
+/* =================================
+   BUTTON
+================================= */
+
 .hall-btn {
   width: 100%;
   padding: 10px;
@@ -81,20 +118,107 @@
   color: #3a0a12;
   font-weight: 700;
   cursor: pointer;
+  transition: all 0.25s ease;
 }
 
+.hall-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+}
 
-/* ===== PARTY PAGE MOBILE (≤768px) ===== */
+/* =================================
+   DETAIL PAGE
+================================= */
+
+.hall-detail-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* IMAGE SECTION */
+
+.hall-image-wrapper {
+  width: 100%;
+  height: 420px;
+  overflow: hidden;
+  border-radius: 16px;
+  margin-bottom: 24px;
+  background: #eee;
+}
+
+.hall-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* INFO */
+
+.hall-info h1 {
+  margin-bottom: 8px;
+  color: #6b1d2b;
+}
+
+.meta {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.contact-btn {
+  background: #e63946;
+  color: #fff;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* SECTIONS */
+
+.hall-section {
+  margin-top: 30px;
+}
+
+.hall-section h3 {
+  margin-bottom: 10px;
+  color: #6b1d2b;
+}
+
+.hall-section ul {
+  padding-left: 18px;
+}
+
+.back-btn {
+  margin-top: 30px;
+  background: none;
+  border: none;
+  color: #6b1d2b;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+/* =================================
+   📱 MOBILE — PREMIUM (≤768px)
+================================= */
+
 @media (max-width: 768px) {
 
-  .party-page {
+  .wedding-page {
     padding: 30px 20px;
-    padding-top: 110px; /* smaller navbar spacing */
+    padding-top: 110px;
   }
 
   .page-title {
-    font-size: 24px;
+    font-size: 22px;
     margin-bottom: 20px;
+  }
+
+  /* 🔥 layout becomes vertical */
+  .wedding-layout {
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
 
   .hall-card-grid {
@@ -117,7 +241,7 @@
     font-size: 12px;
   }
 
-  .price {
+  .hall-price {
     font-size: 15px;
   }
 
@@ -131,5 +255,47 @@
     padding: 9px;
     font-size: 14px;
     border-radius: 8px;
+  }
+}
+
+/* =================================
+   📱 SMALL MOBILE (≤480px)
+================================= */
+
+@media (max-width: 480px) {
+
+  .wedding-page {
+    padding: 25px 16px;
+    padding-top: 100px;
+  }
+
+  .page-title {
+    font-size: 20px;
+  }
+
+  .hall-card img {
+    height: 140px;
+  }
+
+  .hall-image-wrapper {
+    height: 220px;
+  }
+
+  .hall-info h1 {
+    font-size: 20px;
+  }
+
+  .hall-price {
+    font-size: 14px;
+  }
+
+  .hall-btn {
+    font-size: 13px;
+    padding: 8px;
+  }
+
+  .contact-btn {
+    font-size: 13px;
+    padding: 8px;
   }
 }

@@ -1,13 +1,10 @@
-import "../globals.css";
-import Navbar from "../components/Navbar";
+import TopNavBar from "../components/TopNavBar";
 
 export default function MainLayout({ children }) {
   return (
-    <html lang="en">
-      <body>
-        <Navbar />
-        {children}
-      </body>
-    </html>
+    <>
+      <TopNavBar />
+      {children}
+    </>
   );
 }

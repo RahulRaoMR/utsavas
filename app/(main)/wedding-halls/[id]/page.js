@@ -22,6 +22,7 @@ export default function HallDetailPage() {
       try {
         const res = await fetch(`http://localhost:5000/api/halls/${id}`);
         const data = await res.json();
+        console.log("HALL DATA:", data);
         setHall(data);
       } catch (err) {
         console.error("Failed to load hall details", err);
@@ -32,6 +33,26 @@ export default function HallDetailPage() {
 
     fetchHall();
   }, [id]);
+
+  /* =========================
+     FEATURE LABEL FORMATTER
+  ========================= */
+  const formatFeatureLabel = (key) => {
+    const labels = {
+      diningHall: "Dining Hall",
+      stage: "Stage",
+      powerBackup: "Power Backup",
+      airConditioning: "Air Conditioning",
+      nonAcHall: "Non-AC Hall",
+      outsideFoodAllowed: "Outside Food Allowed",
+      outsideDecoratorsAllowed: "Outside Decorators Allowed",
+      outsideDjAllowed: "Outside DJ Allowed",
+      alcoholAllowed: "Alcohol Allowed",
+      valetParking: "Valet Parking",
+    };
+
+    return labels[key] || key;
+  };
 
   if (loading) {
     return <p style={{ padding: 20 }}>Loading hall details...</p>;
@@ -48,6 +69,20 @@ export default function HallDetailPage() {
     hall.images && hall.images.length > 0
       ? hall.images.map((img) => `http://localhost:5000${img}`)
       : [];
+
+  /* =========================
+     ACTIVE FEATURES
+  ========================= */
+  const activeFeatures = hall.features
+    ? Object.entries(hall.features).filter(([_, v]) => v === true)
+    : [];
+
+  /* =========================
+     🔥 PRICE PREPARATION
+  ========================= */
+  const pricePerEvent = Number(hall.pricePerEvent || 0);
+  const pricePerDay = Number(hall.pricePerDay || 0);
+  const pricePerPlate = Number(hall.pricePerPlate || 0);
 
   return (
     <div className="hall-detail-page hall-detail-spacing">
@@ -90,9 +125,36 @@ export default function HallDetailPage() {
             📍 {hall.address?.area}, {hall.address?.city}
           </p>
 
-          <h2 className="price">
-            ₹{hall.pricePerPlate || "N/A"} <span>per plate</span>
-          </h2>
+          {/* 🔥 PREMIUM PRICE BLOCK */}
+          <div className="price-block">
+
+            {pricePerEvent > 0 && (
+              <h2 className="price">
+                ₹{pricePerEvent.toLocaleString()}
+                <span> per event</span>
+              </h2>
+            )}
+
+            {pricePerDay > 0 && (
+              <h2 className="price secondary">
+                ₹{pricePerDay.toLocaleString()}
+                <span> per day</span>
+              </h2>
+            )}
+
+            {pricePerPlate > 0 && (
+              <h2 className="price secondary">
+                ₹{pricePerPlate.toLocaleString()}
+                <span> per plate</span>
+              </h2>
+            )}
+
+            {pricePerEvent === 0 &&
+              pricePerDay === 0 &&
+              pricePerPlate === 0 && (
+                <h2 className="price">₹N/A</h2>
+              )}
+          </div>
 
           <div className="meta">
             <span>👥 {hall.capacity || "N/A"} Capacity</span>
@@ -113,21 +175,19 @@ export default function HallDetailPage() {
         </div>
       </div>
 
-      {/* ================= AMENITIES ================= */}
-      {hall.features && (
+      {/* FEATURES */}
+      {activeFeatures.length > 0 && (
         <section className="hall-section">
           <h3>What this place has to offer</h3>
           <ul>
-            {hall.features.diningHall && <li>✔ Separate Dining Hall</li>}
-            {hall.features.stage && <li>✔ Stage with Backdrop</li>}
-            {hall.features.powerBackup && <li>✔ Power Backup</li>}
-            {hall.features.ac && <li>✔ Air Conditioned</li>}
-            {hall.features.valetParking && <li>✔ Valet Parking</li>}
+            {activeFeatures.map(([key]) => (
+              <li key={key}>✔ {formatFeatureLabel(key)}</li>
+            ))}
           </ul>
         </section>
       )}
 
-      {/* ================= OTHER INFO ================= */}
+      {/* ABOUT */}
       {hall.about && (
         <section className="hall-section">
           <h3>Other Information</h3>
@@ -135,20 +195,19 @@ export default function HallDetailPage() {
         </section>
       )}
 
-      {/* ================= ACTION BUTTONS ================= */}
+      {/* ACTION BUTTONS */}
       <div className="hall-actions">
-  <button className="back-btn" onClick={() => router.back()}>
-    ← Back
-  </button>
+        <button className="back-btn" onClick={() => router.back()}>
+          ← Back
+        </button>
 
-  <button
-    className="book-btn"
-    onClick={() => router.push(`/booking/${hall._id}`)}
-  >
-    Book Now
-  </button>
-</div>
-
+        <button
+          className="book-btn"
+          onClick={() => router.push(`/booking/${hall._id}`)}
+        >
+          Book Now
+        </button>
+      </div>
     </div>
   );
 }

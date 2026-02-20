@@ -1,62 +1,87 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import styles from "./SearchBar.module.css";
 
 export default function SearchBar() {
   const router = useRouter();
 
-  const handleSearch = () => {
-    // ✅ check if user is logged in
-    const token = localStorage.getItem("token");
+  // ✅ filter state
+  const [filters, setFilters] = useState({
+    city: "",
+    location: "",
+    type: "",
+  });
 
-    if (!token) {
-      // ❌ not logged in → go to login page
-      router.push("/login");
-    } else {
-      // ✅ already logged in → go to dashboard
-      router.push("/dashboard");
-    }
+  // ✅ handle dropdown change
+  const handleChange = (e) => {
+    setFilters((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  // ✅ handle search (NO LOGIN REQUIRED)
+  const handleSearch = () => {
+    const params = new URLSearchParams(filters).toString();
+
+    // 🚀 redirect to venues page with filters
+    router.push(`/wedding-halls?${params}`);
   };
 
   return (
     <div className={styles.searchBar}>
       {/* CITY */}
-      <select className={styles.input}>
+      <select
+        name="city"
+        className={styles.input}
+        value={filters.city}
+        onChange={handleChange}
+      >
         <option value="">City</option>
-        <option>Bangalore</option>
-    
+        <option value="Bangalore">Bangalore</option>
       </select>
 
       {/* LOCATION */}
-      <select className={styles.input}>
+      <select
+        name="location"
+        className={styles.input}
+        value={filters.location}
+        onChange={handleChange}
+      >
         <option value="">Select Location</option>
-        <option>Indiranagar</option>
-        <option>Whitefield</option>
-        <option>MG Road</option>
-        <option>Ulsoor</option>
-        <option>Marathahalli</option>
-        <option>KR Puram</option>
-        <option>Jayanagar</option>
-        <option>JP Nagar</option>
-        <option>Banashankari</option>
-        <option>BTM Layout</option>
-        <option>Electronic City</option>
-        <option>Bannerghatta Road</option>
-        <option>Hebbal</option>
-        <option>Yelahanka</option>
-        <option>Devanahalli</option>
-        <option>Rajajinagar</option>
-        <option>Malleswaram</option>
-        <option>Sarjapur Road</option>
+        <option value="Indiranagar">Indiranagar</option>
+        <option value="Whitefield">Whitefield</option>
+        <option value="MG Road">MG Road</option>
+        <option value="Ulsoor">Ulsoor</option>
+        <option value="Marathahalli">Marathahalli</option>
+        <option value="KR Puram">KR Puram</option>
+        <option value="Jayanagar">Jayanagar</option>
+        <option value="JP Nagar">JP Nagar</option>
+        <option value="Banashankari">Banashankari</option>
+        <option value="BTM Layout">BTM Layout</option>
+        <option value="Electronic City">Electronic City</option>
+        <option value="Bannerghatta Road">Bannerghatta Road</option>
+        <option value="Hebbal">Hebbal</option>
+        <option value="Yelahanka">Yelahanka</option>
+        <option value="Devanahalli">Devanahalli</option>
+        <option value="Rajajinagar">Rajajinagar</option>
+        <option value="Malleswaram">Malleswaram</option>
+        <option value="Sarjapur Road">Sarjapur Road</option>
       </select>
 
       {/* VENUE TYPE */}
-      <select className={styles.input}>
+      <select
+        name="type"
+        className={styles.input}
+        value={filters.type}
+        onChange={handleChange}
+      >
         <option value="">Venue Type</option>
-        <option>Wedding Hall</option>
-        <option>Banquet Hall</option>
-        <option>Outdoor Lawn</option>
+        <option value="Wedding Hall">Wedding Hall</option>
+        <option value="Banquet Hall">Banquet Hall</option>
+        <option value="Outdoor Lawn">Outdoor Lawn</option>
       </select>
 
       {/* BUTTON */}
