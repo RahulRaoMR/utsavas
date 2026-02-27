@@ -4,7 +4,7 @@
 
 .container {
   min-height: 100vh;
-  background: #fffaf3;
+  background: linear-gradient(135deg, #fffaf3 0%, #f7f2ec 100%);
   padding: 30px;
   font-family: Arial, sans-serif;
   color: #6b1d2b;
@@ -15,12 +15,13 @@
 ========================= */
 
 .header {
-  background: #6b1d2b;
+  background: linear-gradient(135deg, #6b1d2b, #8a2537);
   color: #f5d28a;
   padding: 20px;
-  border-radius: 10px;
+  border-radius: 14px;
   font-size: 22px;
   font-weight: bold;
+  box-shadow: 0 10px 25px rgba(107, 29, 43, 0.25);
 }
 
 /* =========================
@@ -36,21 +37,22 @@
 
 .card {
   background: #ffffff;
-  border-radius: 14px;
+  border-radius: 16px;
   padding: 20px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
   border-left: 6px solid #6b1d2b;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.card h3,
-.card p {
-  color: #6b1d2b !important;
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
 }
 
 .count {
   font-size: 28px;
   font-weight: bold;
-  color: #6b1d2b !important;
+  color: #6b1d2b;
 }
 
 /* =========================
@@ -64,7 +66,7 @@
 
 .sidebar {
   width: 240px;
-  background: #6b1d2b;
+  background: linear-gradient(180deg, #6b1d2b, #4e1420);
   color: #f5d28a;
   padding: 30px 20px;
 }
@@ -80,12 +82,14 @@
   color: #f5d28a;
   text-decoration: none;
   padding: 12px 16px;
-  border-radius: 8px;
+  border-radius: 10px;
   margin-bottom: 10px;
+  transition: all 0.2s ease;
 }
 
 .navLink:hover {
   background: rgba(245, 210, 138, 0.15);
+  transform: translateX(4px);
 }
 
 .active {
@@ -100,26 +104,15 @@
 }
 
 /* =========================
-   ADMIN HALL CARDS (CRITICAL)
+   HALL CARD
 ========================= */
 
 .hallCard {
   background: #fff5ec;
   border: 2px solid #6b1d2b;
-  border-radius: 14px;
+  border-radius: 16px;
   padding: 20px;
   margin-bottom: 20px;
-}
-
-/* 🚨 FORCE ALL TEXT */
-.hallCard *,
-.hallCard p,
-.hallCard span,
-.hallCard h3,
-.hallCard h4,
-.hallCard b {
-  color: #6b1d2b !important;
-  opacity: 1 !important;
 }
 
 /* =========================
@@ -127,210 +120,181 @@
 ========================= */
 
 .statusApproved {
-  color: #2e7d32 !important;
-  font-weight: bold;
+  color: #16a34a !important;
+  font-weight: 700;
 }
 
 .statusPending {
-  color: #e65100 !important;
-  font-weight: bold;
+  color: #f59e0b !important;
+  font-weight: 700;
 }
 
 .statusRejected {
-  color: #b71c1c !important;
-  font-weight: bold;
+  color: #dc2626 !important;
+  font-weight: 700;
 }
 
 /* =========================
-   TEXT SELECTION
+   FULLCALENDAR PREMIUM
 ========================= */
 
-::selection {
-  background: rgba(107, 29, 43, 0.25);
+.fc-toolbar-title {
   color: #6b1d2b;
+  font-weight: 800;
 }
 
-
-.container {
-  min-height: 100vh;
-  padding: 60px 30px;
-  background: #f7f2ec;
-}
-
-.title {
-  font-size: 32px;
-  color: #6b1d2b;
-  margin-bottom: 30px;
-}
-
-.addBox {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 40px;
-}
-
-.addBox input {
-  flex: 1;
-  padding: 12px;
+.fc-daygrid-event {
+  border: none !important;
   border-radius: 8px;
-  border: 1px solid #ccc;
+  font-size: 12px;
+  padding: 3px 8px;
+  background: linear-gradient(135deg, #6b1d2b, #8a2537) !important;
+  box-shadow: 0 4px 10px rgba(107, 29, 43, 0.25);
 }
 
-.addBox button {
-  padding: 12px 20px;
+/* =========================
+   ⭐ ULTRA PREMIUM MODAL
+========================= */
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal {
+  background: linear-gradient(135deg, #ffffff, #fff7ed);
+  padding: 32px 30px;
+  border-radius: 22px;
+  width: 420px;
+  max-width: 92vw;
+  box-shadow: 0 35px 90px rgba(0, 0, 0, 0.25);
+  animation: modalPop 0.25s ease;
+}
+
+@keyframes modalPop {
+  from {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.modalTitle {
+  color: #6b1d2b;
+  margin-bottom: 14px;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.modalGrid {
+  display: grid;
+  gap: 8px;
+  font-size: 14px;
+}
+
+/* ⭐ BUTTON ROW (IMPORTANT) */
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+/* =========================
+   PAYMENT BADGES
+========================= */
+
+.paymentPaid {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.paymentPending {
+  color: #f59e0b;
+  font-weight: 700;
+}
+
+.paymentFailed {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+.statusBadge {
+  text-transform: capitalize;
+  font-weight: 700;
+}
+
+/* =========================
+   CANCEL BUTTON
+========================= */
+
+.closeBtn {
   background: #6b1d2b;
   color: #fff;
   border: none;
-  border-radius: 8px;
+  padding: 10px 20px;
+  border-radius: 12px;
   cursor: pointer;
-}
-
-.list {
-  display: grid;
-  gap: 15px;
-}
-
-.card {
-  background: #fff;
-  padding: 16px 20px;
-  border-radius: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-}
-
-.card span {
   font-weight: 600;
-  color: #333;
+  transition: all 0.2s ease;
 }
 
-.card button {
-  background: #b91c1c;
+.closeBtn:hover {
+  background: #5a1825;
+  transform: translateY(-1px);
+}
+
+/* =========================
+   🔥 PREMIUM DELETE BUTTON
+========================= */
+
+.deleteBtn {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
   color: white;
   border: none;
-  padding: 8px 14px;
-  border-radius: 6px;
+  padding: 10px 22px;
+  border-radius: 12px;
   cursor: pointer;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  transition: all 0.2s ease;
+  box-shadow: 0 10px 24px rgba(220, 38, 38, 0.25);
 }
 
-/* =================================
-   ADMIN DASHBOARD MOBILE (≤768px)
-================================= */
-@media (max-width: 768px) {
+.deleteBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 34px rgba(220, 38, 38, 0.35);
+}
 
-  /* Layout becomes vertical */
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 768px) {
   .adminLayout {
     flex-direction: column;
   }
 
-  /* Sidebar full width */
   .sidebar {
     width: 100%;
-    padding: 20px;
   }
 
-  .sidebarHeader {
-    font-size: 18px;
-    margin-bottom: 20px;
-  }
-
-  .navLink {
-    padding: 10px 14px;
-    font-size: 14px;
-  }
-
-  /* Main content spacing */
   .mainContent {
     padding: 20px;
   }
 
-  /* Header */
-  .header {
-    font-size: 18px;
-    padding: 16px;
-  }
-
-  /* Cards */
-  .cardGrid {
-    gap: 15px;
-  }
-
-  .card {
-    padding: 16px;
-  }
-
-  .count {
-    font-size: 22px;
-  }
-
-  /* Hall cards */
-  .hallCard {
-    padding: 16px;
-  }
-
-  /* Add box */
-  .addBox {
-    flex-direction: column;
-  }
-
-  .addBox input {
-    width: 100%;
-  }
-
-  .addBox button {
-    width: 100%;
-  }
-
-  /* List cards */
-  .card {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .card button {
-    width: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-
-  .container {
-    padding: 40px 16px;
-  }
-
-  .title {
-    font-size: 22px;
-  }
-
-  .header {
-    font-size: 16px;
-  }
-
-  .card {
-    padding: 14px;
-  }
-
-  .count {
-    font-size: 20px;
-  }
-
-  .sidebar {
-    padding: 16px;
-  }
-
-  .navLink {
-    font-size: 13px;
-  }
-
-  .addBox input {
-    padding: 10px;
-    font-size: 14px;
-  }
-
-  .addBox button {
-    padding: 10px;
-    font-size: 14px;
+  .modal {
+    width: 95%;
+    padding: 22px;
   }
 }

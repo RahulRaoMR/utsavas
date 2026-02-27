@@ -10,20 +10,32 @@ export default function MyHallsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const vendor = JSON.parse(localStorage.getItem("vendor"));
+    try {
+      const vendorData = localStorage.getItem("vendor");
+      const vendor = vendorData ? JSON.parse(vendorData) : null;
 
-    if (!vendor?._id) {
-      router.replace("/vendor/vendor-login");
-      return;
+      if (!vendor?._id) {
+        router.replace("/vendor/vendor-login");
+        return;
+      }
+
+      fetch(`http://localhost:5000/api/halls/vendor/${vendor._id}`)
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("Vendor halls API:", data);
+
+          // ✅🔥 CRITICAL FIX — read data.data
+          setHalls(Array.isArray(data?.data) ? data.data : []);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error("Fetch halls error:", err);
+          setLoading(false);
+        });
+    } catch (err) {
+      console.error("Vendor parse error:", err);
+      setLoading(false);
     }
-
-    fetch(`http://localhost:5000/api/halls/vendor/${vendor._id}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setHalls(data);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
   }, [router]);
 
   if (loading) {
@@ -63,12 +75,11 @@ export default function MyHallsPage() {
               {/* ACTION BUTTONS */}
               <div className={styles.actions}>
                 <button
-            className={styles.viewBtn}
-             onClick={() => router.push(`/hall/${hall._id}`)}
+                  className={styles.viewBtn}
+                  onClick={() => router.push(`/hall/${hall._id}`)}
                 >
-               👁 View
+                  👁 View
                 </button>
-
 
                 <button
                   className={styles.editBtn}

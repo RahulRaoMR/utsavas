@@ -11,13 +11,16 @@ export default function AdminSidebar() {
     { name: "Dashboard", href: "/admin/dashboard" },
     { name: "Vendors", href: "/admin/vendors" },
     { name: "Halls", href: "/admin/halls" },
+
+    // ✅ NEW — BOOKINGS
+    { name: "Bookings", href: "/admin/bookings" },
   ];
 
   return (
     <aside className={styles.sidebar}>
       <div className={styles.sidebarHeader}>Utsavas Admin</div>
 
-      <nav>
+      <nav className={styles.navMenu}>
         {links.map((link) => (
           <Link
             key={link.href}

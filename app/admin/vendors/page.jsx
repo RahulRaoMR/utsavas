@@ -7,6 +7,10 @@ export default function AdminVendorsPage() {
   const [vendors, setVendors] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // ⭐ NEW PREMIUM STATES
+  const [deleteVendorId, setDeleteVendorId] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   /* =====================
      FETCH ALL VENDORS
   ===================== */
@@ -58,7 +62,7 @@ export default function AdminVendorsPage() {
         throw new Error("Failed to update status");
       }
 
-      fetchVendors(); // refresh list
+      fetchVendors();
     } catch (err) {
       console.error(err);
       alert("Failed to update vendor status");
@@ -66,27 +70,33 @@ export default function AdminVendorsPage() {
   };
 
   /* =====================
-     DELETE VENDOR (OPTIONAL)
+     ⭐ PREMIUM DELETE (CASCADE)
   ===================== */
-  const deleteVendor = async (id) => {
-    const confirmDelete = confirm("Delete this vendor permanently?");
-    if (!confirmDelete) return;
+  const confirmDeleteVendor = async () => {
+    if (!deleteVendorId) return;
 
     try {
+      setIsDeleting(true);
+
       const res = await fetch(
-        `http://localhost:5000/api/vendor/delete/${id}`,
-        {
-          method: "DELETE",
-        }
+        `http://localhost:5000/api/admin/vendors/${deleteVendorId}`,
+        { method: "DELETE" }
       );
 
-      if (!res.ok) {
-        throw new Error("Delete failed");
-      }
+      const data = await res.json();
 
+      if (!res.ok) throw new Error(data.message);
+
+      // refresh list
       fetchVendors();
+
+      // close modal
+      setDeleteVendorId(null);
     } catch (err) {
+      console.error(err);
       alert("Failed to delete vendor");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -107,21 +117,11 @@ export default function AdminVendorsPage() {
         <div key={vendor._id} className={styles.card}>
           <h3>{vendor.businessName}</h3>
 
-          <p>
-            <b>Owner:</b> {vendor.ownerName}
-          </p>
-          <p>
-            <b>Email:</b> {vendor.email}
-          </p>
-          <p>
-            <b>Phone:</b> {vendor.phone}
-          </p>
-          <p>
-            <b>City:</b> {vendor.city}
-          </p>
-          <p>
-            <b>Service:</b> {vendor.serviceType}
-          </p>
+          <p><b>Owner:</b> {vendor.ownerName}</p>
+          <p><b>Email:</b> {vendor.email}</p>
+          <p><b>Phone:</b> {vendor.phone}</p>
+          <p><b>City:</b> {vendor.city}</p>
+          <p><b>Service:</b> {vendor.serviceType}</p>
 
           <p>
             <b>Status:</b>{" "}
@@ -136,7 +136,7 @@ export default function AdminVendorsPage() {
             )}
           </p>
 
-          {/* ACTION BUTTONS */}
+          {/* APPROVE / REJECT */}
           {vendor.status === "pending" && (
             <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
               <button
@@ -155,17 +155,51 @@ export default function AdminVendorsPage() {
             </div>
           )}
 
-          {/* DELETE (ADMIN ONLY) */}
+          {/* ⭐ PREMIUM DELETE */}
           <div style={{ marginTop: 10 }}>
             <button
               className={styles.deleteButton}
-              onClick={() => deleteVendor(vendor._id)}
+              onClick={() => setDeleteVendorId(vendor._id)}
             >
               🗑 Delete Vendor
             </button>
           </div>
         </div>
       ))}
+
+      {/* 🔥 PREMIUM DELETE MODAL */}
+      {deleteVendorId && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <h3 className={styles.modalTitle}>Delete Vendor?</h3>
+
+            <p style={{ marginBottom: 16 }}>
+              This will permanently remove:
+              <br />• Vendor
+              <br />• All halls
+              <br />• All bookings
+            </p>
+
+            <div style={{ display: "flex", gap: 10 }}>
+              <button
+                className={styles.closeBtn}
+                onClick={() => setDeleteVendorId(null)}
+                disabled={isDeleting}
+              >
+                Cancel
+              </button>
+
+              <button
+                className={styles.deleteBtn}
+                onClick={confirmDeleteVendor}
+                disabled={isDeleting}
+              >
+                {isDeleting ? "Deleting..." : "Yes, Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

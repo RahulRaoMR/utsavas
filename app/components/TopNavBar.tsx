@@ -1,52 +1,115 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import "./topnavbar.css";
 
 export default function TopNavBar() {
+  const router = useRouter();
+  const dropdownRef = useRef(null);
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [user, setUser] = useState(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [location, setLocation] = useState("");
 
-  // ⭐ Premium scroll shadow
+  /* =========================
+     SCROLL SHADOW
+  ========================= */
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 8);
-    };
-
+    const handleScroll = () => setScrolled(window.scrollY > 8);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // ⭐ Close mobile menu on resize (PRO UX)
+  /* =========================
+     CLOSE MOBILE MENU
+  ========================= */
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth > 768) {
-        setMenuOpen(false);
-      }
+      if (window.innerWidth > 768) setMenuOpen(false);
     };
-
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // ⭐ Prevent body scroll when menu open (PREMIUM FEEL)
+  /* =========================
+     BODY LOCK
+  ========================= */
   useEffect(() => {
-    if (menuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    document.body.style.overflow = menuOpen ? "hidden" : "";
   }, [menuOpen]);
+
+  /* =========================
+     LOAD USER
+  ========================= */
+  useEffect(() => {
+    try {
+      const userStr = localStorage.getItem("user");
+      const vendorStr = localStorage.getItem("vendor");
+
+      let storedUser = null;
+      if (userStr) storedUser = JSON.parse(userStr);
+      else if (vendorStr) storedUser = JSON.parse(vendorStr);
+
+      if (storedUser) setUser(storedUser);
+    } catch (err) {
+      console.error("User parse error:", err);
+    }
+  }, []);
+
+  /* =========================
+     CLOSE DROPDOWN ON OUTSIDE CLICK
+  ========================= */
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  /* =========================
+     LOGOUT
+  ========================= */
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("vendor");
+    setUser(null);
+    router.push("/");
+  };
+
+  /* =========================
+     LOCATION SEARCH
+  ========================= */
+  const handleLocationSearch = () => {
+    if (!location.trim()) return;
+    router.push(`/dashboard?city=${encodeURIComponent(location)}`);
+  };
 
   return (
     <>
       <nav className={`top-nav ${scrolled ? "scrolled" : ""}`}>
-        {/* LEFT — LOGO */}
+        {/* LOGO */}
         <div className="logo">
           <Link href="/">
             <img src="/utsavas-logo.png" alt="UTSAVAS" />
           </Link>
+        </div>
+
+        {/* 🔥 LOCATION BAR */}
+        <div className="location-bar">
+          <input
+            type="text"
+            placeholder="Where are you going?"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+          />
+          <button onClick={handleLocationSearch}>🔍</button>
         </div>
 
         {/* DESKTOP LINKS */}
@@ -59,24 +122,52 @@ export default function TopNavBar() {
 
         {/* RIGHT */}
         <div className="auth-section">
-          <Link href="/vendor/vendor-login" className="list-btn">
-            List your property
-          </Link>
 
-          <Link href="/register" className="register-btn">
-            Register
-          </Link>
+          {/* BEFORE LOGIN */}
+          {!user && (
+            <>
+              <Link href="/vendor/vendor-login" className="list-btn">
+                List your property
+              </Link>
+              <Link href="/register" className="register-btn">
+                Register
+              </Link>
+              <Link href="/login" className="signin-btn">
+                Sign in
+              </Link>
+            </>
+          )}
 
-          <Link href="/login" className="signin-btn">
-            Sign in
-          </Link>
+          {/* AFTER LOGIN */}
+          {user && (
+            <div className="user-wrapper" ref={dropdownRef}>
+              <div
+                className="user-chip"
+                onClick={() => setDropdownOpen((p) => !p)}
+              >
+                <div className="avatar">
+                  {((user?.name || user?.ownerName || "U").charAt(0)).toUpperCase()}
+                </div>
+                <span className="user-name">
+                  {user?.name || user?.ownerName || "User"}
+                </span>
+              </div>
 
-          {/* ⭐ PREMIUM HAMBURGER */}
+              {/* 🔥 DROPDOWN */}
+              {dropdownOpen && (
+                <div className="user-dropdown">
+                  <Link href="/profile">My Profile</Link>
+                  <Link href="/my-bookings">My Bookings</Link>
+                  <button onClick={handleLogout}>Logout</button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* HAMBURGER */}
           <button
             className={`hamburger ${menuOpen ? "active" : ""}`}
-            onClick={() => setMenuOpen((prev) => !prev)}
-            aria-label="Toggle menu"
-            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((p) => !p)}
           >
             <span></span>
             <span></span>
@@ -85,16 +176,12 @@ export default function TopNavBar() {
         </div>
       </nav>
 
-      {/* ⭐ MOBILE MENU */}
-      <div
-        className={`mobile-menu ${menuOpen ? "show" : ""}`}
-        onClick={() => setMenuOpen(false)}
-      >
-        <Link href="/" onClick={() => setMenuOpen(false)}>Home</Link>
-        <Link href="/dashboard" onClick={() => setMenuOpen(false)}>Venues</Link>
-        <Link href="/services" onClick={() => setMenuOpen(false)}>Services</Link>
-        <Link href="/contact" onClick={() => setMenuOpen(false)}>Contact</Link>
-        <Link href="/login" onClick={() => setMenuOpen(false)}>Login</Link>
+      {/* MOBILE MENU */}
+      <div className={`mobile-menu ${menuOpen ? "show" : ""}`}>
+        <Link href="/">Home</Link>
+        <Link href="/dashboard">Venues</Link>
+        <Link href="/services">Services</Link>
+        <Link href="/contact">Contact</Link>
       </div>
     </>
   );
