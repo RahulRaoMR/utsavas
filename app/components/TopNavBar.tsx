@@ -7,11 +7,12 @@ import "./topnavbar.css";
 
 export default function TopNavBar() {
   const router = useRouter();
-  const dropdownRef = useRef(null);
+
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<any>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [location, setLocation] = useState("");
 
@@ -51,6 +52,7 @@ export default function TopNavBar() {
       const vendorStr = localStorage.getItem("vendor");
 
       let storedUser = null;
+
       if (userStr) storedUser = JSON.parse(userStr);
       else if (vendorStr) storedUser = JSON.parse(vendorStr);
 
@@ -64,13 +66,20 @@ export default function TopNavBar() {
      CLOSE DROPDOWN ON OUTSIDE CLICK
   ========================= */
   useEffect(() => {
-  const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !(dropdownRef.current as HTMLElement).contains(e.target as Node)
+      ) {
         setDropdownOpen(false);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   /* =========================
@@ -94,6 +103,7 @@ export default function TopNavBar() {
   return (
     <>
       <nav className={`top-nav ${scrolled ? "scrolled" : ""}`}>
+        
         {/* LOGO */}
         <div className="logo">
           <Link href="/">
@@ -101,7 +111,7 @@ export default function TopNavBar() {
           </Link>
         </div>
 
-        {/* 🔥 LOCATION BAR */}
+        {/* LOCATION SEARCH */}
         <div className="location-bar">
           <input
             type="text"
@@ -120,7 +130,7 @@ export default function TopNavBar() {
           <li><Link href="/contact">Contact Us</Link></li>
         </ul>
 
-        {/* RIGHT */}
+        {/* RIGHT SIDE */}
         <div className="auth-section">
 
           {/* BEFORE LOGIN */}
@@ -146,14 +156,16 @@ export default function TopNavBar() {
                 onClick={() => setDropdownOpen((p) => !p)}
               >
                 <div className="avatar">
-                  {((user?.name || user?.ownerName || "U").charAt(0)).toUpperCase()}
+                  {(user?.name || user?.ownerName || "U")
+                    .charAt(0)
+                    .toUpperCase()}
                 </div>
+
                 <span className="user-name">
                   {user?.name || user?.ownerName || "User"}
                 </span>
               </div>
 
-              {/* 🔥 DROPDOWN */}
               {dropdownOpen && (
                 <div className="user-dropdown">
                   <Link href="/profile">My Profile</Link>
@@ -173,6 +185,7 @@ export default function TopNavBar() {
             <span></span>
             <span></span>
           </button>
+
         </div>
       </nav>
 
