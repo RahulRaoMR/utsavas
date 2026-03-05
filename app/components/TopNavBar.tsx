@@ -64,7 +64,7 @@ export default function TopNavBar() {
      CLOSE DROPDOWN ON OUTSIDE CLICK
   ========================= */
   useEffect(() => {
-    const handleClickOutside = (e) => {
+  const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setDropdownOpen(false);
       }
