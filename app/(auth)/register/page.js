@@ -4,12 +4,13 @@ import { useState, useEffect, useRef } from "react";
 import styles from "../login/login.module.css";
 import { useRouter } from "next/navigation";
 
+const API =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://utsavas-backend-1.onrender.com";
+
 export default function RegisterPage() {
   const router = useRouter();
 
-  /* =========================
-     STATE
-  ========================= */
   const [verified, setVerified] = useState(false);
   const [phone, setPhone] = useState("+91");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -53,7 +54,7 @@ export default function RegisterPage() {
       setLoading(true);
       const cleanPhone = phone.replace("+", "");
 
-      const res = await fetch("http://localhost:5000/api/otp/send-otp", {
+      const res = await fetch(`${API}/api/otp/send-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone: cleanPhone }),
@@ -105,7 +106,7 @@ export default function RegisterPage() {
       const cleanPhone = phone.replace("+", "");
       const finalOtp = otp.join("");
 
-      const res = await fetch("http://localhost:5000/api/otp/verify-otp", {
+      const res = await fetch(`${API}/api/otp/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone: cleanPhone, otp: finalOtp }),
@@ -144,7 +145,7 @@ export default function RegisterPage() {
 
       const cleanPhone = phone.replace("+", "");
 
-      const res = await fetch("http://localhost:5000/api/auth/register", {
+      const res = await fetch(`${API}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -258,16 +259,13 @@ export default function RegisterPage() {
             <input name="city" placeholder="City" className={styles.inputField} onChange={handleChange} />
             <input name="country" placeholder="Country" className={styles.inputField} onChange={handleChange} />
 
-            {/* ✅ FIXED PREMIUM SELECT */}
             <select
               name="gender"
               className={styles.inputField}
               onChange={handleChange}
               defaultValue=""
             >
-              <option value="" disabled>
-                Select Gender
-              </option>
+              <option value="" disabled>Select Gender</option>
               <option value="male">Male</option>
               <option value="female">Female</option>
               <option value="other">Other</option>
