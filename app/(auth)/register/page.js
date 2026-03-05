@@ -36,11 +36,13 @@ export default function RegisterPage() {
   ========================= */
   useEffect(() => {
     let interval;
+
     if (timer > 0) {
       interval = setInterval(() => {
         setTimer((prev) => prev - 1);
       }, 1000);
     }
+
     return () => clearInterval(interval);
   }, [timer]);
 
@@ -52,17 +54,20 @@ export default function RegisterPage() {
 
     try {
       setLoading(true);
+
       const cleanPhone = phone.replace("+", "");
 
       const res = await fetch(`${API}/api/otp/send-otp`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ phone: cleanPhone }),
       });
 
       const data = await res.json();
 
-      if (data.success) {
+      if (res.ok && data.success) {
         alert("OTP sent successfully ✅");
         setOtpSent(true);
         setTimer(30);
@@ -70,11 +75,11 @@ export default function RegisterPage() {
         alert(data.message || "Failed to send OTP");
       }
     } catch (err) {
-      console.error(err);
-      alert("Something went wrong");
+      console.error("OTP error:", err);
+      alert("Server not responding. Please try again.");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   /* =========================
@@ -108,29 +113,37 @@ export default function RegisterPage() {
 
       const res = await fetch(`${API}/api/otp/verify-otp`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: cleanPhone, otp: finalOtp }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          phone: cleanPhone,
+          otp: finalOtp,
+        }),
       });
 
       const data = await res.json();
 
-      if (data.success) {
-        setVerified(true);
+      if (res.ok && data.success) {
         alert("Phone verified ✅");
+        setVerified(true);
       } else {
         alert(data.message || "Invalid OTP ❌");
       }
     } catch (err) {
-      console.error(err);
+      console.error("Verify error:", err);
       alert("Verification failed");
     }
   };
 
   /* =========================
-     HANDLE FORM
+     FORM CHANGE
   ========================= */
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
   };
 
   /* =========================
@@ -147,7 +160,9 @@ export default function RegisterPage() {
 
       const res = await fetch(`${API}/api/auth/register`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           ...form,
           phone: cleanPhone,
@@ -156,7 +171,7 @@ export default function RegisterPage() {
 
       const data = await res.json();
 
-      if (data.success) {
+      if (res.ok && data.success) {
         localStorage.setItem("token", data.token);
         alert("Registration successful 🎉");
         router.push("/dashboard");
@@ -164,7 +179,7 @@ export default function RegisterPage() {
         alert(data.message || "Registration failed");
       }
     } catch (err) {
-      console.error(err);
+      console.error("Register error:", err);
       alert("Something went wrong");
     }
   };
@@ -253,11 +268,40 @@ export default function RegisterPage() {
           </>
         ) : (
           <>
-            <input name="firstName" placeholder="First Name" className={styles.inputField} onChange={handleChange} />
-            <input name="lastName" placeholder="Last Name" className={styles.inputField} onChange={handleChange} />
-            <input name="email" placeholder="Email" className={styles.inputField} onChange={handleChange} />
-            <input name="city" placeholder="City" className={styles.inputField} onChange={handleChange} />
-            <input name="country" placeholder="Country" className={styles.inputField} onChange={handleChange} />
+            <input
+              name="firstName"
+              placeholder="First Name"
+              className={styles.inputField}
+              onChange={handleChange}
+            />
+
+            <input
+              name="lastName"
+              placeholder="Last Name"
+              className={styles.inputField}
+              onChange={handleChange}
+            />
+
+            <input
+              name="email"
+              placeholder="Email"
+              className={styles.inputField}
+              onChange={handleChange}
+            />
+
+            <input
+              name="city"
+              placeholder="City"
+              className={styles.inputField}
+              onChange={handleChange}
+            />
+
+            <input
+              name="country"
+              placeholder="Country"
+              className={styles.inputField}
+              onChange={handleChange}
+            />
 
             <select
               name="gender"
@@ -265,14 +309,29 @@ export default function RegisterPage() {
               onChange={handleChange}
               defaultValue=""
             >
-              <option value="" disabled>Select Gender</option>
+              <option value="" disabled>
+                Select Gender
+              </option>
               <option value="male">Male</option>
               <option value="female">Female</option>
               <option value="other">Other</option>
             </select>
 
-            <input name="password" type="password" placeholder="Password" className={styles.inputField} onChange={handleChange} />
-            <input name="confirmPassword" type="password" placeholder="Confirm Password" className={styles.inputField} onChange={handleChange} />
+            <input
+              name="password"
+              type="password"
+              placeholder="Password"
+              className={styles.inputField}
+              onChange={handleChange}
+            />
+
+            <input
+              name="confirmPassword"
+              type="password"
+              placeholder="Confirm Password"
+              className={styles.inputField}
+              onChange={handleChange}
+            />
 
             <button className={styles.loginBtn} onClick={registerUser}>
               Register Now
