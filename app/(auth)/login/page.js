@@ -16,16 +16,10 @@ export default function LoginPage() {
      📱 FORMAT PHONE AUTO
   ========================= */
   const formatInput = (value) => {
-    // if user typing numbers only → treat as phone
     if (/^\d+$/.test(value)) {
-      // remove non digits
       const digits = value.replace(/\D/g, "");
-
-      // limit to 10 digits
       return digits.slice(0, 10);
     }
-
-    // otherwise treat as email
     return value;
   };
 
@@ -41,15 +35,15 @@ export default function LoginPage() {
     try {
       setLoading(true);
 
-      // ✅ AUTO ADD 91 IF PHONE
       let payloadValue = emailOrPhone.trim();
 
+      // add country code automatically
       if (/^\d{10}$/.test(payloadValue)) {
         payloadValue = "91" + payloadValue;
       }
 
       const res = await fetch(
-        ""https://utsavas-backend-1.onrender.com/api/auth/login",
+        "https://utsavas-backend-1.onrender.com/api/auth/login",
         {
           method: "POST",
           headers: {
@@ -93,9 +87,7 @@ export default function LoginPage() {
         />
 
         <h1 className={styles.logo}>UTSAVAS</h1>
-        <p className={styles.tagline}>
-          Where UTSAVAS Become Memories
-        </p>
+        <p className={styles.tagline}>Where UTSAVAS Become Memories</p>
 
         {/* Email or Phone */}
         <input
