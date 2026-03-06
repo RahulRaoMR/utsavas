@@ -42,7 +42,7 @@ export default function BanquetHallsPage() {
   const fetchHalls = async () => {
     try {
       const res = await fetch(
-        "http://localhost:5000/api/halls/public?category=banquet"
+        "https://utsavas-backend-1.onrender.com/api/halls/public?category=banquet"
       );
 
       const data = await res.json();
@@ -152,7 +152,7 @@ export default function BanquetHallsPage() {
                 <img
                   src={
                     hall.images?.[0]
-                      ? `http://localhost:5000${hall.images[0]}`
+                      ? `https://utsavas-backend-1.onrender.com${hall.images[0]}`
                       : "/hall1.jpg"
                   }
                   alt={hall.hallName}

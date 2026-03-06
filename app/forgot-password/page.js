@@ -20,7 +20,7 @@ export default function ForgotPassword() {
     const cleanPhone = phone.replace("+", "");
 
     const res = await fetch(
-      "http://localhost:5000/api/auth/forgot-password/send-otp",
+      "https://utsavas-backend-1.onrender.com/api/auth/forgot-password/send-otp",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -45,7 +45,7 @@ export default function ForgotPassword() {
     const cleanPhone = phone.replace("+", "");
 
     const res = await fetch(
-      "http://localhost:5000/api/auth/forgot-password/verify-otp",
+      "https://utsavas-backend-1.onrender.com/api/auth/forgot-password/verify-otp",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -67,7 +67,7 @@ export default function ForgotPassword() {
     const cleanPhone = phone.replace("+", "");
 
     const res = await fetch(
-      "http://localhost:5000/api/auth/forgot-password/reset",
+      "https://utsavas-backend-1.onrender.com/api/auth/forgot-password/reset",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

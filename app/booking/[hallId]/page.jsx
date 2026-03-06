@@ -37,7 +37,7 @@ export default function BookingPage() {
     const fetchHall = async () => {
       try {
         const res = await fetch(
-          `http://localhost:5000/api/halls/${hallId}`
+          `https://utsavas-backend-1.onrender.com/api/halls/${hallId}`
         );
         if (!res.ok) throw new Error("Failed to fetch hall");
         const data = await res.json();
@@ -57,7 +57,7 @@ export default function BookingPage() {
     const fetchBookedDates = async () => {
       try {
         const res = await fetch(
-          `http://localhost:5000/api/bookings/hall/${hallId}`
+          `https://utsavas-backend-1.onrender.com/api/bookings/hall/${hallId}`
         );
         const data = await res.json();
 
@@ -173,7 +173,7 @@ export default function BookingPage() {
 
     try {
       const res = await fetch(
-        "http://localhost:5000/api/bookings/create",
+        "https://utsavas-backend-1.onrender.com/api/bookings/create",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

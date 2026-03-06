@@ -27,7 +27,7 @@ export default function VendorBookingsPage() {
       const vendor = JSON.parse(vendorData);
 
       const res = await fetch(
-        `http://localhost:5000/api/bookings/vendor/${vendor._id}`
+        `https://utsavas-backend-1.onrender.com/api/bookings/vendor/${vendor._id}`
       );
 
       const data = await res.json();
@@ -52,7 +52,7 @@ export default function VendorBookingsPage() {
   const updateStatus = async (bookingId, status) => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/bookings/status/${bookingId}`,
+        `https://utsavas-backend-1.onrender.com/api/bookings/status/${bookingId}`,
         {
           method: "PATCH",
           headers: {

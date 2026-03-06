@@ -49,7 +49,7 @@ export default function LoginPage() {
       }
 
       const res = await fetch(
-        "http://localhost:5000/api/auth/login",
+        ""https://utsavas-backend-1.onrender.com/api/auth/login",
         {
           method: "POST",
           headers: {

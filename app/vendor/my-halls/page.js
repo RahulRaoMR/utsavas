@@ -19,7 +19,7 @@ export default function MyHallsPage() {
         return;
       }
 
-      fetch(`http://localhost:5000/api/halls/vendor/${vendor._id}`)
+      fetch(`https://utsavas-backend-1.onrender.com/api/halls/vendor/${vendor._id}`)
         .then((res) => res.json())
         .then((data) => {
           console.log("Vendor halls API:", data);
@@ -57,7 +57,7 @@ export default function MyHallsPage() {
           <div key={hall._id} className={styles.card}>
             {hall.images?.[0] && (
               <img
-                src={`http://localhost:5000${hall.images[0]}`}
+                src={`https://utsavas-backend-1.onrender.com${hall.images[0]}`}
                 alt={hall.hallName}
                 className={styles.image}
               />

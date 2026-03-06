@@ -21,7 +21,7 @@ export default function AdminDashboard() {
     const fetchStats = async () => {
       try {
         const res = await fetch(
-          "http://localhost:5000/api/admin/dashboard-stats"
+          "https://utsavas-backend-1.onrender.com/api/admin/dashboard-stats"
         );
 
         const data = await res.json();

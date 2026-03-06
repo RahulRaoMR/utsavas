@@ -40,7 +40,7 @@ export default function Dashboard() {
       setLoading(true);
       try {
         const res = await fetch(
-          `http://localhost:5000/api/halls/search?q=${search}`
+          `https://utsavas-backend-1.onrender.com/api/halls/search?q=${search}`
         );
         const data = await res.json();
         setResults(Array.isArray(data) ? data : []);

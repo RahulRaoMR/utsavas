@@ -12,7 +12,7 @@ export default function AdminHallsPage() {
   ===================== */
   const fetchHalls = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/admin/halls");
+      const res = await fetch("https://utsavas-backend-1.onrender.com/api/admin/halls");
       const data = await res.json();
 
       setHalls(Array.isArray(data) ? data : []);
@@ -36,7 +36,7 @@ export default function AdminHallsPage() {
     if (!confirm("Approve this hall?")) return;
 
     await fetch(
-      `http://localhost:5000/api/admin/halls/${id}/approve`,
+      `https://utsavas-backend-1.onrender.com/api/admin/halls/${id}/approve`,
       { method: "PUT" }
     );
 
@@ -51,7 +51,7 @@ export default function AdminHallsPage() {
     if (!confirm("Reject this hall?")) return;
 
     await fetch(
-      `http://localhost:5000/api/admin/halls/${id}/reject`,
+      `https://utsavas-backend-1.onrender.com/api/admin/halls/${id}/reject`,
       { method: "PUT" }
     );
 

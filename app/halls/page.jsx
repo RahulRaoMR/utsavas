@@ -8,7 +8,7 @@ export default function PublicHallsPage() {
   const [halls, setHalls] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/halls/all")
+    fetch("https://utsavas-backend-1.onrender.com/api/halls/all")
       .then((res) => res.json())
       .then((data) => {
         // ONLY approved halls
@@ -42,7 +42,7 @@ export default function PublicHallsPage() {
               {/* ✅ IMAGE */}
               {imagePath ? (
                 <img
-                  src={`http://localhost:5000/${imagePath}`}
+                  src={`https://utsavas-backend-1.onrender.com/${imagePath}`}
                   alt={hall.hallName}
                   className={styles.image}
                 />

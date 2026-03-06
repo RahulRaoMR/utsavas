@@ -30,7 +30,7 @@ export default function VendorRegisterPage() {
 
     try {
       // ✅ CALL NEXT.JS API (NOT EXPRESS)
-      const res = await fetch("http://localhost:5000/api/vendor/register", {
+      const res = await fetch("https://utsavas-backend-1.onrender.com/api/vendor/register", {
   method: "POST",
   headers: {
     "Content-Type": "application/json",

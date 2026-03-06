@@ -20,7 +20,7 @@ export default function HallDetailPage() {
 
     const fetchHall = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/halls/${id}`);
+        const res = await fetch(`https://utsavas-backend-1.onrender.com/api/halls/${id}`);
         const data = await res.json();
         console.log("HALL DATA:", data);
         setHall(data);
@@ -67,7 +67,7 @@ export default function HallDetailPage() {
   ========================= */
   const images =
     hall.images && hall.images.length > 0
-      ? hall.images.map((img) => `http://localhost:5000${img}`)
+      ? hall.images.map((img) => `https://utsavas-backend-1.onrender.com${img}`)
       : [];
 
   /* =========================

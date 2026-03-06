@@ -18,7 +18,7 @@ export default function VenueSearch() {
       setLoading(true);
       try {
         const res = await fetch(
-          `http://localhost:5000/api/halls/search?q=${query}`
+          `https://utsavas-backend-1.onrender.com/api/halls/search?q=${query}`
         );
         const data = await res.json();
         setResults(data);

@@ -16,7 +16,7 @@ export default function AdminVendorsPage() {
   ===================== */
   const fetchVendors = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/vendor/all");
+      const res = await fetch("https://utsavas-backend-1.onrender.com/api/vendor/all");
 
       if (!res.ok) {
         throw new Error("Failed to fetch vendors");
@@ -48,7 +48,7 @@ export default function AdminVendorsPage() {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/vendor/status/${id}`,
+        `https://utsavas-backend-1.onrender.com/api/vendor/status/${id}`,
         {
           method: "PUT",
           headers: {
@@ -79,7 +79,7 @@ export default function AdminVendorsPage() {
       setIsDeleting(true);
 
       const res = await fetch(
-        `http://localhost:5000/api/admin/vendors/${deleteVendorId}`,
+        `https://utsavas-backend-1.onrender.com/api/admin/vendors/${deleteVendorId}`,
         { method: "DELETE" }
       );
 

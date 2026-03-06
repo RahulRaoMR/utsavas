@@ -11,7 +11,7 @@ export default function HallDetailsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/halls/${id}`)
+    fetch(`https://utsavas-backend-1.onrender.com/api/halls/${id}`)
       .then((res) => res.json())
       .then((data) => {
         setHall(data);
@@ -31,7 +31,7 @@ export default function HallDetailsPage() {
         {/* IMAGE */}
         {hall.images?.length > 0 && (
           <img
-            src={`http://localhost:5000${hall.images[0]}`}
+            src={`https://utsavas-backend-1.onrender.com${hall.images[0]}`}
             className={styles.image}
             alt={hall.hallName}
           />

@@ -17,7 +17,7 @@ export default function VendorCalendarPage() {
       return;
     }
 
-    fetch(`http://localhost:5000/api/bookings/vendor/${vendor._id}`)
+    fetch(`https://utsavas-backend-1.onrender.com/api/bookings/vendor/${vendor._id}`)
       .then((res) => res.json())
       .then((data) => setBookings(data))
       .catch((err) => console.error(err));

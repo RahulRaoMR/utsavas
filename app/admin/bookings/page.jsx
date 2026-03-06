@@ -16,7 +16,7 @@ export default function AdminBookingsPage() {
     const fetchBookings = async () => {
       try {
         const res = await fetch(
-          "http://localhost:5000/api/bookings/admin/bookings"
+          "https://utsavas-backend-1.onrender.com/api/bookings/admin/bookings"
         );
         const data = await res.json();
 

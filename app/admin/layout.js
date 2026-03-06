@@ -10,7 +10,7 @@ export default function AdminLayout({ children }) {
   const [pendingCount, setPendingCount] = useState(0);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/halls/all")
+    fetch("https://utsavas-backend-1.onrender.com/api/halls/all")
       .then((res) => res.json())
       .then((halls) => {
         const pending = halls.filter(

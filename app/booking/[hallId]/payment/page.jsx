@@ -36,7 +36,7 @@ export default function PaymentPage() {
       setLoading(true);
 
       const res = await fetch(
-        "http://localhost:5000/api/payment/create-order",
+        "https://utsavas-backend-1.onrender.com/api/payment/create-order",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

@@ -14,7 +14,7 @@ export default function HallDetailsPage() {
   useEffect(() => {
     if (!id) return;
 
-    fetch(`http://localhost:5000/api/halls/${id}`)
+    fetch(`https://utsavas-backend-1.onrender.com/api/halls/${id}`)
       .then((res) => {
         if (!res.ok) throw new Error("Hall not found");
         return res.json();
@@ -47,7 +47,7 @@ export default function HallDetailsPage() {
             {hall.images.map((img, i) => (
               <img
                 key={i}
-                src={`http://localhost:5000${img}`}
+                src={`https://utsavas-backend-1.onrender.com${img}`}
                 alt="Hall"
               />
             ))}

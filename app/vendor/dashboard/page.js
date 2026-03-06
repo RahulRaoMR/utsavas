@@ -33,7 +33,7 @@ export default function VendorDashboard() {
     setVendor(parsedVendor);
     setLoading(false);
 
-    fetch(`http://localhost:5000/api/bookings/vendor/${parsedVendor._id}`)
+    fetch(`https://utsavas-backend-1.onrender.com/api/bookings/vendor/${parsedVendor._id}`)
       .then((res) => res.json())
       .then((data) => setBookings(data))
       .catch((err) => console.error("Error fetching bookings", err));

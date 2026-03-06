@@ -237,7 +237,7 @@ export default function AddHallPage() {
 
     images.forEach((img) => formData.append("images", img));
 
-    const res = await fetch("http://localhost:5000/api/halls/add", {
+    const res = await fetch("https://utsavas-backend-1.onrender.com/api/halls/add", {
       method: "POST",
       body: formData,
     });
