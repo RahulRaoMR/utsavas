@@ -1,5 +1,5 @@
 /* ========================================
-   🌟 UTSAVAM ELITE NAVBAR
+🌟 UTSAVAM ELITE NAVBAR — PREMIUM FINAL
 ======================================== */
 
 .top-nav{
@@ -28,7 +28,7 @@ background:rgba(107,29,43,.97);
 }
 
 /* ========================================
-   LOGO
+LOGO
 ======================================== */
 
 .logo img{
@@ -38,7 +38,7 @@ cursor:pointer;
 }
 
 /* ========================================
-   NAV LINKS
+NAV LINKS
 ======================================== */
 
 .nav-links{
@@ -75,7 +75,7 @@ width:100%;
 }
 
 /* ========================================
-   AUTH SECTION
+AUTH SECTION
 ======================================== */
 
 .auth-section{
@@ -85,7 +85,7 @@ gap:12px;
 }
 
 /* ========================================
-   BUTTONS
+BUTTONS
 ======================================== */
 
 .list-btn,
@@ -110,7 +110,7 @@ box-shadow:0 8px 18px rgba(0,0,0,.25);
 }
 
 /* ========================================
-   LOCATION BAR
+LOCATION BAR
 ======================================== */
 
 .location-bar{
@@ -144,7 +144,7 @@ font-size:14px;
 }
 
 /* ========================================
-   USER CHIP (UTSAVAM STYLE)
+USER CHIP
 ======================================== */
 
 .user-wrapper{
@@ -169,8 +169,6 @@ transform:translateY(-1px);
 box-shadow:0 10px 20px rgba(0,0,0,.25);
 }
 
-/* avatar */
-
 .avatar{
 width:34px;
 height:34px;
@@ -184,17 +182,14 @@ font-weight:700;
 font-size:14px;
 }
 
-/* name */
-
 .user-name{
 font-size:14px;
 font-weight:600;
 color:#6b1d2b;
-letter-spacing:.2px;
 }
 
 /* ========================================
-   DROPDOWN
+DROPDOWN
 ======================================== */
 
 .user-dropdown{
@@ -239,13 +234,10 @@ color:#333;
 }
 
 .user-dropdown a:hover,
-.user-dropdown button:hover{
-background:#f5f5f5;
-color:#6b1d2b;
-}
+.user-dropdown button:hover
 
 /* ========================================
-   HAMBURGER
+HAMBURGER
 ======================================== */
 
 .hamburger{
@@ -267,7 +259,7 @@ transition:.3s;
 }
 
 /* ========================================
-   MOBILE MENU
+MOBILE MENU (FIXED)
 ======================================== */
 
 .mobile-menu{
@@ -275,11 +267,13 @@ position:fixed;
 top:64px;
 left:0;
 width:100%;
-background:#6b1d2b;
+height:calc(100vh - 64px);
+background:linear-gradient(180deg,#6b1d2b,#4d0f1a);
 display:flex;
 flex-direction:column;
-gap:20px;
-padding:28px;
+gap:24px;
+padding:30px;
+overflow-y:auto;
 transform:translateY(-120%);
 transition:.35s ease;
 z-index:9998;
@@ -289,24 +283,28 @@ z-index:9998;
 transform:translateY(0);
 }
 
+/* menu links */
+
 .mobile-menu a{
 color:#f3d19c;
-font-size:18px;
+font-size:20px;
 font-weight:600;
 text-decoration:none;
 }
 
+/* button */
+
 .mobile-btn{
 background:#f3d19c;
 color:#6b1d2b;
-padding:12px;
-border-radius:8px;
+padding:14px;
+border-radius:10px;
 text-align:center;
 font-weight:600;
 }
 
 /* ========================================
-   MOBILE RESPONSIVE
+MOBILE RESPONSIVE
 ======================================== */
 
 @media(max-width:768px){
@@ -335,10 +333,6 @@ padding:0 16px;
 
 .logo img{
 height:36px;
-}
-
-.mobile-menu{
-padding:24px;
 }
 
 }
