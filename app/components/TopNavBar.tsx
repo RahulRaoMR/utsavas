@@ -9,13 +9,13 @@ export default function TopNavBar() {
 
   const router = useRouter();
 
-  const dropdownRef = useRef(null);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [user, setUser] = useState(null);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [location, setLocation] = useState("");
+  const [menuOpen, setMenuOpen] = useState<boolean>(false);
+  const [scrolled, setScrolled] = useState<boolean>(false);
+  const [user, setUser] = useState<any>(null);
+  const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
+  const [location, setLocation] = useState<string>("");
 
   /* =========================
      SCROLL SHADOW
@@ -68,7 +68,7 @@ export default function TopNavBar() {
       const userStr = localStorage.getItem("user");
       const vendorStr = localStorage.getItem("vendor");
 
-      let storedUser = null;
+      let storedUser: any = null;
 
       if (userStr) {
         storedUser = JSON.parse(userStr);
@@ -94,11 +94,11 @@ export default function TopNavBar() {
 
   useEffect(() => {
 
-    const handleClickOutside = (e) => {
+    const handleClickOutside = (e: MouseEvent) => {
 
       if (
         dropdownRef.current &&
-        !dropdownRef.current.contains(e.target)
+        !dropdownRef.current.contains(e.target as Node)
       ) {
         setDropdownOpen(false);
       }
