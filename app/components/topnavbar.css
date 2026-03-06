@@ -2,369 +2,326 @@
    🌟 UTSAVAM ELITE NAVBAR — PREMIUM FINAL
 ======================================== */
 
-.top-nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 64px;
-  background: rgba(107, 29, 43, 0.92);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 34px;
-  z-index: 9999;
-  transition: all 0.35s ease;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+.top-nav{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:64px;
+background:rgba(107,29,43,0.92);
+backdrop-filter:blur(10px);
+-webkit-backdrop-filter:blur(10px);
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 34px;
+z-index:9999;
+transition:all .35s ease;
+border-bottom:1px solid rgba(255,255,255,.06);
 }
 
-.top-nav.scrolled {
-  box-shadow:
-    0 10px 30px rgba(0, 0, 0, 0.35),
-    0 2px 8px rgba(0, 0, 0, 0.18);
-  background: rgba(107, 29, 43, 0.97);
+.top-nav.scrolled{
+box-shadow:
+0 10px 30px rgba(0,0,0,.35),
+0 2px 8px rgba(0,0,0,.18);
+background:rgba(107,29,43,.97);
 }
 
 /* ========================================
    LOGO
 ======================================== */
 
-.logo img {
-  height: 44px;
-  object-fit: contain;
-  transition: transform 0.25s ease;
+.logo img{
+height:44px;
+object-fit:contain;
+transition:transform .25s ease;
 }
 
-.logo img:hover {
-  transform: scale(1.04);
+.logo img:hover{
+transform:scale(1.05);
 }
 
 /* ========================================
    NAV LINKS
 ======================================== */
 
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 28px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.nav-links{
+display:flex;
+align-items:center;
+gap:28px;
+list-style:none;
+margin:0;
+padding:0;
 }
 
-.nav-links a {
-  color: #f3d19c;
-  text-decoration: none;
-  font-size: 15px;
-  font-weight: 500;
-  letter-spacing: 0.3px;
-  position: relative;
-  transition: all 0.25s ease;
+.nav-links a{
+color:#f3d19c;
+text-decoration:none;
+font-size:15px;
+font-weight:500;
+letter-spacing:.3px;
+position:relative;
+transition:.25s;
 }
 
-.nav-links a::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -6px;
-  width: 0%;
-  height: 2px;
-  background: linear-gradient(90deg, #f3d19c, #ffd98a);
-  transition: width 0.25s ease;
+.nav-links a::after{
+content:"";
+position:absolute;
+left:0;
+bottom:-6px;
+width:0%;
+height:2px;
+background:linear-gradient(90deg,#f3d19c,#ffd98a);
+transition:.25s;
 }
 
-.nav-links a:hover::after {
-  width: 100%;
+.nav-links a:hover::after{
+width:100%;
 }
 
-.nav-links a:hover {
-  color: #ffd98a;
+.nav-links a:hover{
+color:#ffd98a;
 }
 
 /* ========================================
    AUTH SECTION
 ======================================== */
 
-.auth-section {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.auth-section{
+display:flex;
+align-items:center;
+gap:12px;
 }
 
 /* ========================================
-   PREMIUM BUTTONS
+   BUTTONS
 ======================================== */
 
 .list-btn,
 .register-btn,
-.signin-btn {
-  background: linear-gradient(135deg, #f3d19c, #e6b566);
-  color: #6b1d2b;
-  padding: 8px 18px;
-  border-radius: 10px;
-  font-weight: 600;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: all 0.25s ease;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+.signin-btn{
+background:linear-gradient(135deg,#f3d19c,#e6b566);
+color:#6b1d2b;
+padding:8px 18px;
+border-radius:10px;
+font-weight:600;
+text-decoration:none;
+white-space:nowrap;
+transition:.25s;
+box-shadow:0 4px 14px rgba(0,0,0,.18);
 }
 
 .list-btn:hover,
 .register-btn:hover,
-.signin-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.32);
+.signin-btn:hover{
+transform:translateY(-2px);
+box-shadow:0 10px 24px rgba(0,0,0,.32);
 }
 
 /* ========================================
-   🔥 PREMIUM LOCATION BAR
+   LOCATION BAR
 ======================================== */
 
-.location-bar {
-  display: flex;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.92);
-  border-radius: 999px;
-  padding: 4px;
-  margin: 0 18px;
-  min-width: 260px;
-  box-shadow:
-    0 6px 18px rgba(0, 0, 0, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(6px);
+.location-bar{
+display:flex;
+align-items:center;
+background:rgba(255,255,255,.92);
+border-radius:999px;
+padding:4px;
+margin:0 18px;
+min-width:260px;
+box-shadow:
+0 6px 18px rgba(0,0,0,.18),
+inset 0 1px 0 rgba(255,255,255,.6);
 }
 
-.location-bar input {
-  border: none;
-  padding: 10px 14px;
-  background: transparent;
-  outline: none;
-  width: 100%;
-  font-size: 14px;
-  color: #333;
+.location-bar input{
+border:none;
+padding:10px 14px;
+background:transparent;
+outline:none;
+width:100%;
+font-size:14px;
 }
 
-.location-bar input::placeholder {
-  color: #999;
-  font-weight: 500;
-}
-
-.location-bar button {
-  background: linear-gradient(135deg, #6b1d2b, #8a2436);
-  color: white;
-  border: none;
-  padding: 9px 14px;
-  border-radius: 999px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.25s ease;
-}
-
-.location-bar button:hover {
-  transform: scale(1.05);
+.location-bar button{
+background:#6b1d2b;
+color:white;
+border:none;
+padding:9px 14px;
+border-radius:999px;
+cursor:pointer;
 }
 
 /* ========================================
-   🔥 PREMIUM USER CHIP
+   USER CHIP
 ======================================== */
 
-.user-wrapper {
-  position: relative;
+.user-wrapper{
+position:relative;
 }
 
-.user-chip {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(255, 255, 255, 0.95);
-  padding: 6px 14px 6px 6px;
-  border-radius: 999px;
-  cursor: pointer;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
-  transition: all 0.25s ease;
+.user-chip{
+display:flex;
+align-items:center;
+gap:10px;
+background:white;
+padding:6px 14px 6px 6px;
+border-radius:999px;
+cursor:pointer;
+box-shadow:0 6px 18px rgba(0,0,0,.18);
 }
 
-.user-chip:hover {
-  transform: translateY(-1px);
+.avatar{
+width:34px;
+height:34px;
+background:#6b1d2b;
+color:white;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-weight:700;
 }
 
-.avatar {
-  width: 34px;
-  height: 34px;
-  background: linear-gradient(135deg, #6b1d2b, #8a2436);
-  color: #fff;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 14px;
-}
-
-.user-name {
-  font-size: 14px;
-  font-weight: 600;
-  color: #6b1d2b;
+.user-name{
+font-size:14px;
+font-weight:600;
+color:#6b1d2b;
 }
 
 /* ========================================
-   🔥 PREMIUM DROPDOWN
+   DROPDOWN
 ======================================== */
 
-.user-dropdown {
-  position: absolute;
-  top: 115%;
-  right: 0;
-  background: white;
-  border-radius: 14px;
-  box-shadow:
-    0 18px 40px rgba(0,0,0,0.22),
-    0 4px 12px rgba(0,0,0,0.12);
-  padding: 10px;
-  min-width: 180px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  z-index: 999;
-  animation: utsavamDrop 0.18s ease;
-}
-
-@keyframes utsavamDrop {
-  from {
-    opacity: 0;
-    transform: translateY(-6px) scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+.user-dropdown{
+position:absolute;
+top:115%;
+right:0;
+background:white;
+border-radius:14px;
+box-shadow:
+0 18px 40px rgba(0,0,0,.22),
+0 4px 12px rgba(0,0,0,.12);
+padding:10px;
+min-width:180px;
+display:flex;
+flex-direction:column;
+gap:6px;
 }
 
 .user-dropdown a,
-.user-dropdown button {
-  padding: 10px 12px;
-  border: none;
-  background: none;
-  text-align: left;
-  cursor: pointer;
-  border-radius: 8px;
-  font-size: 14px;
+.user-dropdown button{
+padding:10px 12px;
+border:none;
+background:none;
+text-align:left;
+cursor:pointer;
+border-radius:8px;
+font-size:14px;
 }
 
 .user-dropdown a:hover,
-.user-dropdown button:hover {
-  background: #f5f5f5;
+.user-dropdown button:hover{
+background:#f5f5f5;
 }
 
 /* ========================================
-   🌟 UTSAVAM PREMIUM CARD
+   HAMBURGER
 ======================================== */
 
-.utsavam-card {
-  width: 320px;
-  height: 320px;
-  border-radius: 24px;
-  background:
-    linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.92),
-      rgba(255, 255, 255, 0.85)
-    ),
-    radial-gradient(
-      circle at top left,
-      rgba(243, 209, 156, 0.25),
-      transparent 40%
-    );
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  box-shadow:
-    0 25px 60px rgba(0, 0, 0, 0.35),
-    0 8px 20px rgba(107, 29, 43, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  padding: 24px;
-  transition: all 0.35s ease;
-  position: relative;
-  overflow: hidden;
+.hamburger{
+display:none;
+flex-direction:column;
+gap:5px;
+background:none;
+border:none;
+cursor:pointer;
+padding:6px;
 }
 
-.utsavam-card:hover {
-  transform: translateY(-6px) scale(1.01);
-  box-shadow:
-    0 35px 80px rgba(0, 0, 0, 0.45),
-    0 12px 30px rgba(107, 29, 43, 0.35);
+.hamburger span{
+width:24px;
+height:2px;
+background:#f3d19c;
+display:block;
+transition:.3s;
 }
 
-.utsavam-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 24px;
-  padding: 1px;
-  background: linear-gradient(
-    135deg,
-    rgba(243, 209, 156, 0.8),
-    rgba(107, 29, 43, 0.6)
-  );
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-          mask-composite: exclude;
-  pointer-events: none;
+/* hamburger animation */
+
+.hamburger.active span:nth-child(1){
+transform:rotate(45deg) translate(5px,5px);
+}
+
+.hamburger.active span:nth-child(2){
+opacity:0;
+}
+
+.hamburger.active span:nth-child(3){
+transform:rotate(-45deg) translate(5px,-5px);
 }
 
 /* ========================================
-   MOBILE
+   MOBILE MENU
 ======================================== */
 
-.mobile-menu {
-  position: fixed;
-  top: 64px;
-  left: 0;
-  width: 100%;
-  background: rgba(107, 29, 43, 0.98);
-  backdrop-filter: blur(10px);
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  padding: 22px;
-  z-index: 9998;
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(-12px);
-  transition: all 0.3s ease;
+.mobile-menu{
+position:fixed;
+top:64px;
+left:0;
+width:100%;
+background:#6b1d2b;
+display:flex;
+flex-direction:column;
+gap:20px;
+padding:24px;
+transform:translateY(-120%);
+transition:.35s;
+z-index:9998;
 }
 
-.mobile-menu.show {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
+.mobile-menu.show{
+transform:translateY(0);
 }
 
-.mobile-menu a {
-  color: #f5d48b;
-  font-weight: 600;
-  text-decoration: none;
-  font-size: 18px;
-  padding: 6px 0;
+.mobile-menu a{
+color:#f3d19c;
+font-size:18px;
+font-weight:600;
+text-decoration:none;
 }
 
-@media (max-width: 768px) {
-  .nav-links,
-  .location-bar,
-  .list-btn,
-  .register-btn,
-  .signin-btn {
-    display: none !important;
-  }
+/* ========================================
+   MOBILE RESPONSIVE
+======================================== */
 
-  .hamburger {
-    display: flex !important;
-  }
+@media(max-width:768px){
 
-  .top-nav {
-    padding: 0 16px;
-  }
+.nav-links{
+display:none;
+}
+
+.location-bar{
+display:none;
+}
+
+.list-btn,
+.register-btn,
+.signin-btn{
+display:none;
+}
+
+.hamburger{
+display:flex;
+}
+
+.top-nav{
+padding:0 16px;
+}
+
+.logo img{
+height:36px;
+}
+
 }
