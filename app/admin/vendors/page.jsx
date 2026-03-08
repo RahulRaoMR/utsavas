@@ -23,7 +23,12 @@ export default function AdminVendorsPage() {
       }
 
       const data = await res.json();
-      setVendors(Array.isArray(data) ? data : []);
+      const vendorList = Array.isArray(data?.vendors)
+        ? data.vendors
+        : Array.isArray(data)
+          ? data
+          : [];
+      setVendors(vendorList);
     } catch (err) {
       console.error(err);
       alert("Failed to load vendor data");
