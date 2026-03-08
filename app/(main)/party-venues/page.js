@@ -1,13 +1,14 @@
 "use client";
 
 import "../wedding-halls/weddingHalls.css";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useMemo } from "react";
 import FiltersSidebar from "../../components/FiltersSidebar";
 import { toAbsoluteImageUrl } from "../../../lib/imageUrl";
 
 export default function BanquetHallsPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [halls, setHalls] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState(null);
@@ -61,6 +62,17 @@ export default function BanquetHallsPage() {
   ===================== */
   const isLocationSelected =
     selectedLocation && selectedLocation !== "Select Location";
+  const queryText = (searchParams.get("q") || "").trim().toLowerCase();
+  const cityFilter = (searchParams.get("city") || "").trim().toLowerCase();
+  const areaFilter = (searchParams.get("location") || "").trim().toLowerCase();
+  const displayLocationLabel =
+    searchParams.get("location") ||
+    searchParams.get("city") ||
+    (isLocationSelected ? selectedLocation : "");
+  const activeLocationFilter =
+    areaFilter ||
+    cityFilter ||
+    (isLocationSelected ? selectedLocation.toLowerCase() : "");
 
   /* =====================
      🔥 FINAL FILTER (MATCHED)
@@ -70,13 +82,13 @@ export default function BanquetHallsPage() {
       // ✅ location filter
       let locationMatch = true;
 
-      if (isLocationSelected) {
+      if (activeLocationFilter) {
         const city = hall.address?.city?.toLowerCase() || "";
         const area = hall.address?.area?.toLowerCase() || "";
 
         locationMatch =
-          city.includes(selectedLocation.toLowerCase()) ||
-          area.includes(selectedLocation.toLowerCase());
+          city.includes(activeLocationFilter) ||
+          area.includes(activeLocationFilter);
       }
 
       // ✅ price logic (same as wedding)
@@ -90,9 +102,15 @@ export default function BanquetHallsPage() {
         hallPrice >= priceRange.min &&
         hallPrice <= priceRange.max;
 
-      return locationMatch && priceMatch;
+      const queryMatch =
+        !queryText ||
+        (hall.hallName || "").toLowerCase().includes(queryText) ||
+        (hall.address?.area || "").toLowerCase().includes(queryText) ||
+        (hall.address?.city || "").toLowerCase().includes(queryText);
+
+      return locationMatch && priceMatch && queryMatch;
     });
-  }, [halls, selectedLocation, priceRange, isLocationSelected]);
+  }, [halls, priceRange, queryText, activeLocationFilter]);
 
   /* =====================
      UI
@@ -100,10 +118,10 @@ export default function BanquetHallsPage() {
   return (
     <div className="wedding-page">
       <h1 className="page-title">
-        Banquet Halls
-        {isLocationSelected && (
+        Party Venues
+        {displayLocationLabel && (
           <span style={{ fontSize: "16px", color: "#777" }}>
-            {" "}in {selectedLocation}
+            {" "}in {displayLocationLabel}
           </span>
         )}
       </h1>

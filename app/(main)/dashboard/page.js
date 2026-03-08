@@ -39,11 +39,34 @@ export default function Dashboard() {
     const delay = setTimeout(async () => {
       setLoading(true);
       try {
+        const query = search.trim();
         const res = await fetch(
-          `https://utsavas-backend-1.onrender.com/api/halls/search?q=${search}`
+          `https://utsavas-backend-1.onrender.com/api/halls/search?q=${encodeURIComponent(
+            query
+          )}`
         );
         const data = await res.json();
-        setResults(Array.isArray(data) ? data : []);
+        const halls = Array.isArray(data)
+          ? data
+          : Array.isArray(data?.data)
+          ? data.data
+          : [];
+        const qLower = query.toLowerCase();
+        const filtered = halls.filter((hall) => {
+          const hallName = hall?.hallName?.toLowerCase?.() || "";
+          const area = hall?.address?.area?.toLowerCase?.() || "";
+          const city = hall?.address?.city?.toLowerCase?.() || "";
+          const category = hall?.category?.toLowerCase?.() || "";
+
+          return (
+            hallName.includes(qLower) ||
+            area.includes(qLower) ||
+            city.includes(qLower) ||
+            category.includes(qLower)
+          );
+        });
+
+        setResults(filtered);
       } catch (err) {
         console.error(err);
         setResults([]);
@@ -71,9 +94,33 @@ export default function Dashboard() {
   };
 
   const handleSearchSubmit = () => {
-    if (results.length > 0) {
-      openHall(results[0]);
+    const query = search.trim();
+    if (!query) return;
+
+    const exactMatch = results.find(
+      (hall) =>
+        (hall?.hallName || "").toLowerCase() === query.toLowerCase()
+    );
+
+    if (exactMatch) {
+      openHall(exactMatch);
+      return;
     }
+
+    const preferredCategory =
+      results[0]?.category === "banquet" || results[0]?.category === "party"
+        ? results[0].category
+        : "wedding";
+
+    const listingRoute =
+      preferredCategory === "banquet"
+        ? "/banquet-halls"
+        : preferredCategory === "party"
+        ? "/party-venues"
+        : "/wedding-halls";
+
+    setResults([]);
+    router.push(`${listingRoute}?q=${encodeURIComponent(query)}`);
   };
 
   /* ===================================

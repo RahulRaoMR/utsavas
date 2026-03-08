@@ -13,9 +13,6 @@ export default function HallDetailPage() {
   const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState(0);
 
-  /* =========================
-     FETCH HALL DETAILS
-  ========================= */
   useEffect(() => {
     if (!id) return;
 
@@ -23,7 +20,6 @@ export default function HallDetailPage() {
       try {
         const res = await fetch(`https://utsavas-backend-1.onrender.com/api/halls/${id}`);
         const data = await res.json();
-        console.log("HALL DATA:", data);
         setHall(data);
       } catch (err) {
         console.error("Failed to load hall details", err);
@@ -35,9 +31,6 @@ export default function HallDetailPage() {
     fetchHall();
   }, [id]);
 
-  /* =========================
-     FEATURE LABEL FORMATTER
-  ========================= */
   const formatFeatureLabel = (key) => {
     const labels = {
       diningHall: "Dining Hall",
@@ -48,11 +41,50 @@ export default function HallDetailPage() {
       outsideFoodAllowed: "Outside Food Allowed",
       outsideDecoratorsAllowed: "Outside Decorators Allowed",
       outsideDjAllowed: "Outside DJ Allowed",
+      ac: "Air Conditioning",
+      nonAc: "Non-AC Hall",
+      outsideFood: "Outside Food Allowed",
+      outsideDecorators: "Outside Decorators Allowed",
+      outsideDJ: "Outside DJ Allowed",
       alcoholAllowed: "Alcohol Allowed",
       valetParking: "Valet Parking",
+      parking: "Parking",
+      restaurant: "Restaurant",
+      roomService: "Room Service",
+      frontDesk24: "24-hour Front Desk",
+      fitnessCentre: "Fitness Centre",
+      fitnessCenter: "Fitness Center",
+      nonSmokingRooms: "Non-smoking Rooms",
+      spaWellness: "Spa & Wellness Centre",
+      freeWifi: "Free WiFi",
+      evCharging: "EV Charging Station",
+      liquorLicense: "Liquor License",
+      hotTub: "Hot Tub / Jacuzzi",
+      evChargingStation: "EV Charging Station",
+      swimmingPool: "Swimming Pool",
+      selfCatering: "Self Catering",
+      breakfastIncluded: "Breakfast Included",
+      allMealsIncluded: "All Meals Included",
+      breakfastDinnerIncluded: "Breakfast & Dinner Included",
+      bonfireIncluded: "Bonfire Included",
+      privateDiningIncluded: "Private Dining Included",
+      freeCancellation: "Free Cancellation",
+      catering: "Catering",
+      inhouseStaffAllowed: "Inhouse Staff Allowed",
+      shuttleAvailable: "Shuttle Available",
+      indoorVenue: "Indoor Venue",
+      danceFloor: "Dance Floor",
+      smokingRoom: "Smoking Room",
+      ageOfBookingGuests: "Age of Booking Guests Policy",
+      nearWifi: "Near Wi-Fi",
+      wheelchairAccessible: "Wheelchair Accessible",
+      cctvCoverage: "CCTV Coverage",
+      minibarIncluded: "Minibar Included",
+      acceptsOnlinePayments: "Accepts Online Payments",
+      airportShuttle: "Airport Shuttle",
     };
 
-    return labels[key] || key;
+    return labels[key] || key.replace(/([A-Z])/g, " $1").trim();
   };
 
   if (loading) {
@@ -63,35 +95,74 @@ export default function HallDetailPage() {
     return <p style={{ padding: 20 }}>Hall not found</p>;
   }
 
-  /* =========================
-     IMAGE HANDLING
-  ========================= */
   const images =
     hall.images && hall.images.length > 0
       ? hall.images.map((img) => toAbsoluteImageUrl(img))
       : [];
 
-  /* =========================
-     ACTIVE FEATURES
-  ========================= */
-  const activeFeatures = hall.features
-    ? Object.entries(hall.features).filter(([_, v]) => v === true)
-    : [];
+  const featureDisplayOrder = [
+    "diningHall",
+    "stage",
+    "powerBackup",
+    "airConditioning",
+    "nonAcHall",
+    "outsideFoodAllowed",
+    "outsideDecoratorsAllowed",
+    "outsideDjAllowed",
+    "alcoholAllowed",
+    "valetParking",
+    "parking",
+    "restaurant",
+    "roomService",
+    "frontDesk24",
+    "fitnessCentre",
+    "fitnessCenter",
+    "nonSmokingRooms",
+    "airportShuttle",
+    "spaWellness",
+    "hotTub",
+    "freeWifi",
+    "evCharging",
+    "evChargingStation",
+    "wheelchairAccessible",
+    "swimmingPool",
+    "selfCatering",
+    "breakfastIncluded",
+    "allMealsIncluded",
+    "breakfastDinnerIncluded",
+    "acceptsOnlinePayments",
+    "freeCancellation",
+  ];
 
-  /* =========================
-     🔥 PRICE PREPARATION
-  ========================= */
+  const activeFeatures = hall.features
+    ? Object.entries(hall.features).filter(
+        ([_, v]) => v === true || v === "true" || v === 1
+      )
+    : [];
+  const orderedFeatureKeys = [
+    ...featureDisplayOrder.filter((key) =>
+      activeFeatures.some(([featureKey]) => featureKey === key)
+    ),
+    ...activeFeatures
+      .map(([key]) => key)
+      .filter((key) => !featureDisplayOrder.includes(key)),
+  ];
+
   const pricePerEvent = Number(hall.pricePerEvent || 0);
   const pricePerDay = Number(hall.pricePerDay || 0);
   const pricePerPlate = Number(hall.pricePerPlate || 0);
+  const icons = {
+    location: "\uD83D\uDCCD",
+    capacity: "\uD83D\uDC65",
+    parking: "\uD83D\uDE97",
+    rooms: "\uD83D\uDECF",
+    phone: "\uD83D\uDCDE",
+    check: "\u2714",
+  };
 
   return (
     <div className="hall-detail-page hall-detail-spacing">
-
-      {/* ================= TOP SECTION ================= */}
       <div className="hall-top">
-
-        {/* IMAGE SECTION */}
         <div className="hall-images">
           {images.length > 0 ? (
             <img
@@ -118,57 +189,59 @@ export default function HallDetailPage() {
           )}
         </div>
 
-        {/* INFO SECTION */}
         <div className="hall-info">
           <h1 className="hall-name">{hall.hallName}</h1>
 
+          <p className="location">{`${icons.location} ${hall.address?.area || ""}, ${hall.address?.city || ""}`}</p>
+
           <p className="location">
-            📍 {hall.address?.area}, {hall.address?.city}
+            {hall.address?.flat ? `${hall.address.flat}, ` : ""}
+            {hall.address?.floor ? `${hall.address.floor}, ` : ""}
+            {hall.address?.state ? `${hall.address.state} - ` : ""}
+            {hall.address?.pincode || ""}
+            {hall.address?.landmark ? ` (${hall.address.landmark})` : ""}
           </p>
 
-          {/* 🔥 PREMIUM PRICE BLOCK */}
           <div className="price-block">
-
             {pricePerEvent > 0 && (
-              <h2 className="price">
-                ₹{pricePerEvent.toLocaleString()}
+                <h2 className="price">
+                {"\u20B9"}
+                {pricePerEvent.toLocaleString()}
                 <span> per event</span>
               </h2>
             )}
 
             {pricePerDay > 0 && (
               <h2 className="price secondary">
-                ₹{pricePerDay.toLocaleString()}
+                {"\u20B9"}
+                {pricePerDay.toLocaleString()}
                 <span> per day</span>
               </h2>
             )}
 
             {pricePerPlate > 0 && (
               <h2 className="price secondary">
-                ₹{pricePerPlate.toLocaleString()}
+                {"\u20B9"}
+                {pricePerPlate.toLocaleString()}
                 <span> per plate</span>
               </h2>
             )}
 
             {pricePerEvent === 0 &&
               pricePerDay === 0 &&
-              pricePerPlate === 0 && (
-                <h2 className="price">₹N/A</h2>
-              )}
+              pricePerPlate === 0 && <h2 className="price">{"\u20B9"}N/A</h2>}
           </div>
 
           <div className="meta">
-            <span>👥 {hall.capacity || "N/A"} Capacity</span>
-            <span>🚗 {hall.parkingCapacity || "N/A"} Parking</span>
-            {hall.rooms && <span>🛏 {hall.rooms} Rooms</span>}
+            <span>{`${icons.capacity} ${hall.capacity || "N/A"} Capacity`}</span>
+            <span>{`${icons.parking} ${hall.parkingCapacity || "N/A"} Parking`}</span>
+            {hall.rooms ? <span>{`${icons.rooms} ${hall.rooms} Rooms`}</span> : null}
           </div>
 
           {hall.vendor?.phone && (
             <button
               className="contact-btn"
-              onClick={() =>
-                alert(`📞 Phone Number: ${hall.vendor.phone}`)
-              }
+              onClick={() => alert(`${icons.phone} Phone Number: ${hall.vendor.phone}`)}
             >
               View phone number
             </button>
@@ -176,19 +249,17 @@ export default function HallDetailPage() {
         </div>
       </div>
 
-      {/* FEATURES */}
       {activeFeatures.length > 0 && (
         <section className="hall-section">
           <h3>What this place has to offer</h3>
           <ul>
-            {activeFeatures.map(([key]) => (
-              <li key={key}>✔ {formatFeatureLabel(key)}</li>
+            {orderedFeatureKeys.map((key) => (
+              <li key={key}>{`${icons.check} ${formatFeatureLabel(key)}`}</li>
             ))}
           </ul>
         </section>
       )}
 
-      {/* ABOUT */}
       {hall.about && (
         <section className="hall-section">
           <h3>Other Information</h3>
@@ -196,10 +267,9 @@ export default function HallDetailPage() {
         </section>
       )}
 
-      {/* ACTION BUTTONS */}
       <div className="hall-actions">
         <button className="back-btn" onClick={() => router.back()}>
-          ← Back
+          {"\u2190"} Back
         </button>
 
         <button

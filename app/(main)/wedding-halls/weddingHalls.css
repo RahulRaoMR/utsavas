@@ -23,6 +23,7 @@
   display: grid;
   grid-template-columns: 260px 1fr;
   gap: 24px;
+  align-items: start;
 }
 
 /* =================================
@@ -33,6 +34,8 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 25px;
+  align-items: start;
+  grid-auto-rows: max-content;
 }
 
 /* =================================
@@ -47,6 +50,7 @@
   box-shadow: 0 14px 30px rgba(43, 16, 25, 0.12);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
   cursor: pointer;
+  align-self: start;
 }
 
 .hall-card:hover {

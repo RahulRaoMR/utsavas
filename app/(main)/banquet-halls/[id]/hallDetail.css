@@ -364,3 +364,200 @@
   font-size: 15px;
   cursor: pointer;
 }
+
+
+
+.hall-actions {
+  display: flex;
+  gap: 14px;
+  margin-top: 30px;
+  align-items: center;
+}
+
+.back-btn {
+  padding: 10px 18px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid #6b1d2b;
+  color: #6b1d2b;
+  cursor: pointer;
+  font-weight: 500;
+   margin-top: 0 !important;
+  align-self: center;
+}
+
+.book-btn {
+  padding: 10px 22px;
+  border-radius: 8px;
+  background: #6b1d2b; /* UTSAVAS theme */
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.book-btn:hover {
+  opacity: 0.9;
+}
+  .hall-actions {
+  display: flex;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+/* ===============================
+   ACTION BUTTONS (FINAL)
+=============================== */
+
+.hall-actions {
+  display: flex;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+/* FORCE SAME SIZE */
+.hall-actions button {
+  background-color: #6b1d2b; /* UTSAVAS theme */
+  color: #fff;
+  border: none;
+
+  width: 180px;   /* 🔒 SAME WIDTH */
+  height: 60px;   /* 🔒 SAME HEIGHT */
+
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 14px;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: all 0.3s ease;
+}
+
+.hall-actions button:hover {
+  background-color: #531624;
+  transform: translateY(-2px);
+}
+
+/* ==================================
+   RESPONSIVE OVERRIDES (FINAL)
+================================== */
+
+/* Desktop/tablet safety: avoid column overflow squeeze */
+.hall-top {
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+}
+
+.hall-images {
+  overflow: hidden;
+}
+
+.main-image {
+  width: 100%;
+  height: 420px;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 14px;
+  display: block;
+}
+
+.hall-info {
+  min-width: 0;
+}
+
+/* Tablet */
+@media (max-width: 992px) {
+  .hall-detail-page {
+    padding: 22px 16px;
+  }
+
+  .hall-top {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .main-image {
+    height: 320px;
+  }
+
+  .hall-info h1 {
+    font-size: 32px;
+    line-height: 1.15;
+  }
+
+  .meta {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+}
+
+/* Phone */
+@media (max-width: 640px) {
+  .hall-detail-page {
+    padding: 16px 12px;
+  }
+
+  .hall-images {
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  .main-image {
+    height: 240px;
+    border-radius: 10px;
+  }
+
+  .thumbs img {
+    width: 62px;
+    height: 48px;
+  }
+
+  .hall-info {
+    padding-top: 0;
+  }
+
+  .hall-info h1 {
+    font-size: 24px;
+    margin-top: 0;
+    margin-bottom: 8px;
+  }
+
+  .location {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  .price {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  .meta {
+    gap: 10px 14px;
+    margin: 12px 0 16px;
+    font-size: 14px;
+  }
+
+  .contact-btn {
+    width: 100%;
+    min-height: 46px;
+  }
+
+  .hall-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .hall-actions button {
+    width: 100%;
+    height: 48px;
+    border-radius: 10px;
+    font-size: 15px;
+  }
+
+  .hall-section {
+    margin-top: 24px;
+  }
+}

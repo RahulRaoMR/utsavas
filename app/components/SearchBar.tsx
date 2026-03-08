@@ -26,10 +26,23 @@ export default function SearchBar() {
 
   // ✅ handle search (NO LOGIN REQUIRED)
   const handleSearch = () => {
-    const params = new URLSearchParams(filters).toString();
+    const city = filters.city.trim();
+    const location = filters.location.trim();
+    const type = filters.type.trim();
 
-    // 🚀 redirect to venues page with filters
-    router.push(`/wedding-halls?${params}`);
+    const params = new URLSearchParams();
+    if (city) params.set("city", city);
+    if (location) params.set("location", location);
+
+    const routeByType: Record<string, string> = {
+      wedding: "/wedding-halls",
+      banquet: "/banquet-halls",
+      party: "/party-venues",
+    };
+
+    const route = routeByType[type] || "/wedding-halls";
+    const query = params.toString();
+    router.push(query ? `${route}?${query}` : route);
   };
 
   return (
@@ -81,9 +94,9 @@ export default function SearchBar() {
         onChange={handleChange}
       >
         <option value="">Venue Type</option>
-        <option value="Wedding Hall">Wedding Hall</option>
-        <option value="Banquet Hall">Banquet Hall</option>
-        <option value="Outdoor Lawn">Outdoor Lawn</option>
+        <option value="wedding">Wedding Hall</option>
+        <option value="banquet">Banquet Hall</option>
+        <option value="party">Party Venue</option>
       </select>
 
       {/* BUTTON */}
