@@ -1,28 +1,80 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 
-const VendorSchema = new mongoose.Schema(
+const vendorSchema = new mongoose.Schema(
   {
-    businessName: String,
-    ownerName: String,
-    phone: String,
+    businessName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    ownerName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
     email: {
       type: String,
       required: true,
       unique: true,
+      lowercase: true,
+      trim: true,
     },
-    city: String,
-    serviceType: String,
+
+    phone: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+    },
+
+    city: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    serviceType: {
+      type: String,
+      required: true,
+      enum: ["wedding", "banquet", "party", "service"],
+    },
+
     password: {
       type: String,
       required: true,
     },
-    approved: {
-      type: Boolean,
-      default: false, // admin can approve later
+
+    status: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending",
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
-export default mongoose.models.Vendor ||
-  mongoose.model("Vendor", VendorSchema);
+/* =========================
+   HASH PASSWORD BEFORE SAVE
+========================= */
+vendorSchema.pre("save", async function () {
+  if (!this.isModified("password")) {
+    return;
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+});
+
+/* =========================
+   COMPARE PASSWORD
+========================= */
+vendorSchema.methods.comparePassword = async function (enteredPassword) {
+  return bcrypt.compare(enteredPassword, this.password);
+};
+
+module.exports = mongoose.model("Vendor", vendorSchema);
