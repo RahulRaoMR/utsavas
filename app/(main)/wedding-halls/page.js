@@ -4,6 +4,7 @@ import "./weddingHalls.css";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useMemo } from "react";
 import FiltersSidebar from "../../components/FiltersSidebar";
+import { toAbsoluteImageUrl } from "../../../lib/imageUrl";
 
 export default function WeddingHallsPage() {
   const router = useRouter();
@@ -153,11 +154,14 @@ export default function WeddingHallsPage() {
                 <img
                   src={
                     hall.images?.[0]
-                      ? `https://utsavas-backend-1.onrender.com${hall.images[0]}`
+                      ? toAbsoluteImageUrl(hall.images[0])
                       : "/hall1.jpg"
                   }
                   alt={hall.hallName}
                   loading="lazy"
+                  onError={(e) => {
+                    e.currentTarget.src = "/hall1.jpg";
+                  }}
                 />
 
                 <div className="hall-content">

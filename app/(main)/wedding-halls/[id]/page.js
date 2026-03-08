@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import "./hallDetail.css";
+import { toAbsoluteImageUrl } from "../../../../lib/imageUrl";
 
 export default function HallDetailPage() {
   const { id } = useParams();
@@ -67,7 +68,7 @@ export default function HallDetailPage() {
   ========================= */
   const images =
     hall.images && hall.images.length > 0
-      ? hall.images.map((img) => `https://utsavas-backend-1.onrender.com${img}`)
+      ? hall.images.map((img) => toAbsoluteImageUrl(img))
       : [];
 
   /* =========================

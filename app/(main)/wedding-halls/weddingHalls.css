@@ -41,15 +41,17 @@
 
 .hall-card {
   background: #ffffff;
-  border-radius: 16px;
+  border-radius: 18px;
   overflow: hidden;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-  transition: transform 0.25s ease;
+  border: 1px solid rgba(107, 29, 43, 0.12);
+  box-shadow: 0 14px 30px rgba(43, 16, 25, 0.12);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
   cursor: pointer;
 }
 
 .hall-card:hover {
-  transform: translateY(-6px);
+  transform: translateY(-4px);
+  box-shadow: 0 18px 36px rgba(43, 16, 25, 0.18);
 }
 
 /* =================================
@@ -58,8 +60,9 @@
 
 .hall-card img {
   width: 100%;
-  height: 180px;
+  height: 220px;
   object-fit: cover;
+  background: #efe9e3;
 }
 
 /* =================================
@@ -67,28 +70,30 @@
 ================================= */
 
 .hall-content {
-  padding: 16px;
+  padding: 18px;
 }
 
 .hall-content h3 {
   color: #6b1d2b;
-  margin: 0;
-  font-size: 18px;
+  margin: 0 0 6px;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 .location {
-  font-size: 13px;
-  color: #777;
-  margin: 6px 0;
+  font-size: 14px;
+  color: #5d5660;
+  margin: 0 0 12px;
 }
 
 /* 🔥 IMPORTANT — price used by filter */
 
 .hall-price {
-  font-size: 16px;
+  font-size: 30px;
   font-weight: 700;
-  color: #6b1d2b;
-  margin: 8px 0;
+  color: #7f2a2c;
+  margin: 2px 0 14px;
 }
 
 .price {
@@ -100,9 +105,11 @@
 
 .hall-meta {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   font-size: 13px;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
+  color: #4e4550;
+  flex-wrap: wrap;
 }
 
 /* =================================
@@ -111,12 +118,14 @@
 
 .hall-btn {
   width: 100%;
-  padding: 10px;
+  padding: 14px;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   background: linear-gradient(135deg, #f5d28a, #e4b85c);
   color: #3a0a12;
-  font-weight: 700;
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: 0.2px;
   cursor: pointer;
   transition: all 0.25s ease;
 }
@@ -226,7 +235,7 @@
   }
 
   .hall-card img {
-    height: 160px;
+    height: 180px;
   }
 
   .hall-content {
@@ -234,15 +243,15 @@
   }
 
   .hall-content h3 {
-    font-size: 16px;
+    font-size: 20px;
   }
 
   .location {
-    font-size: 12px;
+    font-size: 13px;
   }
 
   .hall-price {
-    font-size: 15px;
+    font-size: 24px;
   }
 
   .hall-meta {
@@ -252,8 +261,8 @@
   }
 
   .hall-btn {
-    padding: 9px;
-    font-size: 14px;
+    padding: 10px;
+    font-size: 16px;
     border-radius: 8px;
   }
 }
@@ -274,7 +283,7 @@
   }
 
   .hall-card img {
-    height: 140px;
+    height: 160px;
   }
 
   .hall-image-wrapper {
@@ -286,11 +295,11 @@
   }
 
   .hall-price {
-    font-size: 14px;
+    font-size: 22px;
   }
 
   .hall-btn {
-    font-size: 13px;
+    font-size: 15px;
     padding: 8px;
   }
 
