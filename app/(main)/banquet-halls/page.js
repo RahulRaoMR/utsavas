@@ -2,11 +2,11 @@
 
 import "../wedding-halls/weddingHalls.css";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState, useMemo } from "react";
+import { Suspense, useEffect, useState, useMemo } from "react";
 import FiltersSidebar from "../../components/FiltersSidebar";
 import { toAbsoluteImageUrl } from "../../../lib/imageUrl";
 
-export default function BanquetHallsPage() {
+function BanquetHallsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -208,5 +208,13 @@ export default function BanquetHallsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function BanquetHallsPage() {
+  return (
+    <Suspense fallback={<p style={{ padding: 20, color: "#777" }}>Loading halls...</p>}>
+      <BanquetHallsContent />
+    </Suspense>
   );
 }

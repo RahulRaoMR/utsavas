@@ -2,11 +2,11 @@
 
 import "../wedding-halls/weddingHalls.css";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState, useMemo } from "react";
+import { Suspense, useEffect, useState, useMemo } from "react";
 import FiltersSidebar from "../../components/FiltersSidebar";
 import { toAbsoluteImageUrl } from "../../../lib/imageUrl";
 
-export default function BanquetHallsPage() {
+function PartyVenuesContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -50,7 +50,7 @@ export default function BanquetHallsPage() {
       const data = await res.json();
       setHalls(Array.isArray(data) ? data : []);
     } catch (err) {
-      console.error("Failed to fetch banquet halls", err);
+      console.error("Failed to fetch party venues", err);
       setHalls([]);
     } finally {
       setLoading(false);
@@ -139,7 +139,7 @@ export default function BanquetHallsPage() {
         <div className="hall-card-grid">
           {!loading && filteredHalls.length === 0 && (
             <p style={{ color: "#777" }}>
-              No banquet halls found.
+              No party venues found.
             </p>
           )}
 
@@ -164,7 +164,7 @@ export default function BanquetHallsPage() {
                 key={hall._id}
                 className="hall-card"
                 onClick={() =>
-                  router.push(`/banquet-halls/${hall._id}`)
+                  router.push(`/party-venues/${hall._id}`)
                 }
               >
                 <img
@@ -207,5 +207,13 @@ export default function BanquetHallsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function PartyVenuesPage() {
+  return (
+    <Suspense fallback={<p style={{ padding: 20, color: "#777" }}>Loading halls...</p>}>
+      <PartyVenuesContent />
+    </Suspense>
   );
 }
