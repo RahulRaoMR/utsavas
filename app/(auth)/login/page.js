@@ -3,18 +3,23 @@
 import Image from "next/image";
 import { useState } from "react";
 import styles from "./login.module.css";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   const [emailOrPhone, setEmailOrPhone] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const getQueryParam = (key) => {
+    if (typeof window === "undefined") return null;
+    const params = new URLSearchParams(window.location.search);
+    return params.get(key);
+  };
+
   const getRedirectPath = () => {
-    const redirect = searchParams.get("redirect");
+    const redirect = getQueryParam("redirect");
     if (redirect && redirect.startsWith("/")) return redirect;
     return "/dashboard";
   };
@@ -136,7 +141,7 @@ export default function LoginPage() {
           Don&apos;t have an account?{" "}
           <span
             onClick={() => {
-              const redirect = searchParams.get("redirect");
+              const redirect = getQueryParam("redirect");
               if (redirect && redirect.startsWith("/")) {
                 router.push(`/register?redirect=${encodeURIComponent(redirect)}`);
                 return;

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import styles from "../login/login.module.css";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { karnatakaDistricts } from "../../components/karnatakaDistricts";
 
 const API =
@@ -11,7 +11,6 @@ const API =
 
 export default function RegisterPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   const [verified, setVerified] = useState(false);
   const [phone, setPhone] = useState("+91");
@@ -33,8 +32,14 @@ export default function RegisterPage() {
 
   const inputsRef = useRef([]);
 
+  const getQueryParam = (key) => {
+    if (typeof window === "undefined") return null;
+    const params = new URLSearchParams(window.location.search);
+    return params.get(key);
+  };
+
   const getRedirectPath = () => {
-    const redirect = searchParams.get("redirect");
+    const redirect = getQueryParam("redirect");
     if (redirect && redirect.startsWith("/")) return redirect;
     return "/dashboard";
   };
