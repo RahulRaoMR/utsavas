@@ -5,6 +5,10 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import "./topnavbar.css";
 
+const API =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://utsavas-backend-1.onrender.com";
+
 type UserLike = {
   firstName?: string;
   lastName?: string;
@@ -53,27 +57,46 @@ export default function TopNavBar() {
   }, [menuOpen]);
 
   useEffect(() => {
-    try {
-      const savedLocation = localStorage.getItem("utsavasLocation");
-      if (savedLocation) setLocation(savedLocation);
+    const loadUser = async () => {
+      try {
+        const savedLocation = localStorage.getItem("utsavasLocation");
+        if (savedLocation) setLocation(savedLocation);
 
-      const userStr = localStorage.getItem("user");
-      const vendorStr = localStorage.getItem("vendor");
+        const userStr = localStorage.getItem("user");
+        const vendorStr = localStorage.getItem("vendor");
+        const token = localStorage.getItem("token");
 
-      let storedUser: UserLike | null = null;
+        let storedUser: UserLike | null = null;
 
-      if (userStr) {
-        storedUser = JSON.parse(userStr);
-      } else if (vendorStr) {
-        storedUser = JSON.parse(vendorStr);
+        if (userStr) {
+          storedUser = JSON.parse(userStr);
+        } else if (vendorStr) {
+          storedUser = JSON.parse(vendorStr);
+        }
+
+        if (storedUser) {
+          setUser(storedUser);
+          return;
+        }
+
+        if (token) {
+          const res = await fetch(`${API}/api/auth/me`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (!res.ok) return;
+
+          const data = await res.json();
+          if (data?.success && data?.user) {
+            localStorage.setItem("user", JSON.stringify(data.user));
+            setUser(data.user);
+          }
+        }
+      } catch (err) {
+        console.error("User parse error:", err);
       }
+    };
 
-      if (storedUser) {
-        setUser(storedUser);
-      }
-    } catch (err) {
-      console.error("User parse error:", err);
-    }
+    loadUser();
   }, []);
 
   useEffect(() => {
@@ -402,6 +425,11 @@ export default function TopNavBar() {
 
         {user && (
           <>
+            <div className="mobile-user-badge">
+              <span>{avatarLetter}</span>
+              <strong>{displayName}</strong>
+            </div>
+
             <Link href="/profile" onClick={() => setMenuOpen(false)}>
               My Profile
             </Link>

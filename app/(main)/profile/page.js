@@ -21,6 +21,23 @@ const formatDate = (value) => {
   });
 };
 
+const buildDisplayName = (u) => {
+  if (!u) return "User";
+
+  const first = (u.firstName || "").trim();
+  const last = (u.lastName || "").trim();
+  const merged = `${first} ${last}`.trim();
+  if (merged) return merged;
+
+  if (u.name && !String(u.name).includes("@")) return String(u.name).trim();
+
+  if (u.email && String(u.email).includes("@")) {
+    return String(u.email).split("@")[0];
+  }
+
+  return "User";
+};
+
 export default function ProfilePage() {
   const router = useRouter();
 
@@ -70,9 +87,20 @@ export default function ProfilePage() {
         const data = await res.json();
         if (!data?.success || !data?.user) return;
 
-        const apiUser = data.user;
-        setUser(apiUser);
-        localStorage.setItem("user", JSON.stringify(apiUser));
+        const localUser = JSON.parse(localStorage.getItem("user") || "{}");
+        const apiUser = data.user || {};
+
+        const mergedUser = {
+          ...localUser,
+          ...apiUser,
+          firstName: apiUser.firstName || localUser.firstName || "",
+          lastName: apiUser.lastName || localUser.lastName || "",
+        };
+
+        mergedUser.name = buildDisplayName(mergedUser);
+
+        setUser(mergedUser);
+        localStorage.setItem("user", JSON.stringify(mergedUser));
       } catch (err) {
         console.error("Failed to sync user profile:", err);
       }
@@ -120,18 +148,7 @@ export default function ProfilePage() {
   }, [user]);
 
   const fullName = useMemo(() => {
-    if (!user) return "";
-
-    const first = user.firstName || "";
-    const last = user.lastName || "";
-    const merged = `${first} ${last}`.trim();
-    if (merged) return merged;
-
-    if (user.name && !String(user.name).includes("@")) {
-      return user.name;
-    }
-
-    return "User";
+    return buildDisplayName(user);
   }, [user]);
 
   const partnerRows = useMemo(() => {
