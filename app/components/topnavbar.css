@@ -402,7 +402,7 @@
 }
 
 /* Phone/tablet only */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .top-nav {
     padding: 0 10px;
     gap: 8px;
