@@ -404,14 +404,14 @@
 /* Phone/tablet only */
 @media (max-width: 768px) {
   .top-nav {
-    padding: 0 14px;
+    padding: 0 10px;
+    gap: 8px;
   }
 
   .logo img {
-    height: 34px;
+    height: 32px;
   }
 
-  .location-bar,
   .nav-links,
   .user-wrapper,
   .list-btn,
@@ -420,8 +420,44 @@
     display: none;
   }
 
+  .location-search-wrap {
+    display: block;
+    flex: 1;
+    min-width: 0;
+    max-width: none;
+    width: auto;
+  }
+
+  .location-bar {
+    display: flex !important;
+    min-width: 0;
+    max-width: none;
+    width: 100%;
+    padding: 3px;
+  }
+
+  .detect-location-btn {
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+
+  .location-bar input {
+    padding: 8px 6px;
+    font-size: 12px;
+  }
+
+  .location-suggestions {
+    display: none;
+  }
+
+  .auth-section {
+    margin-left: auto;
+    gap: 6px;
+  }
+
   .hamburger {
     display: inline-flex;
+    margin-left: 2px;
   }
 }
 
