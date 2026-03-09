@@ -3,18 +3,22 @@
 import Image from "next/image";
 import { useState } from "react";
 import styles from "./login.module.css";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [emailOrPhone, setEmailOrPhone] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  /* =========================
-     📱 FORMAT PHONE AUTO
-  ========================= */
+  const getRedirectPath = () => {
+    const redirect = searchParams.get("redirect");
+    if (redirect && redirect.startsWith("/")) return redirect;
+    return "/dashboard";
+  };
+
   const formatInput = (value) => {
     if (/^\d+$/.test(value)) {
       const digits = value.replace(/\D/g, "");
@@ -23,9 +27,6 @@ export default function LoginPage() {
     return value;
   };
 
-  /* =========================
-     🔐 LOGIN USER
-  ========================= */
   const handleLogin = async () => {
     if (!emailOrPhone || !password) {
       alert("Please enter email/phone and password");
@@ -37,7 +38,6 @@ export default function LoginPage() {
 
       let payloadValue = emailOrPhone.trim();
 
-      // add country code automatically
       if (/^\d{10}$/.test(payloadValue)) {
         payloadValue = "91" + payloadValue;
       }
@@ -59,11 +59,30 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (data.success) {
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
+        const serverUser = data.user || {};
+        let previousUser = {};
+        try {
+          previousUser = JSON.parse(localStorage.getItem("user") || "{}");
+        } catch {
+          previousUser = {};
+        }
 
-        alert("Login successful ✅");
-        router.push("/dashboard");
+        const normalizedUser = {
+          ...previousUser,
+          ...serverUser,
+          firstName: serverUser.firstName || previousUser.firstName || "",
+          lastName: serverUser.lastName || previousUser.lastName || "",
+          name:
+            serverUser.name ||
+            previousUser.name ||
+            `${serverUser.firstName || ""} ${serverUser.lastName || ""}`.trim(),
+        };
+
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(normalizedUser));
+
+        alert("Login successful");
+        router.push(getRedirectPath());
       } else {
         alert(data.message || "Login failed");
       }
@@ -89,7 +108,6 @@ export default function LoginPage() {
         <h1 className={styles.logo}>UTSAVAS</h1>
         <p className={styles.tagline}>Where UTSAVAS Become Memories</p>
 
-        {/* Email or Phone */}
         <input
           type="text"
           placeholder="Email or Phone Number"
@@ -98,7 +116,6 @@ export default function LoginPage() {
           onChange={(e) => setEmailOrPhone(formatInput(e.target.value))}
         />
 
-        {/* Password */}
         <input
           type="password"
           placeholder="Password"
@@ -107,7 +124,6 @@ export default function LoginPage() {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        {/* Login Button */}
         <button
           className={styles.loginBtn}
           onClick={handleLogin}
@@ -117,8 +133,17 @@ export default function LoginPage() {
         </button>
 
         <p className={styles.registerText}>
-          Don’t have an account?{" "}
-          <span onClick={() => router.push("/register")}>
+          Don&apos;t have an account?{" "}
+          <span
+            onClick={() => {
+              const redirect = searchParams.get("redirect");
+              if (redirect && redirect.startsWith("/")) {
+                router.push(`/register?redirect=${encodeURIComponent(redirect)}`);
+                return;
+              }
+              router.push("/register");
+            }}
+          >
             Register
           </span>
         </p>

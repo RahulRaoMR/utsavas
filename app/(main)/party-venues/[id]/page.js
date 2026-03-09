@@ -160,6 +160,24 @@ export default function HallDetailPage() {
     check: "\u2714",
   };
 
+  const handleBookNow = () => {
+    const token =
+      typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    const user =
+      typeof window !== "undefined" ? localStorage.getItem("user") : null;
+
+    if (!token || !user) {
+      if (token && !user) {
+        localStorage.removeItem("token");
+      }
+      const target = `/booking/${hall._id}`;
+      router.push(`/login?redirect=${encodeURIComponent(target)}`);
+      return;
+    }
+
+    router.push(`/booking/${hall._id}`);
+  };
+
   return (
     <div className="hall-detail-page hall-detail-spacing">
       <div className="hall-top">
@@ -274,7 +292,7 @@ export default function HallDetailPage() {
 
         <button
           className="book-btn"
-          onClick={() => router.push(`/booking/${hall._id}`)}
+          onClick={handleBookNow}
         >
           Book Now
         </button>

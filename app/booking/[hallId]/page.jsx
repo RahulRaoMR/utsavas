@@ -12,6 +12,7 @@ export default function BookingPage() {
 
   const [hall, setHall] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isAuthorized, setIsAuthorized] = useState(null);
 
   /* ⭐ AIRBNB RANGE STATE */
   const [dateRange, setDateRange] = useState([null, null]);
@@ -30,10 +31,32 @@ export default function BookingPage() {
     phone: "",
   });
 
+  useEffect(() => {
+    if (!hallId) return;
+
+    const token =
+      typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    const user =
+      typeof window !== "undefined" ? localStorage.getItem("user") : null;
+
+    if (!token || !user) {
+      if (token && !user) {
+        localStorage.removeItem("token");
+      }
+      setIsAuthorized(false);
+      router.replace(`/login?redirect=${encodeURIComponent(`/booking/${hallId}`)}`);
+      return;
+    }
+
+    setIsAuthorized(true);
+  }, [hallId, router]);
+
   /* =========================
      FETCH HALL DETAILS
   ========================= */
   useEffect(() => {
+    if (!hallId || isAuthorized !== true) return;
+
     const fetchHall = async () => {
       try {
         const res = await fetch(
@@ -47,13 +70,15 @@ export default function BookingPage() {
       }
     };
 
-    if (hallId) fetchHall();
-  }, [hallId]);
+    fetchHall();
+  }, [hallId, isAuthorized]);
 
   /* =========================
      FETCH BOOKED DATES
   ========================= */
   useEffect(() => {
+    if (!hallId || isAuthorized !== true) return;
+
     const fetchBookedDates = async () => {
       try {
         const res = await fetch(
@@ -76,8 +101,8 @@ export default function BookingPage() {
       }
     };
 
-    if (hallId) fetchBookedDates();
-  }, [hallId]);
+    fetchBookedDates();
+  }, [hallId, isAuthorized]);
 
   /* ===================================
      🔄 CALENDAR → INPUT SYNC
@@ -201,6 +226,10 @@ export default function BookingPage() {
       setLoading(false);
     }
   };
+
+  if (isAuthorized !== true) {
+    return <p className={styles.loading}>Checking login...</p>;
+  }
 
   if (!hall) {
     return <p className={styles.loading}>Loading hall details...</p>;

@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import styles from "./vendorRegister.module.css";
 import { useRouter } from "next/navigation";
+import { karnatakaDistricts } from "../components/karnatakaDistricts";
 
 export default function VendorRegisterPage() {
   const router = useRouter();
@@ -111,14 +112,20 @@ export default function VendorRegisterPage() {
             required
           />
 
-          <input
+          <select
             name="city"
-            placeholder="City"
             className={styles.input}
             value={form.city}
             onChange={handleChange}
             required
-          />
+          >
+            <option value="">City</option>
+            {karnatakaDistricts.map((district) => (
+              <option key={district} value={district}>
+                {district}
+              </option>
+            ))}
+          </select>
 
           <input
             type="password"

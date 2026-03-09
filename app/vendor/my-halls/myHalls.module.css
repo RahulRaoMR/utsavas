@@ -53,6 +53,7 @@
 
 .actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   margin-top: 15px;
 }
@@ -79,8 +80,20 @@
   cursor: pointer;
 }
 
+.deleteBtn {
+  flex: 1;
+  background: #c0392b;
+  color: #fff2df;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
 .viewBtn:hover,
-.editBtn:hover {
+.editBtn:hover,
+.deleteBtn:hover {
   opacity: 0.9;
 }
 

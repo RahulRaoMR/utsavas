@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import styles from "../login/login.module.css";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { karnatakaDistricts } from "../../components/karnatakaDistricts";
 
 const API =
   process.env.NEXT_PUBLIC_API_URL ||
@@ -10,6 +11,7 @@ const API =
 
 export default function RegisterPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [verified, setVerified] = useState(false);
   const [phone, setPhone] = useState("+91");
@@ -31,9 +33,12 @@ export default function RegisterPage() {
 
   const inputsRef = useRef([]);
 
-  /* =========================
-     TIMER
-  ========================= */
+  const getRedirectPath = () => {
+    const redirect = searchParams.get("redirect");
+    if (redirect && redirect.startsWith("/")) return redirect;
+    return "/dashboard";
+  };
+
   useEffect(() => {
     let interval;
 
@@ -46,9 +51,6 @@ export default function RegisterPage() {
     return () => clearInterval(interval);
   }, [timer]);
 
-  /* =========================
-     SEND OTP
-  ========================= */
   const sendOTP = async () => {
     if (loading || timer > 0) return;
 
@@ -68,7 +70,7 @@ export default function RegisterPage() {
       const data = await res.json();
 
       if (res.ok && data.success) {
-        alert("OTP sent successfully ✅");
+        alert("OTP sent successfully");
         setOtpSent(true);
         setTimer(30);
       } else {
@@ -82,9 +84,6 @@ export default function RegisterPage() {
     }
   };
 
-  /* =========================
-     OTP INPUT
-  ========================= */
   const handleOtpChange = (value, index) => {
     if (!/^\d*$/.test(value)) return;
 
@@ -103,9 +102,6 @@ export default function RegisterPage() {
     }
   };
 
-  /* =========================
-     VERIFY OTP
-  ========================= */
   const verifyOTP = async () => {
     try {
       const cleanPhone = phone.replace("+", "");
@@ -125,10 +121,10 @@ export default function RegisterPage() {
       const data = await res.json();
 
       if (res.ok && data.success) {
-        alert("Phone verified ✅");
+        alert("Phone verified");
         setVerified(true);
       } else {
-        alert(data.message || "Invalid OTP ❌");
+        alert(data.message || "Invalid OTP");
       }
     } catch (err) {
       console.error("Verify error:", err);
@@ -136,9 +132,6 @@ export default function RegisterPage() {
     }
   };
 
-  /* =========================
-     FORM CHANGE
-  ========================= */
   const handleChange = (e) => {
     setForm({
       ...form,
@@ -146,9 +139,6 @@ export default function RegisterPage() {
     });
   };
 
-  /* =========================
-     REGISTER USER
-  ========================= */
   const registerUser = async () => {
     try {
       if (form.password !== form.confirmPassword) {
@@ -173,8 +163,35 @@ export default function RegisterPage() {
 
       if (res.ok && data.success) {
         localStorage.setItem("token", data.token);
-        alert("Registration successful 🎉");
-        router.push("/dashboard");
+
+        const serverUser = data.user || {};
+        const fallbackUser = {
+          firstName: form.firstName || "",
+          lastName: form.lastName || "",
+          name:
+            `${form.firstName || ""} ${form.lastName || ""}`.trim() ||
+            form.email ||
+            cleanPhone,
+          email: form.email || "",
+          phone: cleanPhone,
+        };
+
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            ...fallbackUser,
+            ...serverUser,
+            firstName: serverUser.firstName || fallbackUser.firstName,
+            lastName: serverUser.lastName || fallbackUser.lastName,
+            name:
+              serverUser.name ||
+              fallbackUser.name ||
+              `${serverUser.firstName || ""} ${serverUser.lastName || ""}`.trim(),
+          })
+        );
+
+        alert("Registration successful");
+        router.push(getRedirectPath());
       } else {
         alert(data.message || "Registration failed");
       }
@@ -184,9 +201,6 @@ export default function RegisterPage() {
     }
   };
 
-  /* =========================
-     UI
-  ========================= */
   return (
     <div className={styles.loginContainer}>
       <div className={styles.loginCard}>
@@ -289,12 +303,19 @@ export default function RegisterPage() {
               onChange={handleChange}
             />
 
-            <input
+            <select
               name="city"
-              placeholder="City"
               className={styles.inputField}
               onChange={handleChange}
-            />
+              value={form.city}
+            >
+              <option value="">City</option>
+              {karnatakaDistricts.map((district) => (
+                <option key={district} value={district}>
+                  {district}
+                </option>
+              ))}
+            </select>
 
             <input
               name="country"

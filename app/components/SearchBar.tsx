@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import styles from "./SearchBar.module.css";
+import { karnatakaDistricts } from "./karnatakaDistricts";
+import { karnatakaTaluksAndTowns } from "./karnatakaTaluksAndTowns";
 
 export default function SearchBar() {
   const router = useRouter();
@@ -55,7 +57,11 @@ export default function SearchBar() {
         onChange={handleChange}
       >
         <option value="">City</option>
-        <option value="Bangalore">Bangalore</option>
+        {karnatakaDistricts.map((district) => (
+          <option key={district} value={district}>
+            {district}
+          </option>
+        ))}
       </select>
 
       {/* LOCATION */}
@@ -66,24 +72,11 @@ export default function SearchBar() {
         onChange={handleChange}
       >
         <option value="">Select Location</option>
-        <option value="Indiranagar">Indiranagar</option>
-        <option value="Whitefield">Whitefield</option>
-        <option value="MG Road">MG Road</option>
-        <option value="Ulsoor">Ulsoor</option>
-        <option value="Marathahalli">Marathahalli</option>
-        <option value="KR Puram">KR Puram</option>
-        <option value="Jayanagar">Jayanagar</option>
-        <option value="JP Nagar">JP Nagar</option>
-        <option value="Banashankari">Banashankari</option>
-        <option value="BTM Layout">BTM Layout</option>
-        <option value="Electronic City">Electronic City</option>
-        <option value="Bannerghatta Road">Bannerghatta Road</option>
-        <option value="Hebbal">Hebbal</option>
-        <option value="Yelahanka">Yelahanka</option>
-        <option value="Devanahalli">Devanahalli</option>
-        <option value="Rajajinagar">Rajajinagar</option>
-        <option value="Malleswaram">Malleswaram</option>
-        <option value="Sarjapur Road">Sarjapur Road</option>
+        {karnatakaTaluksAndTowns.map((place) => (
+          <option key={place} value={place}>
+            {place}
+          </option>
+        ))}
       </select>
 
       {/* VENUE TYPE */}

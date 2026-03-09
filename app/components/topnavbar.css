@@ -39,7 +39,8 @@
 .location-bar {
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.95);
+  background: #f7f0e7;
+  border: 2px solid rgba(243, 209, 156, 0.7);
   border-radius: 999px;
   padding: 4px;
   min-width: 260px;
@@ -48,23 +49,83 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+.location-search-wrap {
+  position: relative;
+  min-width: 260px;
+  max-width: 380px;
+  width: 100%;
+}
+
 .location-bar input {
   border: none;
-  padding: 10px 14px;
+  padding: 10px 10px;
   background: transparent;
   outline: none;
   width: 100%;
   font-size: 14px;
+  color: #6b1d2b;
+  font-weight: 600;
+}
+
+.location-bar input::placeholder {
+  color: #8a5b3a;
+  opacity: 0.8;
+}
+
+.detect-location-btn {
+  background: transparent;
+  color: #6b1d2b;
+  border: none;
+  padding: 8px 10px 8px 12px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 999px;
+}
+
+.detect-location-btn:hover {
+  background: rgba(107, 29, 43, 0.08);
 }
 
 .location-bar button {
   background: #6b1d2b;
-  color: #fff;
+  color: #f3d19c;
   border: none;
   padding: 9px 14px;
   border-radius: 999px;
   cursor: pointer;
   font-size: 14px;
+}
+
+.location-suggestions {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: #fffaf5;
+  border: 1px solid #eadfce;
+  border-radius: 12px;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.2);
+  max-height: 280px;
+  overflow-y: auto;
+  z-index: 10000;
+  padding: 6px;
+}
+
+.location-suggestion-item {
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  color: #4d1b27;
+  border-radius: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.location-suggestion-item:hover {
+  background: #f4e7d6;
 }
 
 .nav-links {
@@ -174,34 +235,44 @@
   position: absolute;
   top: 115%;
   right: 0;
-  background: #fff;
+  background: #fffaf5;
   border-radius: 14px;
+  border: 1px solid #eadfce;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.22), 0 6px 16px rgba(0, 0, 0, 0.12);
-  padding: 10px;
+  padding: 8px;
   min-width: 200px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   z-index: 999;
 }
 
 .user-dropdown a,
 .user-dropdown button {
-  padding: 10px 12px;
+  padding: 11px 12px;
   border: none;
   background: none;
   text-align: left;
   cursor: pointer;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 14px;
-  color: #333;
+  font-weight: 600;
+  color: #4d1b27;
   text-decoration: none;
+  transition: background 0.2s ease, transform 0.15s ease;
 }
 
 .user-dropdown a:hover,
 .user-dropdown button:hover {
-  background: #f8f1e6;
+  background: #f5e8d8;
   color: #6b1d2b;
+  transform: translateX(2px);
+}
+
+.user-dropdown button {
+  color: #8f2435;
+  border-top: 1px solid #efe4d5;
+  margin-top: 4px;
 }
 
 /* Burger hidden on desktop/laptop */
@@ -265,7 +336,11 @@
   color: #f3d19c;
   text-decoration: none;
   font-weight: 600;
-  font-size: 20px;
+  font-size: 17px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
 }
 
 .mobile-btn {
@@ -310,5 +385,31 @@
 
   .hamburger {
     display: inline-flex;
+  }
+}
+
+@media (max-width: 920px) {
+  .user-chip {
+    padding: 5px 10px 5px 5px;
+    gap: 8px;
+  }
+
+  .user-name {
+    max-width: 90px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .user-dropdown {
+    width: min(82vw, 240px);
+    min-width: 180px;
+    top: calc(100% + 8px);
+  }
+
+  .user-dropdown a,
+  .user-dropdown button {
+    padding: 12px 10px;
+    font-size: 15px;
   }
 }
