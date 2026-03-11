@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import styles from "../admin.module.css";
 
@@ -8,7 +8,7 @@ const API =
   process.env.NEXT_PUBLIC_API_URL ||
   "https://utsavas-backend-1.onrender.com";
 
-export default function AdminVendorsPage() {
+function AdminVendorsContent() {
   const searchParams = useSearchParams();
   const [vendors, setVendors] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -250,5 +250,13 @@ export default function AdminVendorsPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function AdminVendorsPage() {
+  return (
+    <Suspense fallback={<p className={styles.loading}>Loading vendors...</p>}>
+      <AdminVendorsContent />
+    </Suspense>
   );
 }

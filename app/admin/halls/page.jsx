@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import styles from "../admin.module.css";
 
@@ -8,7 +8,7 @@ const API =
   process.env.NEXT_PUBLIC_API_URL ||
   "https://utsavas-backend-1.onrender.com";
 
-export default function AdminHallsPage() {
+function AdminHallsContent() {
   const searchParams = useSearchParams();
   const [halls, setHalls] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -189,5 +189,13 @@ export default function AdminHallsPage() {
         </div>
       ))}
     </div>
+  );
+}
+
+export default function AdminHallsPage() {
+  return (
+    <Suspense fallback={<p className={styles.loading}>Loading halls...</p>}>
+      <AdminHallsContent />
+    </Suspense>
   );
 }
