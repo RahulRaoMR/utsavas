@@ -1,22 +1,28 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import styles from "../admin.module.css";
 
+const API =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://utsavas-backend-1.onrender.com";
+
 export default function AdminVendorsPage() {
+  const searchParams = useSearchParams();
   const [vendors, setVendors] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // ⭐ NEW PREMIUM STATES
   const [deleteVendorId, setDeleteVendorId] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [search, setSearch] = useState("");
 
-  /* =====================
-     FETCH ALL VENDORS
-  ===================== */
+  const statusFilter = (searchParams.get("status") || "all").toLowerCase();
+
   const fetchVendors = async () => {
     try {
-      const res = await fetch("https://utsavas-backend-1.onrender.com/api/vendor/all");
+      const res = await fetch(`${API}/api/vendor/all`, {
+        cache: "no-store",
+      });
 
       if (!res.ok) {
         throw new Error("Failed to fetch vendors");
@@ -28,6 +34,7 @@ export default function AdminVendorsPage() {
         : Array.isArray(data)
           ? data
           : [];
+
       setVendors(vendorList);
     } catch (err) {
       console.error(err);
@@ -40,11 +47,22 @@ export default function AdminVendorsPage() {
 
   useEffect(() => {
     fetchVendors();
+
+    const intervalId = window.setInterval(fetchVendors, 10000);
+    const handleVisibility = () => {
+      if (!document.hidden) fetchVendors();
+    };
+
+    window.addEventListener("focus", fetchVendors);
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    return () => {
+      window.clearInterval(intervalId);
+      window.removeEventListener("focus", fetchVendors);
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
   }, []);
 
-  /* =====================
-     APPROVE / REJECT VENDOR
-  ===================== */
   const updateStatus = async (id, status) => {
     const confirmAction = confirm(
       `Are you sure you want to ${status.toUpperCase()} this vendor?`
@@ -52,16 +70,13 @@ export default function AdminVendorsPage() {
     if (!confirmAction) return;
 
     try {
-      const res = await fetch(
-        `https://utsavas-backend-1.onrender.com/api/vendor/status/${id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ status }),
-        }
-      );
+      const res = await fetch(`${API}/api/vendor/status/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status }),
+      });
 
       if (!res.ok) {
         throw new Error("Failed to update status");
@@ -74,9 +89,6 @@ export default function AdminVendorsPage() {
     }
   };
 
-  /* =====================
-     ⭐ PREMIUM DELETE (CASCADE)
-  ===================== */
   const confirmDeleteVendor = async () => {
     if (!deleteVendorId) return;
 
@@ -84,7 +96,7 @@ export default function AdminVendorsPage() {
       setIsDeleting(true);
 
       const res = await fetch(
-        `https://utsavas-backend-1.onrender.com/api/admin/vendors/${deleteVendorId}`,
+        `${API}/api/admin/vendors/${deleteVendorId}`,
         { method: "DELETE" }
       );
 
@@ -92,10 +104,7 @@ export default function AdminVendorsPage() {
 
       if (!res.ok) throw new Error(data.message);
 
-      // refresh list
       fetchVendors();
-
-      // close modal
       setDeleteVendorId(null);
     } catch (err) {
       console.error(err);
@@ -105,20 +114,58 @@ export default function AdminVendorsPage() {
     }
   };
 
-  /* =====================
-     LOADING STATE
-  ===================== */
   if (loading) {
     return <p className={styles.loading}>Loading vendors...</p>;
   }
 
+  const filteredVendors = vendors.filter((vendor) =>
+    statusFilter === "all" ? true : vendor.status === statusFilter
+  );
+
+  const searchedVendors = filteredVendors.filter((vendor) => {
+    const query = search.trim().toLowerCase();
+    if (!query) return true;
+
+    return [
+      vendor.businessName,
+      vendor.ownerName,
+      vendor.email,
+      vendor.phone,
+      vendor.city,
+      vendor.serviceType,
+    ].some((value) => (value || "").toLowerCase().includes(query));
+  });
+
+  const pageTitle =
+    statusFilter === "pending"
+      ? "Pending Vendors"
+      : statusFilter === "approved"
+        ? "Approved Vendors"
+        : statusFilter === "rejected"
+          ? "Rejected Vendors"
+          : "All Vendors";
+
   return (
     <div className={styles.container}>
-      <h1 className={styles.header}>👥 Vendor Approvals</h1>
+      <h1 className={styles.header}>{pageTitle}</h1>
+      <div className={styles.pageToolbar}>
+        <p className={styles.liveMeta}>Live count: {searchedVendors.length}</p>
 
-      {vendors.length === 0 && <p>No vendors found</p>}
+        <div className={styles.searchShell}>
+          <span className={styles.searchBadge}>Search</span>
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className={styles.searchInput}
+            placeholder="Search vendors by name, city, email or phone"
+          />
+        </div>
+      </div>
 
-      {vendors.map((vendor) => (
+      {searchedVendors.length === 0 && <p>No vendors found</p>}
+
+      {searchedVendors.map((vendor) => (
         <div key={vendor._id} className={styles.card}>
           <h3>{vendor.businessName}</h3>
 
@@ -141,38 +188,35 @@ export default function AdminVendorsPage() {
             )}
           </p>
 
-          {/* APPROVE / REJECT */}
           {vendor.status === "pending" && (
-            <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
+            <div className={styles.actionRow}>
               <button
                 className={styles.button}
                 onClick={() => updateStatus(vendor._id, "approved")}
               >
-                ✅ Approve
+                Approve
               </button>
 
               <button
                 className={styles.rejectButton}
                 onClick={() => updateStatus(vendor._id, "rejected")}
               >
-                ❌ Reject
+                Reject
               </button>
             </div>
           )}
 
-          {/* ⭐ PREMIUM DELETE */}
           <div style={{ marginTop: 10 }}>
             <button
               className={styles.deleteButton}
               onClick={() => setDeleteVendorId(vendor._id)}
             >
-              🗑 Delete Vendor
+              Delete Vendor
             </button>
           </div>
         </div>
       ))}
 
-      {/* 🔥 PREMIUM DELETE MODAL */}
       {deleteVendorId && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
@@ -180,12 +224,12 @@ export default function AdminVendorsPage() {
 
             <p style={{ marginBottom: 16 }}>
               This will permanently remove:
-              <br />• Vendor
-              <br />• All halls
-              <br />• All bookings
+              <br />- Vendor
+              <br />- All halls
+              <br />- All bookings
             </p>
 
-            <div style={{ display: "flex", gap: 10 }}>
+            <div className={styles.modalActions}>
               <button
                 className={styles.closeBtn}
                 onClick={() => setDeleteVendorId(null)}

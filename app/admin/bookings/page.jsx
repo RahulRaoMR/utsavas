@@ -5,24 +5,25 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import styles from "../admin.module.css";
 
+const API =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://utsavas-backend-1.onrender.com";
+
 export default function AdminBookingsPage() {
   const [events, setEvents] = useState([]);
   const [selectedBooking, setSelectedBooking] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  /* =========================
-     FETCH BOOKINGS
-  ========================= */
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        const res = await fetch(
-          "https://utsavas-backend-1.onrender.com/api/bookings/admin/bookings"
-        );
+        const res = await fetch(`${API}/api/bookings/admin/bookings`, {
+          cache: "no-store",
+        });
         const data = await res.json();
 
-        // ⭐ PREMIUM EVENT MAPPING WITH COLORS
         const formatted = data.map((b) => {
-          let bgColor = "#3b82f6"; // default blue
+          let bgColor = "#3b82f6";
 
           if (b.status === "approved") bgColor = "#16a34a";
           else if (b.status === "pending") bgColor = "#f59e0b";
@@ -41,22 +42,32 @@ export default function AdminBookingsPage() {
         setEvents(formatted);
       } catch (err) {
         console.error("Failed to load bookings", err);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchBookings();
+
+    const intervalId = window.setInterval(fetchBookings, 10000);
+    const handleVisibility = () => {
+      if (!document.hidden) fetchBookings();
+    };
+
+    window.addEventListener("focus", fetchBookings);
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    return () => {
+      window.clearInterval(intervalId);
+      window.removeEventListener("focus", fetchBookings);
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
   }, []);
 
-  /* =========================
-     EVENT CLICK
-  ========================= */
   const handleEventClick = (info) => {
     setSelectedBooking(info.event.extendedProps);
   };
 
-  /* =========================
-     PAYMENT BADGE CLASS
-  ========================= */
   const getPaymentClass = (status) => {
     if (status === "paid") return styles.paymentPaid;
     if (status === "failed") return styles.paymentFailed;
@@ -65,16 +76,32 @@ export default function AdminBookingsPage() {
 
   return (
     <div className={styles.container}>
-      {/* HEADER */}
       <div className={styles.topHeader}>
-        <h1 className={styles.header}>Admin Bookings</h1>
+        <h1 className={styles.header}>Admin Calendar</h1>
       </div>
 
-      {/* CALENDAR */}
-      <div
-        className={styles.card}
-        style={{ padding: 20, minHeight: 700 }}
-      >
+      <div className={styles.pageToolbar}>
+        <p className={styles.liveMeta}>
+          {loading ? "Loading live calendar..." : `Live bookings: ${events.length}`}
+        </p>
+
+        <div className={styles.calendarLegend}>
+          <span className={styles.legendItem}>
+            <i className={`${styles.legendDot} ${styles.legendApproved}`}></i>
+            Approved
+          </span>
+          <span className={styles.legendItem}>
+            <i className={`${styles.legendDot} ${styles.legendPending}`}></i>
+            Pending
+          </span>
+          <span className={styles.legendItem}>
+            <i className={`${styles.legendDot} ${styles.legendRejected}`}></i>
+            Rejected
+          </span>
+        </div>
+      </div>
+
+      <div className={styles.card} style={{ padding: 20, minHeight: 700 }}>
         <FullCalendar
           plugins={[dayGridPlugin]}
           initialView="dayGridMonth"
@@ -85,13 +112,10 @@ export default function AdminBookingsPage() {
         />
       </div>
 
-      {/* PREMIUM MODAL */}
       {selectedBooking && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
-            <h3 className={styles.modalTitle}>
-              Booking Details
-            </h3>
+            <h3 className={styles.modalTitle}>Booking Details</h3>
 
             <div className={styles.modalGrid}>
               <p><b>Customer:</b> {selectedBooking.customerName}</p>
@@ -107,7 +131,7 @@ export default function AdminBookingsPage() {
                 {new Date(selectedBooking.checkOut).toLocaleDateString()}
               </p>
 
-              <p><b>Amount:</b> ₹{selectedBooking.amount}</p>
+              <p><b>Amount:</b> Rs {selectedBooking.amount}</p>
 
               <p>
                 <b>Payment:</b>{" "}

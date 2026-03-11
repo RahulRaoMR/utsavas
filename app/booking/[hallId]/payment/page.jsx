@@ -56,7 +56,7 @@ export default function PaymentPage() {
         description: "Hall Booking Payment",
         order_id: order.id,
         theme: {
-          color: "#6b1d2b", // 🔥 UTSAVAS theme
+          color: "#788f73",
         },
         handler: function () {
           alert("✅ Payment Successful!");

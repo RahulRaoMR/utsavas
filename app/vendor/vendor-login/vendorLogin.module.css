@@ -3,51 +3,105 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #6b1d2b;
+  padding: 32px 20px;
+  background:
+    radial-gradient(circle at top left, rgba(232, 207, 157, 0.2), transparent 22%),
+    radial-gradient(circle at bottom right, rgba(144, 167, 138, 0.18), transparent 28%),
+    linear-gradient(135deg, #eef1e4 0%, #dfe7d9 42%, #f4ecdf 100%);
 }
 
 .card {
   width: 100%;
-  max-width: 360px;
-  background: #7a2334;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  max-width: 390px;
+  padding: 34px 32px 28px;
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, rgba(251, 245, 234, 0.96), rgba(245, 236, 223, 0.95));
+  border: 1px solid rgba(144, 167, 138, 0.24);
+  box-shadow:
+    0 24px 60px rgba(48, 64, 47, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45);
 }
 
 .title {
   text-align: center;
-  color: #f5d28a;
-  margin-bottom: 20px;
+  color: #30402f;
+  margin: 0 0 22px;
+  font-size: 30px;
+  font-weight: 800;
 }
 
 .input {
   width: 100%;
-  padding: 12px;
+  padding: 14px 16px;
   margin-bottom: 15px;
-  border-radius: 6px;
-  border: none;
+  border-radius: 14px;
+  border: 1px solid #d8ccb5;
   outline: none;
+  color: #30402f;
+  background: rgba(255, 250, 242, 0.92);
+  font-size: 15px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.input::placeholder {
+  color: #8d7a60;
+}
+
+.input:focus {
+  border-color: #90a78a;
+  box-shadow: 0 0 0 4px rgba(144, 167, 138, 0.16);
+  background: #fffdf8;
 }
 
 .submitBtn {
   width: 100%;
-  padding: 12px;
-  background: #f5d28a;
-  color: #6b1d2b;
-  font-weight: bold;
+  padding: 14px;
+  background: linear-gradient(135deg, #90a78a, #788f73);
+  color: #fff2d8;
+  font-weight: 800;
+  font-size: 16px;
   border: none;
-  border-radius: 8px;
+  border-radius: 14px;
   cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
 }
 
 .submitBtn:hover {
-  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(48, 64, 47, 0.2);
+  filter: brightness(1.03);
 }
 
 .backText {
-  margin-top: 15px;
+  margin-top: 18px;
   text-align: center;
-  color: #f5d28a;
+  color: #6a825f;
   cursor: pointer;
+  font-weight: 700;
+}
+
+.backText:hover {
+  color: #30402f;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 20px;
+  }
+
+  .card {
+    max-width: 400px;
+    padding: 28px 22px 24px;
+    border-radius: 22px;
+  }
+
+  .title {
+    font-size: 26px;
+  }
+
+  .input,
+  .submitBtn {
+    font-size: 14px;
+  }
 }

@@ -39,7 +39,7 @@ export default function Navbar() {
         {/* LOGO */}
         <div className="logo">
           <Link href="/dashboard">
-            <img src="/utsavas-logo.png" alt="UTSAVAS" />
+            <img src="/logo/utsavaa-gold.png" alt="UTSAVAS" />
           </Link>
         </div>
 

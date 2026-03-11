@@ -7,11 +7,14 @@ export async function GET(req) {
     await connectDB();
 
     const { searchParams } = new URL(req.url);
-    const category = searchParams.get("category");
+    const category = (searchParams.get("category") || "").toLowerCase().trim();
 
-    const query = category ? { category } : {};
+    const query = {
+      status: "approved",
+      ...(category ? { category } : {}),
+    };
 
-    const halls = await Hall.find(query).lean();
+    const halls = await Hall.find(query).sort({ createdAt: -1 }).lean();
 
     return NextResponse.json(halls);
   } catch (error) {

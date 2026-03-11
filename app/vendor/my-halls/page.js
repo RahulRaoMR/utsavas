@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./myHalls.module.css";
+import { toAbsoluteImageUrl } from "../../../lib/imageUrl";
 
 const API =
   process.env.NEXT_PUBLIC_API_URL ||
@@ -105,13 +106,18 @@ export default function MyHallsPage() {
       <div className={styles.grid}>
         {halls.map((hall) => (
           <div key={hall._id} className={styles.card}>
-            {hall.images?.[0] && (
-              <img
-                src={`https://utsavas-backend-1.onrender.com${hall.images[0]}`}
-                alt={hall.hallName}
-                className={styles.image}
-              />
-            )}
+            <img
+              src={
+                hall.images?.[0]
+                  ? toAbsoluteImageUrl(hall.images[0])
+                  : "/hall1.jpg"
+              }
+              alt={hall.hallName}
+              className={styles.image}
+              onError={(e) => {
+                e.currentTarget.src = "/hall1.jpg";
+              }}
+            />
 
             <div className={styles.cardBody}>
               <h3 className={styles.hallName}>{hall.hallName}</h3>

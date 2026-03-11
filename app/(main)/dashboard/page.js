@@ -23,9 +23,20 @@ export default function Dashboard() {
     const filled = localStorage.getItem("enquiryFilled");
     if (!filled) setShowPopup(true);
 
-    const savedLocation = localStorage.getItem("utsavasLocation");
+    const savedLocation = localStorage.getItem("utsavasSearchedLocation");
     if (savedLocation) setSelectedLocation(savedLocation);
   }, []);
+
+  const openCategoryListing = (route) => {
+    const pickedLocation = (selectedLocation || "").trim();
+
+    if (pickedLocation) {
+      router.push(`${route}?city=${encodeURIComponent(pickedLocation)}`);
+      return;
+    }
+
+    router.push(route);
+  };
 
   /* ===================================
      🔍 SEARCH API
@@ -146,7 +157,10 @@ export default function Dashboard() {
 
       <div className="dashboard-container">
         <div className="overlay">
-          <h1 className="title">Welcome to UTSAVAS</h1>
+          <h1 className="title">
+            <span className="titleLead">Welcome to</span>
+            <span className="titleBrand">UTSAVAS</span>
+          </h1>
           <p className="subtitle">
             Where UTSAVAS Become Memories
           </p>
@@ -200,21 +214,21 @@ export default function Dashboard() {
           <div className="card-container">
             <div
               className="card wedding"
-              onClick={() => router.push("/wedding-halls")}
+              onClick={() => openCategoryListing("/wedding-halls")}
             >
               Wedding Halls
             </div>
 
             <div
               className="card banquet"
-              onClick={() => router.push("/banquet-halls")}
+              onClick={() => openCategoryListing("/banquet-halls")}
             >
               Banquet Halls
             </div>
 
             <div
               className="card party"
-              onClick={() => router.push("/party-venues")}
+              onClick={() => openCategoryListing("/party-venues")}
             >
               Party Venues
             </div>

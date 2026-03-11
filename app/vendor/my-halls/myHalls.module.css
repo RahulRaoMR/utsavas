@@ -1,18 +1,18 @@
 .page {
   padding: 40px;
-  background: #fffaf3;
+  background: #f4ecdf;
   min-height: 100vh;
 }
 
 .title {
   font-size: 28px;
-  color: #6b1d2b;
+  color: #30402f;
   margin-bottom: 30px;
 }
 
 .loading,
 .empty {
-  color: #6b1d2b;
+  color: #30402f;
   font-size: 16px;
 }
 
@@ -23,11 +23,11 @@
 }
 
 .card {
-  background: white;
+  background: #fbf5ea;
   border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 30px rgba(48, 64, 47, 0.08);
   overflow: hidden;
-  border-left: 6px solid #6b1d2b;
+  border-left: 6px solid #90a78a;
 }
 
 .image {
@@ -41,7 +41,7 @@
 }
 
 .hallName {
-  color: #6b1d2b;
+  color: #30402f;
   margin-bottom: 10px;
 }
 
@@ -60,8 +60,8 @@
 
 .viewBtn {
   flex: 1;
-  background: #f5d28a;
-  color: #6b1d2b;
+  background: #dcc08b;
+  color: #30402f;
   border: none;
   padding: 10px;
   border-radius: 8px;
@@ -71,8 +71,8 @@
 
 .editBtn {
   flex: 1;
-  background: #6b1d2b;
-  color: #f5d28a;
+  background: #788f73;
+  color: #fff2d8;
   border: none;
   padding: 10px;
   border-radius: 8px;
@@ -97,11 +97,10 @@
   opacity: 0.9;
 }
 
-/* Text */
 .card p,
 .card h3,
 .card span {
-  color: #6b1d2b; /* UTSAVAS THEME */
+  color: #30402f;
   font-size: 16px;
   margin: 6px 0;
 }

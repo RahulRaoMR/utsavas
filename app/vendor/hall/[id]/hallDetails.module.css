@@ -1,30 +1,27 @@
 .page {
   padding: 32px;
-  background: #fffaf3;
+  background: #f4ecdf;
   min-height: 100vh;
 }
 
-/* Header */
 .title {
   font-size: 30px;
   font-weight: bold;
-  color: #6b1d2b; /* UTSAVAS THEME */
+  color: #30402f;
   margin-bottom: 24px;
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-/* Card */
 .card {
-  background: #ffffff;
+  background: #fbf5ea;
   border-radius: 18px;
   padding: 28px;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
-  border-left: 6px solid #6b1d2b;
+  box-shadow: 0 12px 28px rgba(48, 64, 47, 0.1);
+  border-left: 6px solid #90a78a;
 }
 
-/* Image */
 .image {
   width: 100%;
   height: 340px;
@@ -33,37 +30,32 @@
   margin-bottom: 24px;
 }
 
-/* Section titles */
 .sectionTitle {
-  color: #6b1d2b;
+  color: #30402f;
   font-size: 22px;
   font-weight: bold;
   margin-top: 24px;
   margin-bottom: 12px;
 }
 
-/* Text */
 .text {
-  color: #6b1d2b;
+  color: #30402f;
   font-size: 16px;
   margin: 6px 0;
 }
 
-/* Feature list */
 .features {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 10px;
 }
 
-/* Status */
 .approved {
   margin-top: 16px;
   font-weight: bold;
   color: #2e7d32;
 }
 
-/* Buttons */
 .actions {
   display: flex;
   gap: 16px;
@@ -71,8 +63,8 @@
 }
 
 .backBtn {
-  background: #f5d28a;
-  color: #6b1d2b;
+  background: #dcc08b;
+  color: #30402f;
   border: none;
   padding: 14px 20px;
   border-radius: 10px;
@@ -82,7 +74,7 @@
 }
 
 .editBtn {
-  background: #6b1d2b;
+  background: #788f73;
   color: white;
   border: none;
   padding: 14px 20px;

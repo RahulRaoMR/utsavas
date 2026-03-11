@@ -10,14 +10,21 @@
 
 /* ROOT THEME */
 :root {
-  --background: #5a0f22;
-  --foreground: #ffffff;
+  --background: #f4ecdf;
+  --foreground: #30402f;
+  --brand-maroon: #90a78a;
+  --brand-maroon-deep: #788f73;
+  --brand-maroon-soft: #a9bca1;
+  --brand-gold: #d8b979;
+  --brand-cream: #f4ecdf;
+  --brand-text: #30402f;
+  --brand-surface: #fbf5ea;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #5a0f22;
-    --foreground: #ffffff;
+    --background: #f4ecdf;
+    --foreground: #30402f;
   }
 }
 
@@ -44,7 +51,7 @@ body {
 =============================== */
 
 .top-nav {
-  background: #6b1d2b;
+  background: var(--brand-maroon);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -60,7 +67,7 @@ body {
 }
 
 .nav-links a {
-  color: #f5d48b;
+  color: var(--brand-gold);
   text-decoration: none;
   font-weight: 500;
 }
@@ -75,8 +82,8 @@ body {
 .list-btn,
 .register-btn,
 .signin-btn {
-  background: #f5d48b;
-  color: #6b1d2b;
+  background: var(--brand-gold);
+  color: var(--brand-text);
   padding: 8px 18px;
   border-radius: 8px;
   font-weight: 600;
@@ -91,12 +98,12 @@ body {
 .search-bar {
   display: flex;
   gap: 16px;
-  background: white;
+  background: var(--brand-surface);
   padding: 20px;
   margin: -30px auto 40px;
   width: 80%;
   border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  box-shadow: 0 10px 30px rgba(56, 71, 54, 0.12);
 }
 
 .search-bar select,
@@ -107,7 +114,7 @@ body {
 }
 
 .search-bar button {
-  background: #c71f37;
+  background: var(--brand-maroon-soft);
   color: white;
   font-weight: 600;
   border: none;

@@ -244,7 +244,19 @@ export default function BookingPage() {
 
       {/* ⭐ AIRBNB RANGE CALENDAR */}
       <div className={styles.calendarBox}>
-        <h3>Availability Calendar</h3>
+        <div className={styles.calendarHeader}>
+          <span className={styles.calendarBadge} aria-hidden="true">
+            <span className={styles.calendarRingLeft}></span>
+            <span className={styles.calendarRingRight}></span>
+            <span className={styles.calendarStar}>★</span>
+          </span>
+          <div>
+            <h3>Availability Calendar</h3>
+            <p className={styles.calendarSubtext}>
+              Select your event dates from the live venue calendar.
+            </p>
+          </div>
+        </div>
 
         <Calendar
           selectRange={true}
@@ -259,13 +271,7 @@ export default function BookingPage() {
 
         {/* ⭐ nights counter */}
         {checkInDate && checkOutDate && (
-          <p
-            style={{
-              marginTop: 10,
-              fontWeight: 600,
-              color: "#6b1d2b",
-            }}
-          >
+          <p className={styles.nightsText}>
             {Math.ceil(
               (checkOutDate - checkInDate) /
                 (1000 * 60 * 60 * 24)

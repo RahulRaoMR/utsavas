@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import "./topnavbar.css";
+import { getGeolocationErrorMessage } from "./geolocationError";
 
 const API =
   process.env.NEXT_PUBLIC_API_URL ||
@@ -17,6 +18,20 @@ type UserLike = {
   businessName?: string;
 };
 
+type LocationSuggestion = {
+  label: string;
+  sublabel?: string;
+  value: string;
+  source: "search" | "popular" | "recent" | "current";
+};
+
+const POPULAR_DESTINATIONS: LocationSuggestion[] = [
+  { label: "Bengaluru", sublabel: "Karnataka, India", value: "Bengaluru", source: "popular" },
+  { label: "Mysuru", sublabel: "Karnataka, India", value: "Mysuru", source: "popular" },
+  { label: "Mangaluru", sublabel: "Karnataka, India", value: "Mangaluru", source: "popular" },
+  { label: "Hubballi", sublabel: "Karnataka, India", value: "Hubballi", source: "popular" },
+];
+
 export default function TopNavBar() {
   const router = useRouter();
 
@@ -29,10 +44,14 @@ export default function TopNavBar() {
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
 
   const [location, setLocation] = useState<string>("");
-  const [locationSuggestions, setLocationSuggestions] = useState<string[]>([]);
+  const [recentLocation, setRecentLocation] = useState<string>("");
+  const [locationSuggestions, setLocationSuggestions] = useState<
+    LocationSuggestion[]
+  >([]);
   const [showLocationSuggestions, setShowLocationSuggestions] =
     useState<boolean>(false);
   const [detectingLocation, setDetectingLocation] = useState<boolean>(false);
+  const [locationError, setLocationError] = useState<string>("");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -61,6 +80,9 @@ export default function TopNavBar() {
       try {
         const savedLocation = localStorage.getItem("utsavasLocation");
         if (savedLocation) setLocation(savedLocation);
+
+        const savedRecentLocation = localStorage.getItem("utsavasRecentLocation");
+        if (savedRecentLocation) setRecentLocation(savedRecentLocation);
 
         const userStr = localStorage.getItem("user");
         const vendorStr = localStorage.getItem("vendor");
@@ -126,6 +148,7 @@ export default function TopNavBar() {
 
     if (query.length < 2) {
       setLocationSuggestions([]);
+      setLocationError("");
       return;
     }
 
@@ -151,17 +174,37 @@ export default function TopNavBar() {
               address.suburb ||
               address.county ||
               "";
-            const district = address.county || "";
-            if (!name) return "";
-            return district && district !== name ? `${name}, ${district}` : name;
-          })
-          .filter(Boolean);
+            const district =
+              address.county ||
+              address.state_district ||
+              address.state ||
+              "";
 
-        const unique = [...new Set(formatted)].slice(0, 10);
-        setLocationSuggestions(unique as string[]);
+            if (!name) return null;
+
+            return {
+              label: name,
+              sublabel:
+                district && district !== name
+                  ? `${district}, Karnataka`
+                  : "Karnataka, India",
+              value: district && district !== name ? `${name}, ${district}` : name,
+              source: "search" as const,
+            };
+          })
+          .filter(Boolean) as LocationSuggestion[];
+
+        const unique = formatted.filter(
+          (item, index, self) =>
+            self.findIndex((entry) => entry.value === item.value) === index
+        );
+
+        setLocationSuggestions(unique.slice(0, 8));
+        setLocationError("");
       } catch (err) {
         if ((err as Error).name !== "AbortError") {
           console.error("Location search failed:", err);
+          setLocationError("Unable to load destinations right now.");
         }
       }
     }, 250);
@@ -181,29 +224,42 @@ export default function TopNavBar() {
     router.push("/");
   };
 
-  const handleLocationSearch = () => {
-    if (!location.trim()) return;
-
-    const picked = location.trim();
-    localStorage.setItem("utsavasLocation", picked);
-    setShowLocationSuggestions(false);
-    router.push(`/dashboard?city=${encodeURIComponent(picked)}`);
-  };
-
-  const handlePickSuggestion = (value: string) => {
+  const saveLocationAndGo = (value: string) => {
     setLocation(value);
+    setRecentLocation(value);
     localStorage.setItem("utsavasLocation", value);
+    localStorage.setItem("utsavasRecentLocation", value);
+    localStorage.setItem("utsavasSearchedLocation", value);
     setShowLocationSuggestions(false);
     router.push(`/dashboard?city=${encodeURIComponent(value)}`);
   };
 
+  const handleLocationSearch = () => {
+    const picked = location.trim();
+    if (!picked) return;
+    saveLocationAndGo(picked);
+  };
+
+  const handlePickSuggestion = (value: string) => {
+    saveLocationAndGo(value);
+  };
+
   const handleDetectLocation = () => {
     if (!navigator.geolocation) {
-      alert("Geolocation not supported");
+      setLocationError("Geolocation is not supported on this device.");
+      setShowLocationSuggestions(true);
+      return;
+    }
+
+    if (!window.isSecureContext) {
+      setLocationError(getGeolocationErrorMessage());
+      setShowLocationSuggestions(true);
       return;
     }
 
     setDetectingLocation(true);
+    setLocationError("");
+    setShowLocationSuggestions(true);
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
@@ -227,28 +283,50 @@ export default function TopNavBar() {
             "";
 
           if (!liveLocation) {
-            alert("Could not detect location");
+            setLocationError("Could not detect your current destination.");
             return;
           }
 
-          setLocation(liveLocation);
-          localStorage.setItem("utsavasLocation", liveLocation);
-          setShowLocationSuggestions(false);
-          router.push(`/dashboard?city=${encodeURIComponent(liveLocation)}`);
+          saveLocationAndGo(liveLocation);
         } catch (err) {
           console.error("Live location fetch failed:", err);
-          alert("Failed to detect live location");
+          setLocationError("Failed to detect your destination from GPS.");
         } finally {
           setDetectingLocation(false);
         }
       },
-      () => {
+      (error) => {
         setDetectingLocation(false);
-        alert("Location permission denied");
+        setLocationError(getGeolocationErrorMessage(error));
       },
-      { enableHighAccuracy: true, timeout: 10000 }
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
     );
   };
+
+  const dropdownSuggestions =
+    location.trim().length >= 2
+      ? locationSuggestions
+      : [
+          {
+            label: "Use my current location",
+            sublabel: detectingLocation
+              ? "Detecting your destination..."
+              : "Find venues near you",
+            value: "__current__",
+            source: "current" as const,
+          },
+          ...(recentLocation
+            ? [
+                {
+                  label: recentLocation,
+                  sublabel: "Recent search",
+                  value: recentLocation,
+                  source: "recent" as const,
+                },
+              ]
+            : []),
+          ...POPULAR_DESTINATIONS,
+        ];
 
   const displayName =
     `${user?.firstName || ""} ${user?.lastName || ""}`.trim() ||
@@ -264,21 +342,15 @@ export default function TopNavBar() {
       <nav className={`top-nav ${scrolled ? "scrolled" : ""}`}>
         <div className="logo">
           <Link href="/">
-            <img src="/utsavas-logo.png" alt="UTSAVAS" />
+            <img src="/logo/utsavaa-gold.png" alt="UTSAVAS" />
           </Link>
         </div>
 
         <div className="location-search-wrap" ref={locationRef}>
           <div className="location-bar">
-            <button
-              type="button"
-              className="detect-location-btn"
-              onClick={handleDetectLocation}
-              title="Use my current location"
-              aria-label="Use my current location"
-            >
-              {detectingLocation ? "..." : "📍"}
-            </button>
+            <div className="location-icon-badge" aria-hidden="true">
+              <span className={`location-icon-dot ${detectingLocation ? "loading" : ""}`}></span>
+            </div>
 
             <input
               type="text"
@@ -286,6 +358,7 @@ export default function TopNavBar() {
               value={location}
               onChange={(e) => {
                 setLocation(e.target.value);
+                setLocationError("");
                 setShowLocationSuggestions(true);
               }}
               onFocus={() => setShowLocationSuggestions(true)}
@@ -296,20 +369,67 @@ export default function TopNavBar() {
                 }
               }}
             />
+
+            <button
+              type="button"
+              className="location-submit-btn"
+              onClick={handleLocationSearch}
+            >
+              Search
+            </button>
           </div>
 
-          {showLocationSuggestions && locationSuggestions.length > 0 && (
+          {showLocationSuggestions && (
             <div className="location-suggestions">
-              {locationSuggestions.map((place) => (
+              <div className="location-suggestions-header">
+                <span className="location-suggestions-title">
+                  {location.trim().length >= 2
+                    ? "Matching destinations"
+                    : "Popular destinations"}
+                </span>
                 <button
                   type="button"
-                  key={place}
-                  className="location-suggestion-item"
-                  onClick={() => handlePickSuggestion(place)}
+                  className="location-current-link"
+                  onClick={handleDetectLocation}
                 >
-                  {place}
+                  Use current location
                 </button>
-              ))}
+              </div>
+
+              {locationError ? (
+                <div className="location-feedback">{locationError}</div>
+              ) : null}
+
+              {dropdownSuggestions.length > 0 ? (
+                dropdownSuggestions.map((place) => (
+                  <button
+                    type="button"
+                    key={`${place.source}-${place.value}`}
+                    className="location-suggestion-item"
+                    onClick={() =>
+                      place.value === "__current__"
+                        ? handleDetectLocation()
+                        : handlePickSuggestion(place.value)
+                    }
+                  >
+                    <span className="location-suggestion-icon">
+                      {place.source === "current"
+                        ? "GPS"
+                        : place.source === "recent"
+                        ? "REC"
+                        : "PIN"}
+                    </span>
+                    <span className="location-suggestion-copy">
+                      <strong>{place.label}</strong>
+                      {place.sublabel ? <small>{place.sublabel}</small> : null}
+                    </span>
+                  </button>
+                ))
+              ) : (
+                <div className="location-feedback">
+                  No destinations found. Try a nearby city or area name.
+                </div>
+              )}
             </div>
           )}
         </div>

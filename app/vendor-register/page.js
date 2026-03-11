@@ -62,7 +62,7 @@ export default function VendorRegisterPage() {
     <div className={styles.container}>
       <div className={styles.card}>
         <Image
-          src="/utsavas-logo.png"
+          src="/logo/utsavaa-gold.png"
           alt="UTSAVAS"
           width={100}
           height={100}

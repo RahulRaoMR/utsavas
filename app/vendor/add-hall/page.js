@@ -3,38 +3,11 @@ export const dynamic = "force-dynamic";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Dynamic from "next/dynamic";
 import styles from "./addHall.module.css";
 
-/* =====================
-   LEAFLET DYNAMIC IMPORTS
-===================== */
-const MapContainer = Dynamic(
-  () => import("react-leaflet").then((mod) => mod.MapContainer),
-  { ssr: false }
-);
-
-const TileLayer = Dynamic(
-  () => import("react-leaflet").then((mod) => mod.TileLayer),
-  { ssr: false }
-);
-
-const Marker = Dynamic(
-  () => import("react-leaflet").then((mod) => mod.Marker),
-  { ssr: false }
-);
-
-const LocationPicker = Dynamic(
-  () => import("./LocationPicker"),
-  { ssr: false }
-);
-
-/* =====================
-   GEOCODING (OSM)
-===================== */
 const geocodeAddress = async (query) => {
   const res = await fetch(
-    `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+    `https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=in&q=${encodeURIComponent(
       query
     )}`
   );
@@ -48,9 +21,6 @@ const geocodeAddress = async (query) => {
 export default function AddHallPage() {
   const router = useRouter();
 
-  /* =====================
-     VENUE DETAILS
-  ===================== */
   const [form, setForm] = useState({
     hallName: "",
     category: "wedding",
@@ -60,12 +30,9 @@ export default function AddHallPage() {
     about: "",
     pricePerDay: "",
     pricePerEvent: "",
-    pricePerPlate: "", 
+    pricePerPlate: "",
   });
 
-  /* =====================
-     ADDRESS
-  ===================== */
   const [address, setAddress] = useState({
     flat: "",
     floor: "",
@@ -76,11 +43,7 @@ export default function AddHallPage() {
     landmark: "",
   });
 
-  /* =====================
-     🔥 FEATURES (FINAL CLEAN)
-  ===================== */
   const [features, setFeatures] = useState({
-    // ⭐ Wedding Facilities
     diningHall: false,
     stage: false,
     powerBackup: false,
@@ -91,8 +54,6 @@ export default function AddHallPage() {
     outsideDjAllowed: false,
     alcoholAllowed: false,
     valetParking: false,
-
-    // ⭐ Hotel Amenities
     parking: false,
     restaurant: false,
     roomService: false,
@@ -106,21 +67,14 @@ export default function AddHallPage() {
     evCharging: false,
     wheelchairAccessible: false,
     swimmingPool: false,
-
-    // ⭐ Meals
     selfCatering: false,
     breakfastIncluded: false,
     allMealsIncluded: false,
     breakfastDinnerIncluded: false,
-
-    // ⭐ Policies
     acceptsOnlinePayments: false,
     freeCancellation: false,
   });
 
-  /* =====================
-     LABEL FORMATTER
-  ===================== */
   const formatFeatureLabel = (key) => {
     const labels = {
       diningHall: "Dining Hall",
@@ -133,7 +87,6 @@ export default function AddHallPage() {
       outsideDjAllowed: "Outside DJ Allowed",
       alcoholAllowed: "Alcohol Allowed",
       valetParking: "Valet Parking",
-
       parking: "Parking",
       restaurant: "Restaurant",
       roomService: "Room Service",
@@ -147,12 +100,10 @@ export default function AddHallPage() {
       evCharging: "EV Charging Station",
       wheelchairAccessible: "Wheelchair Accessible",
       swimmingPool: "Swimming Pool",
-
       selfCatering: "Self Catering",
       breakfastIncluded: "Breakfast Included",
       allMealsIncluded: "All Meals Included",
       breakfastDinnerIncluded: "Breakfast & Dinner Included",
-
       acceptsOnlinePayments: "Accepts Online Payments",
       freeCancellation: "Free Cancellation",
     };
@@ -160,22 +111,15 @@ export default function AddHallPage() {
     return labels[key] || key;
   };
 
-  /* =====================
-     MAP LOCATION
-  ===================== */
   const [geoLocation, setGeoLocation] = useState({
-    lat: 10.8505,
-    lng: 76.2711,
+    lat: 12.9716,
+    lng: 77.5946,
   });
+  const [resolvedQuery, setResolvedQuery] = useState("");
+  const [mapLookupState, setMapLookupState] = useState("idle");
 
-  /* =====================
-     IMAGES
-  ===================== */
   const [images, setImages] = useState([]);
 
-  /* =====================
-     HANDLERS
-  ===================== */
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -188,38 +132,104 @@ export default function AddHallPage() {
   const handleAddressChange = (e) =>
     setAddress({ ...address, [e.target.name]: e.target.value });
 
-  /* =====================
-     AUTO GEOLOCATION
-  ===================== */
+  const addressQuery = [
+    address.flat,
+    address.floor,
+    address.landmark,
+    address.area,
+    address.city,
+    address.state,
+    address.pincode,
+  ]
+    .map((value) => value.trim())
+    .filter(Boolean)
+    .join(", ");
+
   useEffect(() => {
+    const hasMinimumAddress =
+      Boolean(address.city.trim()) &&
+      Boolean(address.state.trim()) &&
+      Boolean(
+        address.area.trim() ||
+          address.pincode.trim() ||
+          address.landmark.trim() ||
+          address.flat.trim()
+      );
+
+    if (!addressQuery) {
+      return;
+    }
+
+    if (!hasMinimumAddress) {
+      return;
+    }
+
     const timer = setTimeout(async () => {
-      if (address.area && address.city && address.pincode) {
-        const coords = await geocodeAddress(
-          `${address.area}, ${address.city}, ${address.state}, ${address.pincode}`
-        );
-        if (coords) setGeoLocation(coords);
+      setMapLookupState("loading");
+      const coords = await geocodeAddress(addressQuery);
+      if (coords) {
+        setGeoLocation(coords);
+        setResolvedQuery(addressQuery);
+        setMapLookupState("resolved");
+      } else {
+        setMapLookupState("not_found");
       }
-    }, 800);
+    }, 700);
 
     return () => clearTimeout(timer);
-  }, [address]);
+  }, [
+    address.flat,
+    address.floor,
+    address.landmark,
+    address.area,
+    address.city,
+    address.state,
+    address.pincode,
+    addressQuery,
+  ]);
 
-  /* =====================
-     🚀 SUBMIT (FIXED)
-  ===================== */
+  const mapQuery =
+    resolvedQuery === addressQuery &&
+    typeof geoLocation?.lat === "number" &&
+    typeof geoLocation?.lng === "number"
+      ? `${geoLocation.lat},${geoLocation.lng}`
+      : addressQuery || "Bengaluru";
+  const mapStatus = !addressQuery
+    ? "Enter the venue address to update the map."
+    : !(
+        address.city.trim() &&
+        address.state.trim() &&
+        (address.area.trim() ||
+          address.pincode.trim() ||
+          address.landmark.trim() ||
+          address.flat.trim())
+      )
+    ? "Add area or pincode along with city and state for a more accurate map."
+    : mapLookupState === "loading"
+    ? "Updating map from the address..."
+    : mapLookupState === "not_found"
+    ? "Address not matched exactly. Refine area, landmark, or pincode."
+    : resolvedQuery === addressQuery
+    ? "Map updated automatically from the address."
+    : "Map will refresh after the address is resolved.";
+
+  const embedMapUrl = `https://www.google.com/maps?q=${encodeURIComponent(
+    mapQuery || "Bengaluru"
+  )}&z=16&output=embed`;
+  const openMapUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+    mapQuery || "Bengaluru"
+  )}`;
+
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  console.log("FORM STATE:", form); 
+    const vendor = JSON.parse(localStorage.getItem("vendor"));
+    if (!vendor?._id) {
+      alert("Vendor not logged in");
+      return;
+    }
 
-  const vendor = JSON.parse(localStorage.getItem("vendor"));
-  if (!vendor?._id) {
-    alert("Vendor not logged in");
-    return;
-  }
-
-  const formData = new FormData();
-    // ✅ numbers converted properly
+    const formData = new FormData();
     formData.append("hallName", form.hallName);
     formData.append("category", form.category);
     formData.append("capacity", Number(form.capacity) || 0);
@@ -229,7 +239,6 @@ export default function AddHallPage() {
     formData.append("pricePerEvent", form.pricePerEvent ? Number(form.pricePerEvent) : 0);
     formData.append("pricePerPlate", form.pricePerPlate ? Number(form.pricePerPlate) : 0);
     formData.append("about", form.about);
-
     formData.append("address", JSON.stringify(address));
     formData.append("location", JSON.stringify(geoLocation));
     formData.append("features", JSON.stringify(features));
@@ -250,17 +259,14 @@ export default function AddHallPage() {
     alert("Hall added successfully! Waiting for admin approval.");
     router.push("/vendor/dashboard");
   };
-  /* =====================
-     UI
-  ===================== */
+
   return (
     <div className={styles.page}>
       <h1 className={styles.title}>Add Your Venue</h1>
 
       <form className={styles.form} onSubmit={handleSubmit}>
-        {/* VENUE DETAILS */}
         <section className={styles.card}>
-          <h2>🏛 Venue Details</h2>
+          <h2>Venue Details</h2>
 
           <input
             name="hallName"
@@ -293,31 +299,32 @@ export default function AddHallPage() {
             onChange={handleChange}
           />
 
-         <div className={styles.row}>
-  <input
-    type="number"
-    name="pricePerDay"
-    placeholder="Price Per Day (₹)"
-    value={form.pricePerDay}
-    onChange={handleChange}
-  />
+          <div className={styles.row}>
+            <input
+              type="number"
+              name="pricePerDay"
+              placeholder="Price Per Day (Rs)"
+              value={form.pricePerDay}
+              onChange={handleChange}
+            />
 
-  <input
-    type="number"
-    name="pricePerEvent"
-    placeholder="Price Per Event (₹)"
-    value={form.pricePerEvent}
-    onChange={handleChange}
-  />
+            <input
+              type="number"
+              name="pricePerEvent"
+              placeholder="Price Per Event (Rs)"
+              value={form.pricePerEvent}
+              onChange={handleChange}
+            />
 
-  <input
-    type="number"
-    name="pricePerPlate"
-    placeholder="Price Per Plate (₹)"
-    value={form.pricePerPlate}
-    onChange={handleChange}
-  />
-</div>
+            <input
+              type="number"
+              name="pricePerPlate"
+              placeholder="Price Per Plate (Rs)"
+              value={form.pricePerPlate}
+              onChange={handleChange}
+            />
+          </div>
+
           <textarea
             name="about"
             placeholder="About the venue"
@@ -325,9 +332,8 @@ export default function AddHallPage() {
           />
         </section>
 
-        {/* ADDRESS */}
         <section className={styles.card}>
-          <h2>📍 Venue Address</h2>
+          <h2>Venue Address</h2>
 
           <input name="flat" placeholder="Building / Hall Name" onChange={handleAddressChange} />
           <input name="floor" placeholder="Floor (optional)" onChange={handleAddressChange} />
@@ -338,39 +344,41 @@ export default function AddHallPage() {
           <input name="landmark" placeholder="Nearby Landmark" onChange={handleAddressChange} />
         </section>
 
-        {/* MAP */}
         <section className={styles.card}>
-          <h2>🗺 Pin Venue Location</h2>
+          <h2>Map Location</h2>
+          <p className={styles.mapIntro}>
+            This map updates automatically from the address above so the venue
+            location is easier to verify.
+          </p>
+          <p className={styles.mapStatus}>{mapStatus}</p>
 
-          <MapContainer
-            center={geoLocation}
-            zoom={15}
-            scrollWheelZoom
-            className={styles.map}
-          >
-            <TileLayer
-              attribution='&copy; OpenStreetMap'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          <div className={styles.map}>
+            <iframe
+              title="Venue map preview"
+              src={embedMapUrl}
+              className={styles.mapFrame}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
             />
+          </div>
 
-            <Marker
-              position={geoLocation}
-              draggable
-              eventHandlers={{
-                dragend: (e) => {
-                  setGeoLocation(e.target.getLatLng());
-                },
-              }}
-            />
-
-            {/* ✅ FIXED */}
-            <LocationPicker setGeoLocation={setGeoLocation} />
-          </MapContainer>
+          <div className={styles.mapMeta}>
+            <span>
+              Lat: {geoLocation.lat.toFixed(5)} | Lng: {geoLocation.lng.toFixed(5)}
+            </span>
+            <a
+              href={openMapUrl}
+              target="_blank"
+              rel="noreferrer"
+              className={styles.mapLink}
+            >
+              Open in Google Maps
+            </a>
+          </div>
         </section>
 
-        {/* FEATURES */}
         <section className={styles.card}>
-          <h2>✨ Facilities & Amenities</h2>
+          <h2>Facilities & Amenities</h2>
 
           <div className={styles.featureGrid}>
             {Object.entries(features).map(([key, value]) => (
@@ -387,9 +395,8 @@ export default function AddHallPage() {
           </div>
         </section>
 
-        {/* IMAGES */}
         <section className={styles.card}>
-          <h2>📸 Venue Images</h2>
+          <h2>Venue Images</h2>
           <input type="file" multiple accept="image/*" onChange={handleImageChange} />
         </section>
 

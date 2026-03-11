@@ -2,123 +2,96 @@
 
 import "../wedding-halls/weddingHalls.css";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useState, useMemo } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import FiltersSidebar from "../../components/FiltersSidebar";
 import { toAbsoluteImageUrl } from "../../../lib/imageUrl";
+
+const API =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://utsavas-backend-1.onrender.com";
+
+const normalize = (value) => String(value || "").trim().toLowerCase();
 
 function PartyVenuesContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const [halls, setHalls] = useState([]);
-  const [selectedLocation, setSelectedLocation] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  // ✅ SAME PRICE STATE AS WEDDING
   const [priceRange, setPriceRange] = useState({
     min: 0,
     max: 500000,
   });
 
-  /* =====================
-     LOAD LOCATION + HALLS
-  ===================== */
   useEffect(() => {
-    const loc = localStorage.getItem("utsavasLocation");
-    if (loc) setSelectedLocation(loc);
-
-    fetchHalls();
-
-    const handleStorageChange = () => {
-      setSelectedLocation(localStorage.getItem("utsavasLocation"));
+    const fetchHalls = async () => {
+      try {
+        const res = await fetch(`${API}/api/halls/public`);
+        const data = await res.json();
+        setHalls(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error("Failed to fetch party venues", err);
+        setHalls([]);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    window.addEventListener("storage", handleStorageChange);
-    return () =>
-      window.removeEventListener("storage", handleStorageChange);
+    fetchHalls();
   }, []);
 
-  /* =====================
-     FETCH PARTY/BANQUET
-  ===================== */
-  const fetchHalls = async () => {
-    try {
-      const res = await fetch(
-        "https://utsavas-backend-1.onrender.com/api/halls/public?category=party"
-      );
-
-      const data = await res.json();
-      setHalls(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error("Failed to fetch party venues", err);
-      setHalls([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  /* =====================
-     LOCATION CHECK
-  ===================== */
-  const isLocationSelected =
-    selectedLocation && selectedLocation !== "Select Location";
-  const queryText = (searchParams.get("q") || "").trim().toLowerCase();
-  const cityFilter = (searchParams.get("city") || "").trim().toLowerCase();
-  const areaFilter = (searchParams.get("location") || "").trim().toLowerCase();
+  const queryText = normalize(searchParams.get("q"));
+  const cityFilter = normalize(searchParams.get("city"));
+  const areaFilter = normalize(searchParams.get("location"));
   const displayLocationLabel =
-    searchParams.get("location") ||
-    searchParams.get("city") ||
-    (isLocationSelected ? selectedLocation : "");
-  const activeLocationFilter =
-    areaFilter ||
-    cityFilter ||
-    (isLocationSelected ? selectedLocation.toLowerCase() : "");
+    searchParams.get("location") || searchParams.get("city") || "";
+  const activeLocationFilter = areaFilter || cityFilter;
 
-  /* =====================
-     🔥 FINAL FILTER (MATCHED)
-  ===================== */
   const filteredHalls = useMemo(() => {
     return halls.filter((hall) => {
-      // ✅ location filter
+      if (!normalize(hall.category).includes("party")) return false;
+
       let locationMatch = true;
-
       if (activeLocationFilter) {
-        const city = hall.address?.city?.toLowerCase() || "";
-        const area = hall.address?.area?.toLowerCase() || "";
-
+        const city = normalize(hall.address?.city);
+        const area = normalize(hall.address?.area);
         locationMatch =
           city.includes(activeLocationFilter) ||
           area.includes(activeLocationFilter);
       }
 
-      // ✅ price logic (same as wedding)
       const hallPrice =
-        hall.pricePerEvent ||
-        hall.pricePerDay ||
-        hall.pricePerPlate ||
-        0;
-
+        hall.pricePerEvent || hall.pricePerDay || hall.pricePerPlate || 0;
       const priceMatch =
-        hallPrice >= priceRange.min &&
-        hallPrice <= priceRange.max;
+        hallPrice >= priceRange.min && hallPrice <= priceRange.max;
 
       const queryMatch =
         !queryText ||
-        (hall.hallName || "").toLowerCase().includes(queryText) ||
-        (hall.address?.area || "").toLowerCase().includes(queryText) ||
-        (hall.address?.city || "").toLowerCase().includes(queryText);
+        normalize(hall.hallName).includes(queryText) ||
+        normalize(hall.address?.area).includes(queryText) ||
+        normalize(hall.address?.city).includes(queryText);
 
       return locationMatch && priceMatch && queryMatch;
     });
-  }, [halls, priceRange, queryText, activeLocationFilter]);
+  }, [activeLocationFilter, halls, priceRange, queryText]);
 
-  /* =====================
-     UI
-  ===================== */
   return (
     <div className="wedding-page">
       <h1 className="page-title">
-        Party Venues
+        <button
+          type="button"
+          onClick={() => router.push("/party-venues")}
+          style={{
+            border: "none",
+            background: "transparent",
+            color: "inherit",
+            font: "inherit",
+            cursor: "pointer",
+            padding: 0,
+          }}
+        >
+          Party Venues
+        </button>
         {displayLocationLabel && (
           <span style={{ fontSize: "16px", color: "#777" }}>
             {" "}in {displayLocationLabel}
@@ -129,43 +102,33 @@ function PartyVenuesContent() {
       {loading && <p style={{ color: "#777" }}>Loading halls...</p>}
 
       <div className="wedding-layout">
-        {/* ✅ FILTER SIDEBAR */}
         <FiltersSidebar
           priceRange={priceRange}
           setPriceRange={setPriceRange}
         />
 
-        {/* ✅ GRID */}
         <div className="hall-card-grid">
           {!loading && filteredHalls.length === 0 && (
-            <p style={{ color: "#777" }}>
-              No party venues found.
-            </p>
+            <p style={{ color: "#777" }}>No party venues found.</p>
           )}
 
           {filteredHalls.map((hall) => {
             const displayPrice =
-              hall.pricePerEvent ||
-              hall.pricePerDay ||
-              hall.pricePerPlate ||
-              0;
+              hall.pricePerEvent || hall.pricePerDay || hall.pricePerPlate || 0;
 
-            const priceLabel =
-              hall.pricePerEvent
-                ? "per event"
-                : hall.pricePerDay
+            const priceLabel = hall.pricePerEvent
+              ? "per event"
+              : hall.pricePerDay
                 ? "per day"
                 : hall.pricePerPlate
-                ? "per plate"
-                : "";
+                  ? "per plate"
+                  : "";
 
             return (
               <div
                 key={hall._id}
                 className="hall-card"
-                onClick={() =>
-                  router.push(`/party-venues/${hall._id}`)
-                }
+                onClick={() => router.push(`/party-venues/${hall._id}`)}
               >
                 <img
                   src={
@@ -182,24 +145,20 @@ function PartyVenuesContent() {
 
                 <div className="hall-content">
                   <h3>{hall.hallName}</h3>
-
                   <p className="location">
-                    📍 {hall.address?.area}, {hall.address?.city}
+                    {"\uD83D\uDCCD"} {hall.address?.area}, {hall.address?.city}
                   </p>
 
                   <div className="hall-meta">
-                    <span>👥 {hall.capacity || 0} Capacity</span>
-                    <span>🚗 {hall.parkingCapacity || 0} Parking</span>
+                    <span>{"\uD83D\uDC65"} {hall.capacity || 0} Capacity</span>
+                    <span>{"\uD83D\uDE97"} {hall.parkingCapacity || 0} Parking</span>
                   </div>
 
-                  {/* ✅ PRICE (ADDED) */}
                   <p className="hall-price">
-                    ₹{displayPrice.toLocaleString()} {priceLabel}
+                    {"\u20B9"}{displayPrice.toLocaleString()} {priceLabel}
                   </p>
 
-                  <button className="hall-btn">
-                    View Details
-                  </button>
+                  <button className="hall-btn">View Details</button>
                 </div>
               </div>
             );

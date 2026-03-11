@@ -7,7 +7,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 14px 40px;
-  background: #6b1d2b;
+  background: #90a78a;
   position: fixed;
   top: 0;
   left: 0;
@@ -19,6 +19,9 @@
 .logo img {
   height: 35px;
   object-fit: contain;
+  display: block;
+  background: transparent;
+  mix-blend-mode: multiply;
 }
 
 /* ===============================
@@ -31,7 +34,7 @@
 }
 
 .nav-links a {
-  color: #f5d28a;
+  color: #fff2d8;
   text-decoration: none;
   font-size: 15px;
   font-weight: 600;
@@ -47,7 +50,7 @@
   bottom: -6px;
   width: 0%;
   height: 2px;
-  background: #f5d28a;
+  background: #f1dfbb;
   transition: width 0.3s ease;
 }
 
@@ -64,8 +67,8 @@
    =============================== */
 
 .location-box {
-  background: linear-gradient(135deg, #f8e3a1, #e6b65c);
-  color: #6b1d2b;
+  background: linear-gradient(135deg, #f0e2c2, #dcc08b);
+  color: #30402f;
   padding: 10px 22px;
   border-radius: 22px;
   font-size: 14px;
@@ -95,7 +98,7 @@
 .hamburger {
   display: none;
   font-size: 26px;
-  color: #f5d28a;
+  color: #fff2d8;
   cursor: pointer;
 }
 
@@ -130,7 +133,7 @@
     top: 65px;
     left: 0;
     width: 100%;
-    background: #6b1d2b;
+    background: #90a78a;
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -140,7 +143,7 @@
   }
 
   .mobile-menu a {
-    color: #f5d28a;
+    color: #fff2d8;
     font-size: 18px;
     text-decoration: none;
     font-weight: 600;

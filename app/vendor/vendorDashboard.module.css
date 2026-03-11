@@ -1,21 +1,12 @@
-/* =====================
-   VENDOR DASHBOARD THEME
-   (ADMIN STYLE)
-===================== */
-
 .page {
   min-height: 100vh;
-  background: #fffaf3;
+  background: #f4ecdf;
   font-family: Arial, sans-serif;
 }
 
-/* =====================
-   TOP HEADER BAR
-===================== */
-
 .header {
-  background: #6b1d2b;
-  color: #f5d28a;
+  background: linear-gradient(135deg, #90a78a, #788f73);
+  color: #fff2d8;
   padding: 18px 30px;
   display: flex;
   justify-content: space-between;
@@ -28,10 +19,9 @@
   letter-spacing: 1px;
 }
 
-/* LOGOUT BUTTON */
 .logoutBtn {
-  background: white;
-  color: #6b1d2b;
+  background: #fbf5ea;
+  color: #30402f;
   border: none;
   padding: 8px 18px;
   border-radius: 999px;
@@ -40,16 +30,12 @@
 }
 
 .logoutBtn:hover {
-  opacity: 0.9;
+  opacity: 0.92;
 }
 
-/* =====================
-   WELCOME SECTION
-===================== */
-
 .welcomeBox {
-  background: #7a1c1c;
-  color: #f5d28a;
+  background: linear-gradient(135deg, #90a78a, #788f73);
+  color: #fff2d8;
   padding: 30px;
 }
 
@@ -63,10 +49,6 @@
   font-size: 14px;
 }
 
-/* =====================
-   ACTION CARDS
-===================== */
-
 .actions {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -75,12 +57,15 @@
 }
 
 .card {
-  background: white;
+  background: #fbf5ea;
   border-radius: 16px;
-  padding: 26px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-  border-left: 6px solid #6b1d2b;
-  text-align: center;
+  padding: 24px;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-left: 6px solid #90a78a;
+  box-shadow: 0 8px 22px rgba(48, 64, 47, 0.08);
   cursor: pointer;
   transition: transform 0.2s ease;
 }
@@ -97,12 +82,8 @@
 .cardTitle {
   font-size: 18px;
   font-weight: bold;
-  color: #6b1d2b;
+  color: #30402f;
 }
-
-/* =====================
-   SMALL TEXT
-===================== */
 
 .muted {
   font-size: 13px;
@@ -110,22 +91,6 @@
   margin-top: 6px;
 }
 
-
-/* ===== BOOKINGS CARD ===== */
-
-.card {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 24px;
-  margin-bottom: 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  border-left: 6px solid #6b1d2b;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
-}
-
-/* LEFT CONTENT */
 .cardLeft {
   display: flex;
   flex-direction: column;
@@ -134,11 +99,10 @@
 
 .hallName {
   margin-bottom: 6px;
-  color: #6b1d2b;
+  color: #30402f;
   font-size: 20px;
 }
 
-/* TEXT */
 .card p {
   margin: 0;
   font-size: 14px;
@@ -147,23 +111,20 @@
 
 .card p span {
   font-weight: 600;
-  color: #6b1d2b;
+  color: #30402f;
 }
 
-/* STATUS */
 .status {
   color: #b8892f;
 }
 
-/* ACTIONS */
 .cardActions {
   display: flex;
   gap: 12px;
 }
 
-/* BUTTONS */
 .approveBtn {
-  background: #6b1d2b;
+  background: #788f73;
   color: #fff;
   border: none;
   padding: 10px 18px;
@@ -173,9 +134,9 @@
 }
 
 .rejectBtn {
-  background: #fff;
-  color: #6b1d2b;
-  border: 1.5px solid #6b1d2b;
+  background: #fbf5ea;
+  color: #30402f;
+  border: 1.5px solid #90a78a;
   padding: 10px 18px;
   border-radius: 10px;
   cursor: pointer;
@@ -183,31 +144,28 @@
 }
 
 .approveBtn:hover {
-  background: #531624;
+  background: #657d5f;
 }
 
 .rejectBtn:hover {
-  background: #6b1d2b;
+  background: #90a78a;
   color: #fff;
 }
 
-/* ===== CALENDAR SECTION ===== */
-
 .calendarSection {
-  margin-top: 50px;
-  background: #fff;
+  margin: 50px 40px 0;
+  background: #fbf5ea;
   padding: 30px;
   border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 25px rgba(48, 64, 47, 0.08);
 }
 
 .calendarTitle {
-  color: #6b1d2b;
+  color: #30402f;
   font-size: 24px;
   margin-bottom: 20px;
 }
 
-/* MONTH BAR */
 .monthBar {
   display: flex;
   justify-content: center;
@@ -215,11 +173,11 @@
   align-items: center;
   margin-bottom: 20px;
   font-weight: 600;
-  color: #6b1d2b;
+  color: #30402f;
 }
 
 .monthBar button {
-  background: #6b1d2b;
+  background: #788f73;
   color: #fff;
   border: none;
   padding: 6px 12px;
@@ -227,7 +185,6 @@
   cursor: pointer;
 }
 
-/* GRID */
 .calendarGrid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -236,7 +193,7 @@
 
 .day {
   height: 80px;
-  background: #fff7ef;
+  background: #f8f1e5;
   border-radius: 12px;
   display: flex;
   justify-content: center;
@@ -245,7 +202,6 @@
   color: #333;
 }
 
-/* STATUS COLORS */
 .pending {
   background: #fff3cd;
   color: #856404;
@@ -256,20 +212,15 @@
   color: #155724;
 }
 
-/* LEGEND */
 .legend {
   margin-top: 20px;
   display: flex;
   gap: 20px;
 }
 
-/* ===== MODAL OVERLAY ===== */
 .modalOverlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
@@ -277,9 +228,8 @@
   z-index: 1000;
 }
 
-/* ===== MODAL ===== */
 .modal {
-  background: #fff;
+  background: #fbf5ea;
   padding: 30px;
   border-radius: 20px;
   width: 420px;
@@ -287,7 +237,7 @@
 }
 
 .modal h2 {
-  color: #6b1d2b;
+  color: #30402f;
   margin-bottom: 20px;
 }
 
@@ -299,13 +249,12 @@
 
 .modal p span {
   font-weight: 600;
-  color: #6b1d2b;
+  color: #30402f;
 }
 
-/* CLOSE BUTTON */
 .closeBtn {
   margin-top: 20px;
-  background: #6b1d2b;
+  background: #788f73;
   color: #fff;
   border: none;
   padding: 10px 20px;
@@ -315,18 +264,15 @@
 }
 
 .closeBtn:hover {
-  background: #531624;
+  background: #657d5f;
 }
 
-
-/* ================= REVENUE SUMMARY ================= */
-
 .revenueSection {
-  margin-top: 50px;
+  margin: 50px 40px 0;
 }
 
 .revenueTitle {
-  color: #6b1d2b;
+  color: #30402f;
   margin-bottom: 20px;
 }
 
@@ -337,11 +283,11 @@
 }
 
 .revenueCard {
-  background: #fff;
+  background: #fbf5ea;
   padding: 22px;
   border-radius: 16px;
-  border-left: 6px solid #6b1d2b;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  border-left: 6px solid #90a78a;
+  box-shadow: 0 6px 18px rgba(48, 64, 47, 0.08);
 }
 
 .revenueCard p {
@@ -353,16 +299,11 @@
 .revenueCard h3 {
   margin-top: 10px;
   font-size: 26px;
-  color: #6b1d2b;
+  color: #30402f;
 }
 
-/* Highlight revenue */
 .revenueHighlight {
-  background: linear-gradient(
-    135deg,
-    #6b1d2b,
-    #8b2a3e
-  );
+  background: linear-gradient(135deg, #90a78a, #788f73);
 }
 
 .revenueHighlight p,

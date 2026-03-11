@@ -1,25 +1,39 @@
 .hero {
-  position: relative;            /* REQUIRED */
-  height: 100vh;
+  position: relative;
+  min-height: 100vh;
   width: 100%;
-  background-image: url("/images/utsavam-hero.jpg");
+  background-image:
+    linear-gradient(180deg, rgba(32, 32, 26, 0.1) 0%, rgba(32, 32, 26, 0.24) 100%),
+    url("/images/utsavam-hero.jpg");
   background-size: cover;
-  background-position: center;
+  background-position: center 38%;
   background-repeat: no-repeat;
-
-  padding-top: 160px;            /* space for navbar + search bar */
+  overflow: hidden;
+  padding: 170px 20px 90px;
   margin-top: 0;
-
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at top, rgba(244, 221, 176, 0.14), transparent 42%),
+    radial-gradient(circle at center, transparent 52%, rgba(0, 0, 0, 0.12) 100%);
+  z-index: 1;
+  pointer-events: none;
 }
 
 /* Dark overlay */
 .overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background:
+    linear-gradient(180deg, rgba(68, 56, 34, 0.08) 0%, rgba(32, 28, 21, 0.24) 100%),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0.04) 100%);
   z-index: 1;
 }
 
@@ -28,9 +42,11 @@
   position: relative;
   z-index: 2;
   text-align: center;
-  max-width: 900px;
+  max-width: 980px;
   color: #ffffff;
-  padding: 0 20px;
+  padding: 32px 32px 20px;
+  border-radius: 32px;
+  backdrop-filter: blur(2px);
 }
 
 /* Main heading */
@@ -51,8 +67,8 @@
 
 /* CTA button */
 .content button {
-  background: #f5d28e;
-  color: #6b1d2b;
+  background: #dcc08b;
+  color: #30402f;
   border: none;
   padding: 15px 38px;
   font-size: 14px;
@@ -63,33 +79,42 @@
 }
 
 .content button:hover {
-  background: #6b1d2b;
-  color: #f5d28e;
-  border: 1px solid #f5d28e;
+  background: #90a78a;
+  color: #fff7ea;
+  border: 1px solid #dcc08b;
 }
 /* Main brand title */
 .content h1 {
   font-family: "Playfair Display", serif;
-  font-size: 58px;
-  font-weight: 500;
-  margin-bottom: 22px;
-  color: #f5d28e; /* UTSAVAM GOLD */
-}
-
-/* Tagline: WHERE UTSAVAS BECOME MEMORIES */
-.content h2 {
-  font-size: 14px;
-  letter-spacing: 4px;
+  font-size: clamp(3.5rem, 7vw, 6rem);
+  font-weight: 700;
   margin-bottom: 18px;
-  color: #f5d28e; /* UTSAVAM GOLD */
+  letter-spacing: 0.04em;
+  color: #f6e2b4;
+  text-shadow:
+    0 0 8px rgba(246, 226, 180, 0.55),
+    0 0 18px rgba(220, 192, 139, 0.4),
+    0 0 34px rgba(220, 192, 139, 0.22);
 }
 
 /* Subtitle line */
 .content p {
-  font-size: 14px;
-  letter-spacing: 3px;
-  margin-bottom: 36px;
-  color: #f5d28e; /* UTSAVAM GOLD */
+  font-size: 0.98rem;
+  letter-spacing: 0.26em;
+  margin-bottom: 20px;
+  font-weight: 700;
+  color: #f4ddb0;
+  text-shadow:
+    0 0 5px rgba(244, 221, 176, 0.35),
+    0 0 12px rgba(216, 185, 121, 0.18);
+}
+
+.content p:first-of-type {
+  margin-bottom: 26px;
+}
+
+.content p:last-of-type {
+  margin-bottom: 34px;
 }
 /* ===== HERO MOBILE FIX ===== */
 @media (max-width: 768px) {
@@ -114,13 +139,13 @@
 @media (max-width: 768px) {
 
   .hero {
-    height: 85vh;
-    padding-top: 120px;
-    background-position: center;
+    min-height: 88vh;
+    padding: 132px 16px 72px;
+    background-position: center 30%;
   }
 
   .content {
-    padding: 0 16px;
+    padding: 20px 16px 12px;
   }
 
   .content h1 {
@@ -129,16 +154,10 @@
     margin-bottom: 16px;
   }
 
-  .content h2 {
-    font-size: 12px;
-    letter-spacing: 2px;
-    margin-bottom: 12px;
-  }
-
   .content p {
     font-size: 13px;
-    letter-spacing: 2px;
-    margin-bottom: 24px;
+    letter-spacing: 0.16em;
+    margin-bottom: 18px;
   }
 
   .content button {
@@ -151,22 +170,17 @@
 @media (max-width: 480px) {
 
   .hero {
-    height: 75vh;
-    padding-top: 100px;
+    min-height: 78vh;
+    padding: 112px 12px 56px;
   }
 
   .content h1 {
     font-size: 28px;
   }
 
-  .content h2 {
-    font-size: 11px;
-    letter-spacing: 1.5px;
-  }
-
   .content p {
     font-size: 12px;
-    letter-spacing: 1.5px;
+    letter-spacing: 0.12em;
   }
 
   .content button {

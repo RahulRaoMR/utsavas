@@ -72,7 +72,14 @@ export default function VendorCalendarPage() {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Booking Calendar</h1>
+      <div className={styles.titleRow}>
+        <span className={styles.calendarBadge} aria-hidden="true">
+          <span className={styles.calendarRingLeft}></span>
+          <span className={styles.calendarRingRight}></span>
+          <span className={styles.calendarStar}>★</span>
+        </span>
+        <h1 className={styles.title}>Booking Calendar</h1>
+      </div>
 
       {/* MONTH NAVIGATION */}
       <div className={styles.monthBar}>

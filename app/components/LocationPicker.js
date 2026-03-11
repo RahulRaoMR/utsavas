@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import "./locationPopup.css";
+import { getGeolocationErrorMessage } from "./geolocationError";
 
 const POPULAR_LOCATIONS = [
   "JP Nagar",
@@ -21,6 +22,11 @@ export default function LocationPopup({ onClose, onSelect }) {
   const detectLocation = () => {
     if (!navigator.geolocation) {
       alert("Geolocation not supported");
+      return;
+    }
+
+    if (!window.isSecureContext) {
+      alert(getGeolocationErrorMessage());
       return;
     }
 
@@ -66,10 +72,11 @@ export default function LocationPopup({ onClose, onSelect }) {
           setLoading(false);
         }
       },
-      () => {
-        alert("Location permission denied");
+      (error) => {
+        alert(getGeolocationErrorMessage(error));
         setLoading(false);
-      }
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
     );
   };
 

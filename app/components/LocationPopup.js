@@ -3,6 +3,7 @@
 import { useState } from "react";
 import "./locationPopup.css";
 import { karnatakaTaluksAndTowns } from "./karnatakaTaluksAndTowns";
+import { getGeolocationErrorMessage } from "./geolocationError";
 
 /* ⭐ Popular quick picks */
 const POPULAR_LOCATIONS = [
@@ -33,6 +34,11 @@ export default function LocationPopup({ onClose, onSelect }) {
       return;
     }
 
+    if (!window.isSecureContext) {
+      alert(getGeolocationErrorMessage());
+      return;
+    }
+
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const lat = position.coords.latitude;
@@ -54,9 +60,10 @@ export default function LocationPopup({ onClose, onSelect }) {
           alert("Unable to fetch location");
         }
       },
-      () => {
-        alert("Location permission denied");
-      }
+      (error) => {
+        alert(getGeolocationErrorMessage(error));
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
     );
   };
 

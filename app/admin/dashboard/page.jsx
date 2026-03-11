@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "../admin.module.css";
 
+const API =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://utsavas-backend-1.onrender.com";
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -20,9 +23,9 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await fetch(
-          "https://utsavas-backend-1.onrender.com/api/admin/dashboard-stats"
-        );
+        const res = await fetch(`${API}/api/admin/dashboard-stats`, {
+          cache: "no-store",
+        });
 
         const data = await res.json();
 
@@ -40,6 +43,20 @@ export default function AdminDashboard() {
     };
 
     fetchStats();
+
+    const intervalId = window.setInterval(fetchStats, 10000);
+    const handleVisibility = () => {
+      if (!document.hidden) fetchStats();
+    };
+
+    window.addEventListener("focus", fetchStats);
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    return () => {
+      window.clearInterval(intervalId);
+      window.removeEventListener("focus", fetchStats);
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
   }, []);
 
   const handleLogout = () => {
@@ -68,25 +85,41 @@ export default function AdminDashboard() {
 
         {/* STATS CARDS */}
         <div className={styles.cardGrid}>
-          <div className={styles.card}>
+          <button
+            type="button"
+            className={`${styles.card} ${styles.statCard}`}
+            onClick={() => router.push("/admin/vendors?status=all")}
+          >
             <h3>Total Vendors</h3>
             <p className={styles.count}>{stats.totalVendors}</p>
-          </div>
+          </button>
 
-          <div className={styles.card}>
+          <button
+            type="button"
+            className={`${styles.card} ${styles.statCard}`}
+            onClick={() => router.push("/admin/vendors?status=pending")}
+          >
             <h3>Pending Vendors</h3>
             <p className={styles.count}>{stats.pendingVendors}</p>
-          </div>
+          </button>
 
-          <div className={styles.card}>
+          <button
+            type="button"
+            className={`${styles.card} ${styles.statCard}`}
+            onClick={() => router.push("/admin/halls?status=all")}
+          >
             <h3>Total Halls</h3>
             <p className={styles.count}>{stats.totalHalls}</p>
-          </div>
+          </button>
 
-          <div className={styles.card}>
+          <button
+            type="button"
+            className={`${styles.card} ${styles.statCard}`}
+            onClick={() => router.push("/admin/halls?status=pending")}
+          >
             <h3>Pending Halls</h3>
             <p className={styles.count}>{stats.pendingHalls}</p>
-          </div>
+          </button>
         </div>
       </div>
 

@@ -1,18 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import styles from "../admin.module.css";
 
+const API =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://utsavas-backend-1.onrender.com";
+
 export default function AdminHallsPage() {
+  const searchParams = useSearchParams();
   const [halls, setHalls] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
 
-  /* =====================
-     FETCH PENDING HALLS (ADMIN)
-  ===================== */
-  const fetchHalls = async () => {
+  const statusFilter = (searchParams.get("status") || "pending").toLowerCase();
+
+  const fetchHalls = useCallback(async () => {
     try {
-      const res = await fetch("https://utsavas-backend-1.onrender.com/api/admin/halls");
+      const res = await fetch(`${API}/api/admin/halls?status=${statusFilter}`, {
+        cache: "no-store",
+      });
       const data = await res.json();
 
       setHalls(Array.isArray(data) ? data : []);
@@ -23,55 +31,95 @@ export default function AdminHallsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [statusFilter]);
 
   useEffect(() => {
+    setLoading(true);
     fetchHalls();
-  }, []);
 
-  /* =====================
-     APPROVE HALL
-  ===================== */
+    const intervalId = window.setInterval(fetchHalls, 10000);
+    const handleVisibility = () => {
+      if (!document.hidden) fetchHalls();
+    };
+
+    window.addEventListener("focus", fetchHalls);
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    return () => {
+      window.clearInterval(intervalId);
+      window.removeEventListener("focus", fetchHalls);
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
+  }, [fetchHalls]);
+
   const approveHall = async (id) => {
     if (!confirm("Approve this hall?")) return;
 
-    await fetch(
-      `https://utsavas-backend-1.onrender.com/api/admin/halls/${id}/approve`,
-      { method: "PUT" }
-    );
+    await fetch(`${API}/api/admin/halls/${id}/approve`, {
+      method: "PUT",
+    });
 
-    // remove approved hall from list
-    setHalls((prev) => prev.filter((h) => h._id !== id));
+    fetchHalls();
   };
 
-  /* =====================
-     REJECT HALL
-  ===================== */
   const rejectHall = async (id) => {
     if (!confirm("Reject this hall?")) return;
 
-    await fetch(
-      `https://utsavas-backend-1.onrender.com/api/admin/halls/${id}/reject`,
-      { method: "PUT" }
-    );
+    await fetch(`${API}/api/admin/halls/${id}/reject`, {
+      method: "PUT",
+    });
 
-    // remove rejected hall from list
-    setHalls((prev) => prev.filter((h) => h._id !== id));
+    fetchHalls();
   };
 
   if (loading) {
     return <p className={styles.loading}>Loading halls...</p>;
   }
 
+  const pageTitle =
+    statusFilter === "all"
+      ? "All Halls"
+      : statusFilter === "approved"
+        ? "Approved Halls"
+        : statusFilter === "rejected"
+          ? "Rejected Halls"
+          : "Pending Halls";
+
+  const searchedHalls = halls.filter((hall) => {
+    const query = search.trim().toLowerCase();
+    if (!query) return true;
+
+    return [
+      hall.hallName,
+      hall.category,
+      hall.vendor?.businessName,
+      hall.vendor?.email,
+      hall.address?.city,
+      hall.address?.area,
+    ].some((value) => (value || "").toLowerCase().includes(query));
+  });
+
   return (
     <div className={styles.container}>
-      <h1 className={styles.header}>
-        🛠 Admin – Hall Approvals (UTSAVAS)
-      </h1>
+      <h1 className={styles.header}>{pageTitle}</h1>
+      <div className={styles.pageToolbar}>
+        <p className={styles.liveMeta}>Live count: {searchedHalls.length}</p>
 
-      {halls.length === 0 && <p>No halls found</p>}
+        <div className={styles.searchShell}>
+          <span className={styles.searchBadge}>Search</span>
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className={styles.searchInput}
+            placeholder="Search halls by hall name, vendor, city or category"
+          />
+        </div>
+      </div>
 
-      {halls.map((hall) => (
+      {searchedHalls.length === 0 && <p>No halls found</p>}
+
+      {searchedHalls.map((hall) => (
         <div key={hall._id} className={styles.hallCard}>
           <h3>{hall.hallName}</h3>
 
@@ -85,7 +133,13 @@ export default function AdminHallsPage() {
 
           <p>
             <b>Status:</b>{" "}
-            <span className={styles.statusPending}>PENDING</span>
+            {hall.status === "approved" ? (
+              <span className={styles.statusApproved}>APPROVED</span>
+            ) : hall.status === "rejected" ? (
+              <span className={styles.statusRejected}>REJECTED</span>
+            ) : (
+              <span className={styles.statusPending}>PENDING</span>
+            )}
           </p>
 
           <p>
@@ -96,43 +150,42 @@ export default function AdminHallsPage() {
             <b>Email:</b> {hall.vendor?.email || "N/A"}
           </p>
 
-          {/* IMAGES */}
           {hall.images?.length > 0 && (
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+            <div className={styles.hallImageRow}>
               {hall.images.map((img, i) => (
                 <img
                   key={i}
-                  src={img}   // ✅ image already has full URL
+                  src={img}
                   alt="Hall"
                   width={120}
                   height={80}
                   style={{
                     objectFit: "cover",
                     borderRadius: 8,
-                    border: "1px solid #6b1d2b", // UTSAVAS theme
+                    border: "1px solid #6b1d2b",
                   }}
                 />
               ))}
             </div>
           )}
 
-          {/* ACTION BUTTONS */}
-          <div style={{ marginTop: 14, display: "flex", gap: 12 }}>
-            <button
-              className={styles.button}
-              onClick={() => approveHall(hall._id)}
-            >
-              ✅ Approve
-            </button>
+          {hall.status === "pending" && (
+            <div className={styles.actionRow}>
+              <button
+                className={styles.button}
+                onClick={() => approveHall(hall._id)}
+              >
+                Approve
+              </button>
 
-            <button
-              className={styles.button}
-              onClick={() => rejectHall(hall._id)}
-              style={{ background: "#b71c1c" }}
-            >
-              ❌ Reject
-            </button>
-          </div>
+              <button
+                className={styles.rejectButton}
+                onClick={() => rejectHall(hall._id)}
+              >
+                Reject
+              </button>
+            </div>
+          )}
         </div>
       ))}
     </div>

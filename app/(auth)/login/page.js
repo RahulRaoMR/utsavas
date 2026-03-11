@@ -103,7 +103,7 @@ export default function LoginPage() {
     <div className={styles.loginContainer}>
       <div className={styles.loginCard}>
         <Image
-          src="/utsavas-logo.png"
+          src="/logo/utsavaa-gold.png"
           alt="UTSAVAS Logo"
           width={120}
           height={120}
