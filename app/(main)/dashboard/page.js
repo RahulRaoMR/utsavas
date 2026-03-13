@@ -3,18 +3,26 @@
 import { useEffect, useState, useRef } from "react";
 import "./dashboard.css";
 import EnquiryPopup from "../../components/EnquiryPopup";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Footer from "../../components/Footer";
+import { getApiBaseUrl } from "../../../lib/api";
+import {
+  DEFAULT_VENUE_ROUTE,
+  getVenueCategoryCards,
+  getVenueRoute,
+} from "../../../lib/venueCategories";
 
 export default function Dashboard() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const searchRef = useRef(null);
 
   const [search, setSearch] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
-  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [selectedLocation, setSelectedLocation] = useState("");
+  const categoryCards = getVenueCategoryCards();
 
   /* ===================================
      ✅ POPUP + LOCATION (PUBLIC — NO LOGIN)
@@ -23,19 +31,37 @@ export default function Dashboard() {
     const filled = localStorage.getItem("enquiryFilled");
     if (!filled) setShowPopup(true);
 
-    const savedLocation = localStorage.getItem("utsavasSearchedLocation");
-    if (savedLocation) setSelectedLocation(savedLocation);
-  }, []);
+    const locationFromQuery =
+      (searchParams.get("city") || searchParams.get("location") || "").trim();
+    const savedLocation = localStorage.getItem("utsavasSearchedLocation") || "";
+    const nextLocation = locationFromQuery || savedLocation;
 
-  const openCategoryListing = (route) => {
-    const pickedLocation = (selectedLocation || "").trim();
+    if (nextLocation) {
+      setSelectedLocation(nextLocation);
+      localStorage.setItem("utsavasSearchedLocation", nextLocation);
+    } else {
+      setSelectedLocation("");
+    }
+  }, [searchParams]);
 
-    if (pickedLocation) {
-      router.push(`${route}?city=${encodeURIComponent(pickedLocation)}`);
-      return;
+  const openCategoryListing = (route, title, categoryKey) => {
+    const params = new URLSearchParams();
+    const pickedLocation = selectedLocation.trim();
+
+    if (title) {
+      params.set("title", title);
     }
 
-    router.push(route);
+    if (categoryKey) {
+      params.set("category", categoryKey);
+    }
+
+    if (pickedLocation) {
+      params.set("city", pickedLocation);
+    }
+
+    const queryString = params.toString();
+    router.push(queryString ? `${route}?${queryString}` : route);
   };
 
   /* ===================================
@@ -52,7 +78,7 @@ export default function Dashboard() {
       try {
         const query = search.trim();
         const res = await fetch(
-          `https://utsavas-backend-1.onrender.com/api/halls/search?q=${encodeURIComponent(
+          `${getApiBaseUrl()}/api/halls/search?q=${encodeURIComponent(
             query
           )}`
         );
@@ -94,14 +120,7 @@ export default function Dashboard() {
   =================================== */
   const openHall = (hall) => {
     setResults([]);
-
-    if (hall.category === "wedding") {
-      router.push(`/wedding-halls/${hall._id}`);
-    } else if (hall.category === "banquet") {
-      router.push(`/banquet-halls/${hall._id}`);
-    } else {
-      router.push(`/party-venues/${hall._id}`);
-    }
+    router.push(`${getVenueRoute(hall.category)}/${hall._id}`);
   };
 
   const handleSearchSubmit = () => {
@@ -118,20 +137,19 @@ export default function Dashboard() {
       return;
     }
 
-    const preferredCategory =
-      results[0]?.category === "banquet" || results[0]?.category === "party"
-        ? results[0].category
-        : "wedding";
-
-    const listingRoute =
-      preferredCategory === "banquet"
-        ? "/banquet-halls"
-        : preferredCategory === "party"
-        ? "/party-venues"
-        : "/wedding-halls";
+    const preferredCategory = results[0]?.category || "";
+    const listingRoute = getVenueRoute(preferredCategory) || DEFAULT_VENUE_ROUTE;
+    const pickedLocation = selectedLocation.trim();
 
     setResults([]);
-    router.push(`${listingRoute}?q=${encodeURIComponent(query)}`);
+    const params = new URLSearchParams({ q: query });
+    if (preferredCategory) {
+      params.set("category", preferredCategory);
+    }
+    if (pickedLocation) {
+      params.set("city", pickedLocation);
+    }
+    router.push(`${listingRoute}?${params.toString()}`);
   };
 
   /* ===================================
@@ -212,26 +230,31 @@ export default function Dashboard() {
           </div>
 
           <div className="card-container">
-            <div
-              className="card wedding"
-              onClick={() => openCategoryListing("/wedding-halls")}
-            >
-              Wedding Halls
-            </div>
-
-            <div
-              className="card banquet"
-              onClick={() => openCategoryListing("/banquet-halls")}
-            >
-              Banquet Halls
-            </div>
-
-            <div
-              className="card party"
-              onClick={() => openCategoryListing("/party-venues")}
-            >
-              Party Venues
-            </div>
+            {categoryCards.map((category) => (
+              <button
+                key={category.key}
+                type="button"
+                className="category-tile"
+                onClick={() =>
+                  openCategoryListing(
+                    getVenueRoute(category.key) ||
+                      category.route ||
+                      DEFAULT_VENUE_ROUTE,
+                    category.title,
+                    category.key
+                  )
+                }
+              >
+                <span
+                  className="category-thumb"
+                  style={{ backgroundImage: `url("${category.image}")` }}
+                ></span>
+                <span className="category-content">
+                  <span className="category-label">{category.title}</span>
+                  <span className="category-meta">{category.meta}</span>
+                </span>
+              </button>
+            ))}
           </div>
         </div>
       </div>

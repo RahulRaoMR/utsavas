@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import "./topnavbar.css";
 import { getGeolocationErrorMessage } from "./geolocationError";
 
@@ -32,8 +32,16 @@ const POPULAR_DESTINATIONS: LocationSuggestion[] = [
   { label: "Hubballi", sublabel: "Karnataka, India", value: "Hubballi", source: "popular" },
 ];
 
+const NAV_ITEMS = [
+  { href: "/", label: "Home", icon: "HM" },
+  { href: "/dashboard", label: "Venues", icon: "VN" },
+  { href: "/services", label: "Services", icon: "SV" },
+  { href: "/contact", label: "Contact Us", icon: "CT" },
+];
+
 export default function TopNavBar() {
   const router = useRouter();
+  const pathname = usePathname();
 
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const locationRef = useRef<HTMLDivElement | null>(null);
@@ -340,164 +348,164 @@ export default function TopNavBar() {
   return (
     <>
       <nav className={`top-nav ${scrolled ? "scrolled" : ""}`}>
-        <div className="logo">
-          <Link href="/">
-            <img src="/logo/utsavaa-gold.png" alt="UTSAVAS" />
-          </Link>
-        </div>
-
-        <div className="location-search-wrap" ref={locationRef}>
-          <div className="location-bar">
-            <div className="location-icon-badge" aria-hidden="true">
-              <span className={`location-icon-dot ${detectingLocation ? "loading" : ""}`}></span>
+        <div className="top-nav-main">
+          <div className="brand-cluster">
+            <div className="logo">
+              <Link href="/">
+                <img src="/logo/utsavaa-gold.png" alt="UTSAVAS" />
+              </Link>
             </div>
 
-            <input
-              type="text"
-              placeholder="Where are you going?"
-              value={location}
-              onChange={(e) => {
-                setLocation(e.target.value);
-                setLocationError("");
-                setShowLocationSuggestions(true);
-              }}
-              onFocus={() => setShowLocationSuggestions(true)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  handleLocationSearch();
-                }
-              }}
-            />
-
-            <button
-              type="button"
-              className="location-submit-btn"
-              onClick={handleLocationSearch}
-            >
-              Search
-            </button>
+            <div className="brand-copy">
+              <strong>utsavas</strong>
+              <span>Venue booking</span>
+            </div>
           </div>
 
-          {showLocationSuggestions && (
-            <div className="location-suggestions">
-              <div className="location-suggestions-header">
-                <span className="location-suggestions-title">
-                  {location.trim().length >= 2
-                    ? "Matching destinations"
-                    : "Popular destinations"}
-                </span>
-                <button
-                  type="button"
-                  className="location-current-link"
-                  onClick={handleDetectLocation}
-                >
-                  Use current location
-                </button>
+          <div className="location-search-wrap" ref={locationRef}>
+            <div className="location-bar">
+              <div className="search-field">
+                <span className="search-field-icon" aria-hidden="true"></span>
+                <input
+                  type="text"
+                  placeholder="Search for venue, city, or area"
+                  value={location}
+                  onChange={(e) => {
+                    setLocation(e.target.value);
+                    setLocationError("");
+                    setShowLocationSuggestions(true);
+                  }}
+                  onFocus={() => setShowLocationSuggestions(true)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleLocationSearch();
+                    }
+                  }}
+                />
               </div>
+            </div>
 
-              {locationError ? (
-                <div className="location-feedback">{locationError}</div>
-              ) : null}
-
-              {dropdownSuggestions.length > 0 ? (
-                dropdownSuggestions.map((place) => (
+            {showLocationSuggestions && (
+              <div className="location-suggestions">
+                <div className="location-suggestions-header">
+                  <span className="location-suggestions-title">
+                    {location.trim().length >= 2
+                      ? "Matching destinations"
+                      : "Popular destinations"}
+                  </span>
                   <button
                     type="button"
-                    key={`${place.source}-${place.value}`}
-                    className="location-suggestion-item"
-                    onClick={() =>
-                      place.value === "__current__"
-                        ? handleDetectLocation()
-                        : handlePickSuggestion(place.value)
-                    }
+                    className="location-current-link"
+                    onClick={handleDetectLocation}
                   >
-                    <span className="location-suggestion-icon">
-                      {place.source === "current"
-                        ? "GPS"
-                        : place.source === "recent"
-                        ? "REC"
-                        : "PIN"}
-                    </span>
-                    <span className="location-suggestion-copy">
-                      <strong>{place.label}</strong>
-                      {place.sublabel ? <small>{place.sublabel}</small> : null}
-                    </span>
+                    Use current location
                   </button>
-                ))
-              ) : (
-                <div className="location-feedback">
-                  No destinations found. Try a nearby city or area name.
                 </div>
-              )}
-            </div>
-          )}
+
+                {locationError ? (
+                  <div className="location-feedback">{locationError}</div>
+                ) : null}
+
+                {dropdownSuggestions.length > 0 ? (
+                  dropdownSuggestions.map((place) => (
+                    <button
+                      type="button"
+                      key={`${place.source}-${place.value}`}
+                      className="location-suggestion-item"
+                      onClick={() =>
+                        place.value === "__current__"
+                          ? handleDetectLocation()
+                          : handlePickSuggestion(place.value)
+                      }
+                    >
+                      <span className="location-suggestion-icon">
+                        {place.source === "current"
+                          ? "GPS"
+                          : place.source === "recent"
+                          ? "REC"
+                          : "PIN"}
+                      </span>
+                      <span className="location-suggestion-copy">
+                        <strong>{place.label}</strong>
+                        {place.sublabel ? <small>{place.sublabel}</small> : null}
+                      </span>
+                    </button>
+                  ))
+                ) : (
+                  <div className="location-feedback">
+                    No destinations found. Try a nearby city or area name.
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          <div className="auth-section">
+            {!user && (
+              <>
+                <Link href="/vendor/vendor-login" className="list-btn">
+                  List your property
+                </Link>
+
+                <Link href="/register" className="register-btn">
+                  Register
+                </Link>
+
+                <Link href="/login" className="signin-btn">
+                  Sign in
+                </Link>
+              </>
+            )}
+
+            {user && (
+              <div className="user-wrapper" ref={dropdownRef}>
+                <div className="user-chip" onClick={() => setDropdownOpen(!dropdownOpen)}>
+                  <div className="avatar">{avatarLetter}</div>
+
+                  <span className="user-name">{displayName}</span>
+                </div>
+
+                {dropdownOpen && (
+                  <div className="user-dropdown">
+                    <Link href="/profile" onClick={() => setDropdownOpen(false)}>
+                      My Profile
+                    </Link>
+
+                    <Link href="/my-bookings" onClick={() => setDropdownOpen(false)}>
+                      My Bookings
+                    </Link>
+
+                    <button onClick={handleLogout}>Logout</button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <button
+              className={`hamburger ${menuOpen ? "active" : ""}`}
+              onClick={() => setMenuOpen(!menuOpen)}
+            >
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
+          </div>
         </div>
 
-        <ul className="nav-links">
-          <li>
-            <Link href="/">Home</Link>
-          </li>
-          <li>
-            <Link href="/dashboard">Venues</Link>
-          </li>
-          <li>
-            <Link href="/services">Services</Link>
-          </li>
-          <li>
-            <Link href="/contact">Contact Us</Link>
-          </li>
-        </ul>
-
-        <div className="auth-section">
-          {!user && (
-            <>
-              <Link href="/vendor/vendor-login" className="list-btn">
-                List your property
-              </Link>
-
-              <Link href="/register" className="register-btn">
-                Register
-              </Link>
-
-              <Link href="/login" className="signin-btn">
-                Sign in
-              </Link>
-            </>
-          )}
-
-          {user && (
-            <div className="user-wrapper" ref={dropdownRef}>
-              <div className="user-chip" onClick={() => setDropdownOpen(!dropdownOpen)}>
-                <div className="avatar">{avatarLetter}</div>
-
-                <span className="user-name">{displayName}</span>
-              </div>
-
-              {dropdownOpen && (
-                <div className="user-dropdown">
-                  <Link href="/profile" onClick={() => setDropdownOpen(false)}>
-                    My Profile
-                  </Link>
-
-                  <Link href="/my-bookings" onClick={() => setDropdownOpen(false)}>
-                    My Bookings
-                  </Link>
-
-                  <button onClick={handleLogout}>Logout</button>
-                </div>
-              )}
-            </div>
-          )}
-
-          <button
-            className={`hamburger ${menuOpen ? "active" : ""}`}
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
+        <div className="top-nav-categories">
+          <ul className="nav-links">
+            {NAV_ITEMS.map((item) => (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  className={pathname === item.href ? "nav-link-active" : ""}
+                >
+                  <span>{item.label}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
       </nav>
 

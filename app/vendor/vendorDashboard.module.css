@@ -5,8 +5,8 @@
 }
 
 .header {
-  background: linear-gradient(135deg, #90a78a, #788f73);
-  color: #fff2d8;
+  background: linear-gradient(135deg, #5f97d6, #3f6fb6);
+  color: #f4f9ff;
   padding: 18px 30px;
   display: flex;
   justify-content: space-between;
@@ -21,7 +21,7 @@
 
 .logoutBtn {
   background: #fbf5ea;
-  color: #30402f;
+  color: #183b63;
   border: none;
   padding: 8px 18px;
   border-radius: 999px;
@@ -34,8 +34,8 @@
 }
 
 .welcomeBox {
-  background: linear-gradient(135deg, #90a78a, #788f73);
-  color: #fff2d8;
+  background: linear-gradient(135deg, #5f97d6, #3f6fb6);
+  color: #f4f9ff;
   padding: 30px;
 }
 
@@ -64,8 +64,8 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  border-left: 6px solid #90a78a;
-  box-shadow: 0 8px 22px rgba(48, 64, 47, 0.08);
+  border-left: 6px solid #5f97d6;
+  box-shadow: 0 8px 22px rgba(29, 74, 138, 0.1);
   cursor: pointer;
   transition: transform 0.2s ease;
 }
@@ -82,7 +82,7 @@
 .cardTitle {
   font-size: 18px;
   font-weight: bold;
-  color: #30402f;
+  color: #183b63;
 }
 
 .muted {
@@ -99,7 +99,7 @@
 
 .hallName {
   margin-bottom: 6px;
-  color: #30402f;
+  color: #183b63;
   font-size: 20px;
 }
 
@@ -111,7 +111,7 @@
 
 .card p span {
   font-weight: 600;
-  color: #30402f;
+  color: #183b63;
 }
 
 .status {
@@ -124,7 +124,7 @@
 }
 
 .approveBtn {
-  background: #788f73;
+  background: #3f6fb6;
   color: #fff;
   border: none;
   padding: 10px 18px;
@@ -135,8 +135,8 @@
 
 .rejectBtn {
   background: #fbf5ea;
-  color: #30402f;
-  border: 1.5px solid #90a78a;
+  color: #183b63;
+  border: 1.5px solid #5f97d6;
   padding: 10px 18px;
   border-radius: 10px;
   cursor: pointer;
@@ -144,11 +144,11 @@
 }
 
 .approveBtn:hover {
-  background: #657d5f;
+  background: #274f8f;
 }
 
 .rejectBtn:hover {
-  background: #90a78a;
+  background: #5f97d6;
   color: #fff;
 }
 
@@ -157,11 +157,11 @@
   background: #fbf5ea;
   padding: 30px;
   border-radius: 20px;
-  box-shadow: 0 10px 25px rgba(48, 64, 47, 0.08);
+  box-shadow: 0 10px 25px rgba(29, 74, 138, 0.08);
 }
 
 .calendarTitle {
-  color: #30402f;
+  color: #183b63;
   font-size: 24px;
   margin-bottom: 20px;
 }
@@ -173,11 +173,11 @@
   align-items: center;
   margin-bottom: 20px;
   font-weight: 600;
-  color: #30402f;
+  color: #183b63;
 }
 
 .monthBar button {
-  background: #788f73;
+  background: #3f6fb6;
   color: #fff;
   border: none;
   padding: 6px 12px;
@@ -237,7 +237,7 @@
 }
 
 .modal h2 {
-  color: #30402f;
+  color: #183b63;
   margin-bottom: 20px;
 }
 
@@ -249,12 +249,12 @@
 
 .modal p span {
   font-weight: 600;
-  color: #30402f;
+  color: #183b63;
 }
 
 .closeBtn {
   margin-top: 20px;
-  background: #788f73;
+  background: #3f6fb6;
   color: #fff;
   border: none;
   padding: 10px 20px;
@@ -264,7 +264,7 @@
 }
 
 .closeBtn:hover {
-  background: #657d5f;
+  background: #274f8f;
 }
 
 .revenueSection {
@@ -272,7 +272,7 @@
 }
 
 .revenueTitle {
-  color: #30402f;
+  color: #183b63;
   margin-bottom: 20px;
 }
 
@@ -286,8 +286,8 @@
   background: #fbf5ea;
   padding: 22px;
   border-radius: 16px;
-  border-left: 6px solid #90a78a;
-  box-shadow: 0 6px 18px rgba(48, 64, 47, 0.08);
+  border-left: 6px solid #5f97d6;
+  box-shadow: 0 6px 18px rgba(29, 74, 138, 0.08);
 }
 
 .revenueCard p {
@@ -299,11 +299,11 @@
 .revenueCard h3 {
   margin-top: 10px;
   font-size: 26px;
-  color: #30402f;
+  color: #183b63;
 }
 
 .revenueHighlight {
-  background: linear-gradient(135deg, #90a78a, #788f73);
+  background: linear-gradient(135deg, #5f97d6, #3f6fb6);
 }
 
 .revenueHighlight p,

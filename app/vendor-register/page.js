@@ -5,6 +5,7 @@ import { useState } from "react";
 import styles from "./vendorRegister.module.css";
 import { useRouter } from "next/navigation";
 import { karnatakaDistricts } from "../components/karnatakaDistricts";
+import { VENUE_TYPE_OPTIONS } from "../../lib/venueCategories";
 
 export default function VendorRegisterPage() {
   const router = useRouter();
@@ -145,9 +146,11 @@ export default function VendorRegisterPage() {
             required
           >
             <option value="">Select Service Type</option>
-            <option value="wedding">Wedding Hall</option>
-            <option value="banquet">Banquet Hall</option>
-            <option value="party">Party Hall</option>
+            {VENUE_TYPE_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
             <option value="service">Service Provider</option>
           </select>
 

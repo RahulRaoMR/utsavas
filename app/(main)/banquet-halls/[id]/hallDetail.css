@@ -266,6 +266,37 @@
   margin: 8px 0;
 }
 
+.feature-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.feature-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 999px;
+  background: rgba(251, 245, 234, 0.88);
+  border: 1px solid rgba(144, 167, 138, 0.18);
+  box-shadow: 0 10px 24px rgba(80, 66, 47, 0.06);
+  color: #30402f;
+  font-weight: 500;
+}
+
+.feature-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  background: radial-gradient(circle at 35% 35%, #e7c87f 0%, #b98f35 55%, #8a6822 100%);
+  box-shadow: 0 0 0 4px rgba(185, 143, 53, 0.14);
+}
+
 .back-btn {
   margin-top: 40px;
   background: none;
@@ -279,7 +310,7 @@
 ============================== */
 
 .hall-detail-page {
-  padding-top: 40px; /* creates space from navbar */
+  padding-top: 140px; /* creates space from fixed navbar */
 }
 
 /* TOP SECTION */
@@ -512,6 +543,75 @@
   transform: translateY(-2px);
 }
 
+.info-showcase h3 {
+  margin-bottom: 20px;
+  color: #30402f;
+  font-size: 22px;
+}
+
+.info-card-grid,
+.offer-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.info-card,
+.offer-card {
+  background: #fbf5ea;
+  border-radius: 18px;
+  padding: 24px;
+  border: 1px solid rgba(144, 167, 138, 0.18);
+  box-shadow: 0 18px 36px rgba(80, 66, 47, 0.08);
+}
+
+.info-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.info-card-icon,
+.offer-card-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: rgba(120, 143, 115, 0.12);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.info-card h4,
+.offer-card h4 {
+  margin: 0;
+  color: #30402f;
+  font-size: 18px;
+  line-height: 1.45;
+  font-weight: 700;
+}
+
+.info-card p {
+  margin: 0;
+  color: #5e5551;
+  line-height: 1.6;
+}
+
+.offer-card {
+  min-height: 116px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 28px 24px;
+}
+
+.offer-card-icon {
+  display: none;
+}
+
 /* ==================================
    RESPONSIVE OVERRIDES (FINAL)
 ================================== */
@@ -541,7 +641,7 @@
 /* Tablet */
 @media (max-width: 992px) {
   .hall-detail-page {
-    padding: 22px 16px;
+    padding: 112px 16px 22px;
   }
 
   .hall-top {
@@ -562,12 +662,21 @@
     flex-wrap: wrap;
     gap: 12px;
   }
+
+  .info-card-grid,
+  .offer-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .feature-list {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Phone */
 @media (max-width: 640px) {
   .hall-detail-page {
-    padding: 16px 12px;
+    padding: 96px 12px 16px;
   }
 
   .hall-images {
@@ -649,5 +758,27 @@
   .map-frame-wrap,
   .map-frame {
     min-height: 260px;
+  }
+
+  .info-showcase h3 {
+    font-size: 20px;
+    margin-bottom: 14px;
+  }
+
+  .info-card-grid,
+  .offer-card-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .info-card,
+  .offer-card {
+    padding: 18px;
+    border-radius: 14px;
+  }
+
+  .info-card h4,
+  .offer-card h4 {
+    font-size: 18px;
   }
 }

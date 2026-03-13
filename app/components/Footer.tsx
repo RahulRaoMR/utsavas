@@ -87,13 +87,7 @@ export default function Footer() {
   const router = useRouter();
 
   const handleRedirect = (path: string) => {
-    if (typeof window === "undefined") return;
-
-    const token = window.localStorage.getItem("token");
-
-    if (token) {
-      router.push(path);
-    }
+    router.push(path);
   };
 
   return (
@@ -118,12 +112,34 @@ export default function Footer() {
         <div className={styles.links}>
           <h5>Quick Links</h5>
           <ul>
-            <li onClick={() => handleRedirect("/")}>Home</li>
-            <li onClick={() => handleRedirect("/dashboard")}>Venues</li>
-            <li onClick={() => handleRedirect("/dashboard")}>Amenities</li>
+            <li onClick={() => handleRedirect("/why-utsavas")}>
+              Why UTSAVAS
+            </li>
+            <li onClick={() => handleRedirect("/venue-stories")}>
+              Venue Stories
+            </li>
+            <li onClick={() => handleRedirect("/amenities")}>Amenities</li>
             <li onClick={() => handleRedirect("/services")}>Events</li>
             <li onClick={() => handleRedirect("/faqs")}>FAQs</li>
-            <li onClick={() => handleRedirect("/services")}>Contact Us</li>
+            <li onClick={() => handleRedirect("/contact")}>Contact Us</li>
+          </ul>
+        </div>
+
+        <div className={styles.learnMore}>
+          <h5>Learn More</h5>
+          <ul>
+            <li onClick={() => handleRedirect("/privacy")}>Privacy</li>
+            <li onClick={() => handleRedirect("/security")}>Security</li>
+            <li onClick={() => handleRedirect("/terms-of-service")}>
+              Terms of Service
+            </li>
+            <li onClick={() => handleRedirect("/help-support")}>
+              Help &amp; Support
+            </li>
+            <li onClick={() => handleRedirect("/report-fraud")}>
+              Report a Fraud
+            </li>
+            <li onClick={() => handleRedirect("/about-us")}>About Us</li>
           </ul>
         </div>
 
@@ -199,7 +215,7 @@ export default function Footer() {
         </p>
 
         <p className={styles.footerCopy}>
-          Copyright (c) 2012-2026 Talme.com. All rights reserved.
+          Copyright (c) 2018-2026 Talme.com. All rights reserved.
         </p>
       </div>
     </footer>

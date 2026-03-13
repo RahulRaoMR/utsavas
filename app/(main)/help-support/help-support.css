@@ -1,0 +1,147 @@
+.help-page {
+  min-height: 100vh;
+  background: #f5f2eb;
+  padding-top: 90px;
+  font-family: "Poppins", sans-serif;
+}
+
+.help-hero {
+  min-height: 260px;
+  background:
+    linear-gradient(180deg, rgba(7, 37, 97, 0.38) 0%, rgba(9, 53, 135, 0.5) 100%),
+    url("/services-bg.jpg");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.help-heroOverlay {
+  text-align: center;
+  padding: 20px;
+}
+
+.help-heroOverlay h1 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 48px;
+  font-weight: 800;
+  text-shadow: 0 10px 30px rgba(4, 20, 53, 0.34);
+}
+
+.help-content {
+  padding: 40px 20px 72px;
+  display: flex;
+  justify-content: center;
+}
+
+.help-grid {
+  width: min(100%, 1100px);
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.8fr);
+  gap: 32px;
+}
+
+.help-formCard,
+.help-infoCard {
+  background: #ffffff;
+  border: 1px solid #e7e1d7;
+  border-radius: 14px;
+  box-shadow: 0 12px 28px rgba(31, 41, 55, 0.08);
+}
+
+.help-formCard {
+  padding: 24px;
+}
+
+.help-side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.help-infoCard {
+  padding: 22px;
+}
+
+.help-infoCard h3 {
+  margin: 0 0 10px;
+  color: #1d2f5f;
+  font-size: 24px;
+}
+
+.help-infoCard p {
+  margin: 0;
+  color: #4b5563;
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+.help-infoCard a {
+  display: inline-block;
+  margin-top: 14px;
+  color: #0a5bd3;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.help-input,
+.help-textarea {
+  width: 100%;
+  border: 1px solid #d7dce5;
+  border-radius: 6px;
+  padding: 13px 14px;
+  font-size: 14px;
+  color: #23314f;
+  background: #ffffff;
+  margin-bottom: 16px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.help-input:focus,
+.help-textarea:focus {
+  border-color: #0a5bd3;
+  box-shadow: 0 0 0 3px rgba(10, 91, 211, 0.12);
+}
+
+.help-textarea {
+  resize: vertical;
+  min-height: 140px;
+}
+
+.help-button {
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #0a5bd3, #004cb8);
+  color: #fff8ea;
+  padding: 12px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 12px 24px rgba(10, 91, 211, 0.2);
+}
+
+@media (max-width: 768px) {
+  .help-page {
+    padding-top: 80px;
+  }
+
+  .help-hero {
+    min-height: 220px;
+  }
+
+  .help-heroOverlay h1 {
+    font-size: 32px;
+  }
+
+  .help-content {
+    padding: 28px 16px 48px;
+  }
+
+  .help-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}

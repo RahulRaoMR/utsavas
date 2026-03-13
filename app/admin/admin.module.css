@@ -7,7 +7,7 @@
   background: linear-gradient(135deg, #f7f0e4 0%, #efe6d7 100%);
   padding: 30px;
   font-family: Arial, sans-serif;
-  color: #30402f;
+  color: #183b63;
 }
 
 /* =========================
@@ -23,32 +23,32 @@
 }
 
 .header {
-  background: linear-gradient(135deg, #90a78a, #788f73);
-  color: #fff2d8;
+  background: linear-gradient(135deg, #5f97d6, #3f6fb6);
+  color: #f4f9ff;
   padding: 20px;
   margin: 0;
   flex: 1;
   border-radius: 14px;
   font-size: 22px;
   font-weight: bold;
-  box-shadow: 0 10px 25px rgba(48, 64, 47, 0.16);
+  box-shadow: 0 10px 25px rgba(29, 74, 138, 0.18);
 }
 
 .logoutButton {
   border: none;
-  background: linear-gradient(135deg, #f0e2c2, #dcc08b);
-  color: #30402f;
+  background: linear-gradient(135deg, #d8eaff, #b8d5fb);
+  color: #183b63;
   padding: 12px 20px;
   border-radius: 12px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 10px 24px rgba(48, 64, 47, 0.12);
+  box-shadow: 0 10px 24px rgba(29, 74, 138, 0.14);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .logoutButton:hover {
   transform: translateY(-1px);
-  box-shadow: 0 14px 28px rgba(48, 64, 47, 0.18);
+  box-shadow: 0 14px 28px rgba(29, 74, 138, 0.2);
 }
 
 /* =========================
@@ -67,7 +67,7 @@
   border-radius: 16px;
   padding: 20px;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
-  border-left: 6px solid #90a78a;
+  border-left: 6px solid #5f97d6;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -87,7 +87,7 @@
 
 .liveMeta {
   margin: 0;
-  color: #647d5f;
+  color: #3f6fb6;
   font-weight: 700;
 }
 
@@ -109,7 +109,7 @@
   border-radius: 999px;
   background: linear-gradient(135deg, #fbf5ea, #f2e8d9);
   border: 1px solid #e3d2b4;
-  box-shadow: 0 14px 28px rgba(48, 64, 47, 0.08);
+  box-shadow: 0 14px 28px rgba(29, 74, 138, 0.08);
 }
 
 .searchBadge {
@@ -120,8 +120,8 @@
   min-width: 82px;
   padding: 12px 14px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #90a78a, #788f73);
-  color: #fff2d8;
+  background: linear-gradient(135deg, #5f97d6, #3f6fb6);
+  color: #f4f9ff;
   font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.02em;
@@ -132,7 +132,7 @@
   border: none;
   outline: none;
   background: transparent;
-  color: #30402f;
+  color: #183b63;
   font-size: 15px;
   font-weight: 600;
 }
@@ -152,7 +152,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: #30402f;
+  color: #183b63;
   font-size: 13px;
   font-weight: 700;
 }
@@ -179,7 +179,7 @@
 .count {
   font-size: 28px;
   font-weight: bold;
-  color: #30402f;
+  color: #183b63;
 }
 
 .actionRow {
@@ -209,27 +209,27 @@
   width: 240px;
   background:
     radial-gradient(circle at top, rgba(255, 255, 255, 0.08), transparent 28%),
-    linear-gradient(180deg, #90a78a, #788f73 55%, #657d5f);
-  color: #fff2d8;
+    linear-gradient(180deg, #5f97d6, #3f6fb6 55%, #274f8f);
+  color: #f4f9ff;
   padding: 28px 18px;
-  border-right: 1px solid rgba(255, 242, 216, 0.18);
+  border-right: 1px solid rgba(244, 249, 255, 0.2);
 }
 
 .sidebarHeader {
   font-size: 21px;
   font-weight: 800;
-  color: #fff2d8;
+  color: #f4f9ff;
 }
 
 .sidebarBrand {
   margin-bottom: 28px;
   padding: 10px 8px 18px;
-  border-bottom: 1px solid rgba(255, 242, 216, 0.14);
+  border-bottom: 1px solid rgba(244, 249, 255, 0.16);
 }
 
 .sidebarSubtext {
   margin-top: 8px;
-  color: rgba(255, 242, 216, 0.74);
+  color: rgba(244, 249, 255, 0.76);
   font-size: 12px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -249,7 +249,7 @@
 
 .navSectionLabel {
   margin: 0 10px 2px;
-  color: rgba(255, 242, 216, 0.62);
+  color: rgba(244, 249, 255, 0.68);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -258,7 +258,7 @@
 
 .navLink {
   display: block;
-  color: #fff2d8;
+  color: #f4f9ff;
   text-decoration: none;
   padding: 13px 16px;
   border-radius: 16px;
@@ -267,16 +267,16 @@
 }
 
 .navLink:hover {
-  background: rgba(255, 242, 216, 0.12);
-  border-color: rgba(255, 242, 216, 0.18);
+  background: rgba(244, 249, 255, 0.12);
+  border-color: rgba(244, 249, 255, 0.2);
   transform: translateX(4px);
 }
 
 .active {
-  background: linear-gradient(135deg, #e8d29e, #dcc08b);
-  color: #30402f !important;
+  background: linear-gradient(135deg, #d7e8ff, #b8d5fb);
+  color: #183b63 !important;
   font-weight: bold;
-  box-shadow: 0 14px 26px rgba(20, 5, 8, 0.22);
+  box-shadow: 0 14px 26px rgba(29, 74, 138, 0.22);
 }
 
 .mainContent {
@@ -290,10 +290,50 @@
 
 .hallCard {
   background: #fbf5ea;
-  border: 2px solid #90a78a;
-  border-radius: 16px;
-  padding: 20px;
+  border: 2px solid #7aa9e6;
+  border-radius: 24px;
+  padding: 14px;
   margin-bottom: 20px;
+  box-shadow: 0 18px 38px rgba(29, 74, 138, 0.1);
+  overflow: hidden;
+}
+
+.adminHallMedia {
+  border-radius: 20px;
+  overflow: hidden;
+  background: #e6ddd0;
+}
+
+.adminHallImage {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  display: block;
+}
+
+.adminHallBody {
+  padding: 22px 16px 10px;
+}
+
+.adminHallTitle {
+  margin: 0 0 14px;
+  color: #183b63;
+  font-size: 34px;
+  font-weight: 500;
+}
+
+.adminHallBody p {
+  margin: 0 0 12px;
+  color: #183b63;
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.adminHallActions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 22px;
 }
 
 /* =========================
@@ -320,7 +360,7 @@
 ========================= */
 
 .fc-toolbar-title {
-  color: #30402f;
+  color: #183b63;
   font-weight: 800;
 }
 
@@ -329,8 +369,8 @@
   border-radius: 8px;
   font-size: 12px;
   padding: 3px 8px;
-  background: linear-gradient(135deg, #90a78a, #788f73) !important;
-  box-shadow: 0 4px 10px rgba(48, 64, 47, 0.16);
+  background: linear-gradient(135deg, #5f97d6, #3f6fb6) !important;
+  box-shadow: 0 4px 10px rgba(29, 74, 138, 0.16);
 }
 
 /* =========================
@@ -370,7 +410,7 @@
 }
 
 .modalTitle {
-  color: #30402f;
+  color: #183b63;
   margin-bottom: 14px;
   font-size: 22px;
   font-weight: 800;
@@ -420,7 +460,7 @@
 ========================= */
 
 .closeBtn {
-  background: #788f73;
+  background: #3f6fb6;
   color: #fff;
   border: none;
   padding: 10px 20px;
@@ -431,25 +471,34 @@
 }
 
 .closeBtn:hover {
-  background: #657d5f;
+  background: #274f8f;
   transform: translateY(-1px);
 }
 
 .button,
+.viewButton,
 .rejectButton,
 .deleteButton {
   border: none;
+  min-height: 54px;
   padding: 10px 18px;
-  border-radius: 12px;
+  border-radius: 14px;
   cursor: pointer;
   font-weight: 700;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  font-size: 15px;
+}
+
+.viewButton {
+  background: linear-gradient(135deg, #d7e8ff, #b8d5fb);
+  color: #183b63;
+  box-shadow: 0 10px 24px rgba(95, 151, 214, 0.22);
 }
 
 .button {
-  background: linear-gradient(135deg, #90a78a, #788f73);
-  color: #fff2d8;
-  box-shadow: 0 10px 24px rgba(48, 64, 47, 0.16);
+  background: linear-gradient(135deg, #5f97d6, #3f6fb6);
+  color: #f4f9ff;
+  box-shadow: 0 10px 24px rgba(29, 74, 138, 0.18);
 }
 
 .rejectButton {
@@ -464,6 +513,7 @@
   box-shadow: 0 10px 24px rgba(220, 38, 38, 0.18);
 }
 
+.viewButton:hover,
 .button:hover,
 .rejectButton:hover,
 .deleteButton:hover {
@@ -525,5 +575,17 @@
   .modal {
     width: 95%;
     padding: 22px;
+  }
+
+  .adminHallImage {
+    height: 220px;
+  }
+
+  .adminHallTitle {
+    font-size: 28px;
+  }
+
+  .adminHallActions {
+    grid-template-columns: 1fr;
   }
 }

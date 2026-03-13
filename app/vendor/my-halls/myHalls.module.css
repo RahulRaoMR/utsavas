@@ -6,13 +6,13 @@
 
 .title {
   font-size: 28px;
-  color: #30402f;
+  color: #183b63;
   margin-bottom: 30px;
 }
 
 .loading,
 .empty {
-  color: #30402f;
+  color: #183b63;
   font-size: 16px;
 }
 
@@ -24,83 +24,105 @@
 
 .card {
   background: #fbf5ea;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(48, 64, 47, 0.08);
+  border-radius: 24px;
+  box-shadow: 0 18px 38px rgba(29, 74, 138, 0.1);
   overflow: hidden;
-  border-left: 6px solid #90a78a;
+  border: 2px solid #7aa9e6;
 }
 
 .image {
   width: 100%;
-  height: 200px;
+  height: 280px;
   object-fit: cover;
+  display: block;
 }
 
 .cardBody {
-  padding: 20px;
+  padding: 22px 16px 18px;
 }
 
 .hallName {
-  color: #30402f;
-  margin-bottom: 10px;
+  color: #183b63;
+  margin: 0 0 14px;
+  font-size: 34px;
+  font-weight: 500;
 }
 
 .approved {
-  color: green;
+  color: #3f6fb6;
   font-weight: bold;
   margin-top: 8px;
 }
 
 .actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 15px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 22px;
 }
 
 .viewBtn {
-  flex: 1;
-  background: #dcc08b;
-  color: #30402f;
+  background: linear-gradient(135deg, #d7e8ff, #b8d5fb);
+  color: #183b63;
   border: none;
-  padding: 10px;
-  border-radius: 8px;
-  font-weight: bold;
+  min-height: 54px;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 15px;
   cursor: pointer;
+  box-shadow: 0 10px 24px rgba(95, 151, 214, 0.22);
 }
 
 .editBtn {
-  flex: 1;
-  background: #788f73;
-  color: #fff2d8;
+  background: linear-gradient(135deg, #5f97d6, #3f6fb6);
+  color: #f4f9ff;
   border: none;
-  padding: 10px;
-  border-radius: 8px;
-  font-weight: bold;
+  min-height: 54px;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 15px;
   cursor: pointer;
+  box-shadow: 0 10px 24px rgba(29, 74, 138, 0.18);
 }
 
 .deleteBtn {
-  flex: 1;
-  background: #c0392b;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
   color: #fff2df;
   border: none;
-  padding: 10px;
-  border-radius: 8px;
-  font-weight: bold;
+  min-height: 54px;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 15px;
   cursor: pointer;
+  box-shadow: 0 10px 24px rgba(220, 38, 38, 0.18);
 }
 
 .viewBtn:hover,
 .editBtn:hover,
 .deleteBtn:hover {
-  opacity: 0.9;
+  opacity: 0.95;
+  transform: translateY(-1px);
 }
 
 .card p,
 .card h3,
 .card span {
-  color: #30402f;
+  color: #183b63;
   font-size: 16px;
-  margin: 6px 0;
+  margin: 0 0 12px;
+  line-height: 1.55;
+}
+
+@media (max-width: 768px) {
+  .image {
+    height: 220px;
+  }
+
+  .hallName {
+    font-size: 28px;
+  }
+
+  .actions {
+    grid-template-columns: 1fr;
+  }
 }

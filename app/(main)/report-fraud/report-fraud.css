@@ -1,0 +1,151 @@
+.fraud-page {
+  min-height: 100vh;
+  background: #f5f2eb;
+  padding-top: 90px;
+  font-family: "Poppins", sans-serif;
+}
+
+.fraud-hero {
+  min-height: 260px;
+  background:
+    linear-gradient(180deg, rgba(7, 37, 97, 0.38) 0%, rgba(9, 53, 135, 0.5) 100%),
+    url("/services-bg.jpg");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fraud-heroOverlay {
+  text-align: center;
+  padding: 20px;
+}
+
+.fraud-heroOverlay h1 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 48px;
+  font-weight: 800;
+  text-shadow: 0 10px 30px rgba(4, 20, 53, 0.34);
+}
+
+.fraud-content {
+  padding: 40px 20px 72px;
+  display: flex;
+  justify-content: center;
+}
+
+.fraud-card {
+  width: min(100%, 1100px);
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1px solid #e7e1d7;
+  box-shadow: 0 12px 28px rgba(31, 41, 55, 0.08);
+  padding: 24px;
+}
+
+.fraud-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.8fr);
+  gap: 32px;
+}
+
+.fraud-note {
+  margin: 0 0 14px;
+  color: #b42318;
+  font-size: 13px;
+}
+
+.fraud-input,
+.fraud-textarea {
+  width: 100%;
+  border: 1px solid #d7dce5;
+  border-radius: 6px;
+  padding: 12px 13px;
+  font-size: 14px;
+  color: #23314f;
+  background: #ffffff;
+  margin-bottom: 12px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.fraud-input:focus,
+.fraud-textarea:focus {
+  border-color: #0a5bd3;
+  box-shadow: 0 0 0 3px rgba(10, 91, 211, 0.12);
+}
+
+.fraud-textarea {
+  resize: vertical;
+  min-height: 150px;
+}
+
+.fraud-disclaimerText {
+  margin: 0 0 10px;
+  color: #6b7280;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.fraud-button {
+  margin-top: 8px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #0a5bd3, #004cb8);
+  color: #fff8ea;
+  padding: 11px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 12px 24px rgba(10, 91, 211, 0.2);
+}
+
+.fraud-sideCard {
+  height: fit-content;
+  background: #ffffff;
+  border: 1px solid #e7e1d7;
+  border-radius: 14px;
+  padding: 22px 28px;
+  box-shadow: 0 12px 28px rgba(31, 41, 55, 0.08);
+}
+
+.fraud-sideCard h3 {
+  margin: 0 0 10px;
+  color: #1d2f5f;
+  font-size: 24px;
+}
+
+.fraud-sideCard p {
+  margin: 0 0 12px;
+  color: #4b5563;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+@media (max-width: 768px) {
+  .fraud-page {
+    padding-top: 80px;
+  }
+
+  .fraud-hero {
+    min-height: 220px;
+  }
+
+  .fraud-heroOverlay h1 {
+    font-size: 32px;
+  }
+
+  .fraud-content {
+    padding: 28px 16px 48px;
+  }
+
+  .fraud-card {
+    padding: 20px;
+  }
+
+  .fraud-grid {
+    grid-template-columns: 1fr;
+  }
+}

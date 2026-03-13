@@ -11,8 +11,44 @@
 
 .page-title {
   color: #6b1d2b;
-  font-size: 28px;
+  font-size: 38px;
+  margin: 0;
+  line-height: 1.1;
+}
+
+.page-hero {
   margin-bottom: 30px;
+  padding: 24px 28px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #fff5e7, #f7ebdc);
+  border: 1px solid rgba(220, 192, 139, 0.34);
+  box-shadow: 0 14px 30px rgba(124, 106, 82, 0.08);
+}
+
+.page-link-back {
+  border: none;
+  background: transparent;
+  color: #8a6a35;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 10px;
+}
+
+.page-subtitle {
+  margin: 10px 0 0;
+  font-size: 16px;
+  color: #5d5660;
+}
+
+.page-note {
+  margin: 10px 0 0;
+  font-size: 14px;
+  color: #8a6a35;
+  font-weight: 600;
 }
 
 /* =================================
@@ -217,6 +253,13 @@
 ================================= */
 
 @media (max-width: 768px) {
+  .page-hero {
+    padding: 20px;
+  }
+
+  .page-title {
+    font-size: 30px;
+  }
 
   .wedding-page {
     padding: 30px 20px;

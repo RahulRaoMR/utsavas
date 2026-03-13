@@ -4,11 +4,13 @@ import "./weddingHalls.css";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import FiltersSidebar from "../../components/FiltersSidebar";
+import { getApiBaseUrl } from "../../../lib/api";
 import { toAbsoluteImageUrl } from "../../../lib/imageUrl";
-
-const API =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "https://utsavas-backend-1.onrender.com";
+import {
+  categoryBelongsToRoute,
+  getVenueCategoryLabel,
+  normalizeVenueCategory,
+} from "../../../lib/venueCategories";
 
 const normalize = (value) => String(value || "").trim().toLowerCase();
 
@@ -26,7 +28,7 @@ function WeddingHallsContent() {
   useEffect(() => {
     const fetchHalls = async () => {
       try {
-        const res = await fetch(`${API}/api/halls/public`);
+        const res = await fetch(`${getApiBaseUrl()}/api/halls/public`);
         const data = await res.json();
         setHalls(Array.isArray(data) ? data : []);
       } catch (err) {
@@ -43,13 +45,22 @@ function WeddingHallsContent() {
   const queryText = normalize(searchParams.get("q"));
   const cityFilter = normalize(searchParams.get("city"));
   const areaFilter = normalize(searchParams.get("location"));
+  const requestedCategoryParam = normalize(searchParams.get("category"));
+  const requestedCategory = normalizeVenueCategory(searchParams.get("category"));
+  const requestedTitle =
+    getVenueCategoryLabel(requestedCategory) ||
+    searchParams.get("title") ||
+    "Wedding Halls";
   const displayLocationLabel =
     searchParams.get("location") || searchParams.get("city") || "";
   const activeLocationFilter = areaFilter || cityFilter;
 
-  const filteredHalls = useMemo(() => {
+  const routeMatchedHalls = useMemo(() => {
     return halls.filter((hall) => {
-      if (!normalize(hall.category).includes("wedding")) return false;
+      const category = normalizeVenueCategory(hall.category);
+      if (!categoryBelongsToRoute(category, "/wedding-halls")) {
+        return false;
+      }
 
       let locationMatch = true;
       if (activeLocationFilter) {
@@ -75,29 +86,35 @@ function WeddingHallsContent() {
     });
   }, [activeLocationFilter, halls, priceRange, queryText]);
 
+  const exactCategoryHalls = useMemo(() => {
+    if (!requestedCategoryParam) {
+      return routeMatchedHalls;
+    }
+
+    return routeMatchedHalls.filter(
+      (hall) => normalize(hall.category) === requestedCategoryParam
+    );
+  }, [requestedCategoryParam, routeMatchedHalls]);
+
+  const filteredHalls = requestedCategoryParam ? exactCategoryHalls : routeMatchedHalls;
+
   return (
     <div className="wedding-page">
-      <h1 className="page-title">
+      <div className="page-hero">
         <button
           type="button"
+          className="page-link-back"
           onClick={() => router.push("/wedding-halls")}
-          style={{
-            border: "none",
-            background: "transparent",
-            color: "inherit",
-            font: "inherit",
-            cursor: "pointer",
-            padding: 0,
-          }}
         >
-          Wedding Halls
+          All Wedding Venues
         </button>
-        {displayLocationLabel && (
-          <span style={{ fontSize: "16px", color: "#777" }}>
-            {" "}in {displayLocationLabel}
-          </span>
-        )}
-      </h1>
+        <h1 className="page-title">{requestedTitle}</h1>
+        <p className="page-subtitle">
+          {displayLocationLabel
+            ? `Showing venues in ${displayLocationLabel}`
+            : "Showing all venues in this section"}
+        </p>
+      </div>
 
       {loading && <p style={{ color: "#777" }}>Loading halls...</p>}
 
@@ -109,7 +126,7 @@ function WeddingHallsContent() {
 
         <div className="hall-card-grid">
           {!loading && filteredHalls.length === 0 && (
-            <p style={{ color: "#777" }}>No wedding halls found.</p>
+            <p style={{ color: "#777" }}>No venues found for this selection.</p>
           )}
 
           {filteredHalls.map((hall) => {
@@ -134,12 +151,12 @@ function WeddingHallsContent() {
                   src={
                     hall.images?.[0]
                       ? toAbsoluteImageUrl(hall.images[0])
-                      : "/hall1.jpg"
+                      : "/dashboard/banquet.jpg"
                   }
                   alt={hall.hallName}
                   loading="lazy"
                   onError={(e) => {
-                    e.currentTarget.src = "/hall1.jpg";
+                    e.currentTarget.src = "/dashboard/banquet.jpg";
                   }}
                 />
 

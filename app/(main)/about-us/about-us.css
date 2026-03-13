@@ -1,0 +1,102 @@
+.about-page {
+  min-height: 100vh;
+  background: #f4ecdf;
+  padding-top: 90px;
+  font-family: "Poppins", sans-serif;
+}
+
+.about-hero {
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    linear-gradient(180deg, rgba(7, 37, 97, 0.78) 0%, rgba(9, 53, 135, 0.72) 100%),
+    url("/services-bg.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+.about-overlay {
+  text-align: center;
+  color: #fff8e2;
+  padding: 20px;
+}
+
+.about-overlay h1 {
+  margin: 0 0 12px;
+  font-size: 44px;
+  font-weight: 800;
+  text-shadow:
+    0 10px 30px rgba(4, 20, 53, 0.34),
+    0 0 18px rgba(255, 199, 76, 0.14);
+}
+
+.about-overlay p {
+  margin: 0;
+  font-size: 18px;
+  color: #e9eefb;
+  text-shadow: 0 6px 18px rgba(8, 23, 58, 0.32);
+}
+
+.about-content {
+  padding: 56px 20px 72px;
+  display: flex;
+  justify-content: center;
+}
+
+.about-card {
+  width: min(100%, 980px);
+  background: #fbf5ea;
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 0 20px 50px rgba(48, 64, 47, 0.12);
+}
+
+.about-card h2 {
+  margin: 0 0 20px;
+  color: #7a2433;
+  font-size: 32px;
+}
+
+.about-card p {
+  margin: 0 0 16px;
+  color: #30402f;
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+@media (max-width: 768px) {
+  .about-page {
+    padding-top: 80px;
+  }
+
+  .about-hero {
+    min-height: 240px;
+  }
+
+  .about-overlay h1 {
+    font-size: 30px;
+  }
+
+  .about-overlay p {
+    font-size: 15px;
+  }
+
+  .about-content {
+    padding: 36px 16px 48px;
+  }
+
+  .about-card {
+    padding: 24px 20px;
+    border-radius: 18px;
+  }
+
+  .about-card h2 {
+    font-size: 24px;
+  }
+
+  .about-card p {
+    font-size: 14px;
+  }
+}

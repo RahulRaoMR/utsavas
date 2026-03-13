@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./myHalls.module.css";
 import { toAbsoluteImageUrl } from "../../../lib/imageUrl";
+import { getVenueCategoryLabel } from "../../../lib/venueCategories";
 
 const API =
   process.env.NEXT_PUBLIC_API_URL ||
@@ -110,19 +111,19 @@ export default function MyHallsPage() {
               src={
                 hall.images?.[0]
                   ? toAbsoluteImageUrl(hall.images[0])
-                  : "/hall1.jpg"
+                  : "/dashboard/banquet.jpg"
               }
               alt={hall.hallName}
               className={styles.image}
               onError={(e) => {
-                e.currentTarget.src = "/hall1.jpg";
+                e.currentTarget.src = "/dashboard/banquet.jpg";
               }}
             />
 
             <div className={styles.cardBody}>
               <h3 className={styles.hallName}>{hall.hallName}</h3>
 
-              <p><b>Category:</b> {hall.category}</p>
+              <p><b>Category:</b> {getVenueCategoryLabel(hall.category) || hall.category}</p>
               <p><b>Capacity:</b> {hall.capacity}</p>
               <p><b>City:</b> {hall.address?.city}</p>
 
@@ -131,14 +132,14 @@ export default function MyHallsPage() {
               <div className={styles.actions}>
                 <button
                   className={styles.viewBtn}
-                  onClick={() => router.push(`/hall/${hall._id}`)}
+                  onClick={() => router.push(`/vendor/hall/${hall._id}`)}
                 >
                   View
                 </button>
 
                 <button
                   className={styles.editBtn}
-                  onClick={() => router.push(`/vendor/edit-hall/${hall._id}`)}
+                  onClick={() => router.push(`/vendor/hall/${hall._id}/edit`)}
                 >
                   Edit
                 </button>

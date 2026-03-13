@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import "./services.css";
+import Footer from "../../components/Footer";
 
 export default function ServicesPage() {
   return (
@@ -37,6 +38,7 @@ export default function ServicesPage() {
         </div>
       </section>
 
+      <Footer />
     </div>
   );
 }

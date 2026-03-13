@@ -1,8 +1,9 @@
 .gallery {
   padding: 108px 5% 96px;
   background:
-    radial-gradient(circle at top left, rgba(185, 139, 83, 0.14), transparent 24%),
-    linear-gradient(180deg, #fcf8f2 0%, #f6efe5 55%, #fbf4ea 100%);
+    radial-gradient(circle at top left, rgba(255, 214, 120, 0.14), transparent 24%),
+    radial-gradient(circle at top right, rgba(72, 123, 214, 0.16), transparent 28%),
+    linear-gradient(180deg, #173f7f 0%, #123467 52%, #0d244b 100%);
 }
 
 .header {
@@ -14,14 +15,14 @@
 .subtitle {
   display: inline-block;
   margin-bottom: 14px;
-  color: #8b5e3c;
+  color: #f0d7a6;
   font-size: 12px;
   letter-spacing: 0.28em;
 }
 
 .gallery h2 {
   margin: 0 0 18px;
-  color: #6b1d2b;
+  color: #fff6df;
   font-size: clamp(2.5rem, 4.8vw, 4.7rem);
   line-height: 0.95;
   font-weight: 500;
@@ -30,7 +31,7 @@
 .desc {
   margin: 0 auto;
   max-width: 720px;
-  color: #625856;
+  color: #dfe8fb;
   font-size: clamp(1rem, 1.15vw, 1.12rem);
   line-height: 1.8;
 }
@@ -53,7 +54,7 @@
 }
 
 .carouselHeader span {
-  color: #8b5e3c;
+  color: #f0d7a6;
   font-size: 0.9rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;

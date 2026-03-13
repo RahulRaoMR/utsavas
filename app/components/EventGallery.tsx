@@ -2,8 +2,8 @@ import styles from "./EventGallery.module.css";
 
 const galleryItems = [
   { src: "/gallery/g1.jpg", label: "Wedding Grandeur", shape: "medium" },
-  { src: "/gallery/g2.jpg", label: "Open Air Elegance", shape: "large" },
-  { src: "/gallery/g3.jpg", label: "Floral Styling", shape: "tall" },
+  { src: "/gallery/g23.jpg", label: "Open Air Elegance", shape: "large" },
+  { src: "/gallery/g19.jpg", label: "Floral Styling", shape: "tall" },
   { src: "/gallery/g4.jpg", label: "Celebration Evenings", shape: "medium" },
   { src: "/gallery/g5.jpg", label: "Sacred Moments", shape: "tall" },
   { src: "/gallery/g6.jpg", label: "Table Details", shape: "medium" },

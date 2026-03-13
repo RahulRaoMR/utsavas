@@ -1,0 +1,200 @@
+.stories-page {
+  min-height: 100vh;
+  background: #f5f2eb;
+  padding-top: 90px;
+  font-family: "Poppins", sans-serif;
+}
+
+.stories-hero {
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    linear-gradient(180deg, rgba(7, 37, 97, 0.78) 0%, rgba(9, 53, 135, 0.72) 100%),
+    url("/services-bg.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+.stories-overlay {
+  width: min(100%, 1100px);
+  padding: 24px;
+  text-align: center;
+  color: #fff8e2;
+}
+
+.stories-eyebrow {
+  display: inline-block;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #fff0cf;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.stories-overlay h1 {
+  margin: 16px 0 10px;
+  font-size: 54px;
+  font-weight: 800;
+  text-shadow:
+    0 10px 30px rgba(4, 20, 53, 0.34),
+    0 0 18px rgba(255, 199, 76, 0.14);
+}
+
+.stories-overlay p {
+  width: min(100%, 760px);
+  margin: 0 auto;
+  color: #e9eefb;
+  font-size: 18px;
+  line-height: 1.8;
+}
+
+.stories-gridSection,
+.stories-summary {
+  padding: 24px 20px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.stories-grid,
+.stories-summaryCard {
+  width: min(100%, 1120px);
+}
+
+.stories-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.story-card,
+.stories-summaryCard {
+  overflow: hidden;
+  border-radius: 22px;
+  background: #ffffff;
+  border: 1px solid rgba(224, 229, 239, 0.9);
+  box-shadow:
+    0 20px 40px rgba(11, 33, 77, 0.1),
+    0 8px 18px rgba(11, 33, 77, 0.06);
+}
+
+.story-image {
+  position: relative;
+  height: 210px;
+  background-size: cover;
+  background-position: center;
+}
+
+.story-imageOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(7, 37, 97, 0.02) 0%, rgba(8, 16, 34, 0.52) 100%);
+}
+
+.story-body {
+  padding: 18px 18px 20px;
+}
+
+.story-body h2,
+.stories-summaryCard h2 {
+  margin: 0 0 4px;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.story-body.compact {
+  margin-top: -74px;
+  position: relative;
+  z-index: 2;
+}
+
+.story-body.compact p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.stories-summaryCard h2 {
+  color: #163d7a;
+  font-size: 28px;
+  margin: 0 0 12px;
+}
+
+.stories-summaryCard p {
+  margin: 0;
+  color: #435271;
+  font-size: 15px;
+  line-height: 1.85;
+}
+
+.stories-summary {
+  padding-bottom: 56px;
+}
+
+.stories-summaryCard {
+  padding: 30px 32px;
+}
+
+@media (max-width: 900px) {
+  .stories-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .stories-page {
+    padding-top: 80px;
+  }
+
+  .stories-hero {
+    min-height: 240px;
+  }
+
+  .stories-overlay h1 {
+    font-size: 38px;
+  }
+
+  .stories-overlay p {
+    font-size: 15px;
+  }
+
+  .stories-gridSection,
+  .stories-summary {
+    padding: 24px 16px 0;
+  }
+
+  .story-card,
+  .stories-summaryCard {
+    border-radius: 18px;
+  }
+
+  .story-image {
+    height: 210px;
+  }
+
+  .story-body,
+  .stories-summaryCard {
+    padding: 22px 20px;
+  }
+
+  .story-body h2,
+  .stories-summaryCard h2 {
+    font-size: 24px;
+  }
+
+  .story-body.compact {
+    margin-top: -78px;
+  }
+
+  .stories-summary {
+    padding-bottom: 40px;
+  }
+}

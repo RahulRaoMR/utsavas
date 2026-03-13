@@ -1,22 +1,32 @@
 "use client";
 export const dynamic = "force-dynamic";
 
+import dynamicImport from "next/dynamic";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./addHall.module.css";
+import {
+  buildAddressQuery,
+  buildAddressQueries,
+  buildVenueMapUrls,
+  geocodeAddress,
+  hasMinimumVenueAddress,
+  INDIA_MAP_CENTER,
+  isValidLocation,
+} from "../../../lib/hallLocation";
+import {
+  normalizeVenueCategory,
+  VENUE_TYPE_OPTIONS,
+} from "../../../lib/venueCategories";
 
-const geocodeAddress = async (query) => {
-  const res = await fetch(
-    `https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=in&q=${encodeURIComponent(
-      query
-    )}`
-  );
-  const data = await res.json();
-  if (data?.length) {
-    return { lat: +data[0].lat, lng: +data[0].lon };
-  }
-  return null;
-};
+const API =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://utsavas-backend-1.onrender.com";
+
+const VenueLocationMap = dynamicImport(
+  () => import("../../components/VenueLocationMap"),
+  { ssr: false }
+);
 
 export default function AddHallPage() {
   const router = useRouter();
@@ -111,17 +121,21 @@ export default function AddHallPage() {
     return labels[key] || key;
   };
 
-  const [geoLocation, setGeoLocation] = useState({
-    lat: 12.9716,
-    lng: 77.5946,
-  });
-  const [resolvedQuery, setResolvedQuery] = useState("");
+  const [geoLocation, setGeoLocation] = useState(null);
+  const [mapCenter, setMapCenter] = useState(INDIA_MAP_CENTER);
+  const [confirmedAddressQuery, setConfirmedAddressQuery] = useState("");
   const [mapLookupState, setMapLookupState] = useState("idle");
 
   const [images, setImages] = useState([]);
 
   const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm({
+      ...form,
+      [e.target.name]:
+        e.target.name === "category"
+          ? normalizeVenueCategory(e.target.value)
+          : e.target.value,
+    });
 
   const handleCheckbox = (e) =>
     setFeatures({ ...features, [e.target.name]: e.target.checked });
@@ -129,96 +143,88 @@ export default function AddHallPage() {
   const handleImageChange = (e) =>
     setImages(Array.from(e.target.files));
 
-  const handleAddressChange = (e) =>
-    setAddress({ ...address, [e.target.name]: e.target.value });
+  const handleAddressChange = (e) => {
+    const nextAddress = { ...address, [e.target.name]: e.target.value };
+    const nextAddressQuery = buildAddressQuery(nextAddress);
 
-  const addressQuery = [
-    address.flat,
-    address.floor,
-    address.landmark,
-    address.area,
-    address.city,
-    address.state,
-    address.pincode,
-  ]
-    .map((value) => value.trim())
-    .filter(Boolean)
-    .join(", ");
+    setAddress(nextAddress);
+    setGeoLocation(null);
+    setConfirmedAddressQuery("");
+    setMapLookupState(
+      nextAddressQuery
+        ? hasMinimumVenueAddress(nextAddress)
+          ? "idle"
+          : "incomplete"
+        : "idle"
+    );
+  };
+
+  const addressQuery = buildAddressQuery(address);
+  const hasMinimumAddress = hasMinimumVenueAddress(address);
+
+  const handleGeoLocationChange = (nextLocation) => {
+    setGeoLocation(nextLocation);
+    setMapCenter(nextLocation);
+    setConfirmedAddressQuery(addressQuery);
+    setMapLookupState("manual");
+  };
 
   useEffect(() => {
-    const hasMinimumAddress =
-      Boolean(address.city.trim()) &&
-      Boolean(address.state.trim()) &&
-      Boolean(
-        address.area.trim() ||
-          address.pincode.trim() ||
-          address.landmark.trim() ||
-          address.flat.trim()
-      );
+    let isCancelled = false;
 
-    if (!addressQuery) {
+    if (!addressQuery || !hasMinimumAddress) {
       return;
     }
 
-    if (!hasMinimumAddress) {
+    if (addressQuery === confirmedAddressQuery && isValidLocation(geoLocation)) {
       return;
     }
 
     const timer = setTimeout(async () => {
       setMapLookupState("loading");
-      const coords = await geocodeAddress(addressQuery);
+      const coords = await geocodeAddress(buildAddressQueries(address));
+      if (isCancelled) {
+        return;
+      }
       if (coords) {
         setGeoLocation(coords);
-        setResolvedQuery(addressQuery);
+        setMapCenter(coords);
+        setConfirmedAddressQuery(addressQuery);
         setMapLookupState("resolved");
       } else {
         setMapLookupState("not_found");
       }
     }, 700);
 
-    return () => clearTimeout(timer);
+    return () => {
+      isCancelled = true;
+      clearTimeout(timer);
+    };
   }, [
-    address.flat,
-    address.floor,
-    address.landmark,
-    address.area,
-    address.city,
-    address.state,
-    address.pincode,
+    address,
     addressQuery,
+    confirmedAddressQuery,
+    geoLocation,
+    hasMinimumAddress,
   ]);
 
-  const mapQuery =
-    resolvedQuery === addressQuery &&
-    typeof geoLocation?.lat === "number" &&
-    typeof geoLocation?.lng === "number"
-      ? `${geoLocation.lat},${geoLocation.lng}`
-      : addressQuery || "Bengaluru";
-  const mapStatus = !addressQuery
-    ? "Enter the venue address to update the map."
-    : !(
-        address.city.trim() &&
-        address.state.trim() &&
-        (address.area.trim() ||
-          address.pincode.trim() ||
-          address.landmark.trim() ||
-          address.flat.trim())
-      )
-    ? "Add area or pincode along with city and state for a more accurate map."
-    : mapLookupState === "loading"
-    ? "Updating map from the address..."
-    : mapLookupState === "not_found"
-    ? "Address not matched exactly. Refine area, landmark, or pincode."
-    : resolvedQuery === addressQuery
-    ? "Map updated automatically from the address."
-    : "Map will refresh after the address is resolved.";
+  const { openMapUrl } = buildVenueMapUrls({
+    hallName: form.hallName,
+    address,
+    location: geoLocation,
+  });
 
-  const embedMapUrl = `https://www.google.com/maps?q=${encodeURIComponent(
-    mapQuery || "Bengaluru"
-  )}&z=16&output=embed`;
-  const openMapUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
-    mapQuery || "Bengaluru"
-  )}`;
+  const mapStatus = !addressQuery
+    ? "Enter the venue address, then click the map if you need to place the exact location manually."
+    : !hasMinimumAddress
+    ? "Add city and state with area, hall name, landmark, or pincode so the map can locate the venue."
+    : mapLookupState === "loading"
+    ? "Trying to place the venue from the address..."
+    : mapLookupState === "not_found"
+    ? "Address not matched. Click the exact venue spot on the map or drag the pin after placing it."
+    : mapLookupState === "manual"
+    ? "Exact venue pin selected. Customers will get directions to this point."
+    : "Address matched. Drag the pin if you want to fine-tune the exact venue location.";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -226,6 +232,16 @@ export default function AddHallPage() {
     const vendor = JSON.parse(localStorage.getItem("vendor"));
     if (!vendor?._id) {
       alert("Vendor not logged in");
+      return;
+    }
+
+    if (!hasMinimumAddress) {
+      alert("Enter city, state, and at least one address detail like area, pincode, landmark, or hall name.");
+      return;
+    }
+
+    if (!isValidLocation(geoLocation) || confirmedAddressQuery !== addressQuery) {
+      alert("Set the exact venue location on the map before submitting.");
       return;
     }
 
@@ -246,13 +262,15 @@ export default function AddHallPage() {
 
     images.forEach((img) => formData.append("images", img));
 
-    const res = await fetch("https://utsavas-backend-1.onrender.com/api/halls/add", {
+    const res = await fetch(`${API}/api/halls/add`, {
       method: "POST",
       body: formData,
     });
 
+    const data = await res.json().catch(() => ({}));
+
     if (!res.ok) {
-      alert("Failed to add hall");
+      alert(data.message || "Failed to add hall");
       return;
     }
 
@@ -275,10 +293,12 @@ export default function AddHallPage() {
             onChange={handleChange}
           />
 
-          <select name="category" onChange={handleChange}>
-            <option value="wedding">Wedding Hall</option>
-            <option value="banquet">Banquet Hall</option>
-            <option value="party">Party Venue</option>
+          <select name="category" value={form.category} onChange={handleChange}>
+            {VENUE_TYPE_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
           </select>
 
           <input
@@ -347,24 +367,24 @@ export default function AddHallPage() {
         <section className={styles.card}>
           <h2>Map Location</h2>
           <p className={styles.mapIntro}>
-            This map updates automatically from the address above so the venue
-            location is easier to verify.
+            The map tries to locate the venue from the address. If it is not exact,
+            click the map or drag the pin to save the precise vendor location.
           </p>
           <p className={styles.mapStatus}>{mapStatus}</p>
 
           <div className={styles.map}>
-            <iframe
-              title="Venue map preview"
-              src={embedMapUrl}
-              className={styles.mapFrame}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
+            <VenueLocationMap
+              fallbackCenter={mapCenter}
+              onChange={handleGeoLocationChange}
+              position={geoLocation}
             />
           </div>
 
           <div className={styles.mapMeta}>
             <span>
-              Lat: {geoLocation.lat.toFixed(5)} | Lng: {geoLocation.lng.toFixed(5)}
+              {isValidLocation(geoLocation)
+                ? `Lat: ${geoLocation.lat.toFixed(5)} | Lng: ${geoLocation.lng.toFixed(5)}`
+                : "Pin not set yet"}
             </span>
             <a
               href={openMapUrl}
@@ -375,6 +395,10 @@ export default function AddHallPage() {
               Open in Google Maps
             </a>
           </div>
+
+          <p className={styles.mapNote}>
+            Tip: the customer &quot;Get Directions&quot; button will use this saved pin.
+          </p>
         </section>
 
         <section className={styles.card}>

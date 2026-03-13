@@ -7,13 +7,13 @@ export default function Hero() {
   return (
     <section className={styles.hero}>
       <div className={styles.overlay}></div>
+      <div className={styles.heroGlow}></div>
 
       <div className={styles.content}>
-        <h1> UTSAVAS</h1>
+        <div className={styles.eyebrow}>Events and venue booking made simple</div>
+        <h1>UTSAVAS</h1>
         <p>WHERE UTSAVAS BECOME MEMORIES</p>
-        <p>CRAFTED FOR CELEBRATIONS · DISCOVER THE PERFECT VENUE</p>
-
-        {/* Search bar on hero */}
+        <p>CRAFTED FOR CELEBRATIONS | DISCOVER THE PERFECT VENUE</p>
         <SearchBar />
       </div>
     </section>

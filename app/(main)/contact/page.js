@@ -1,6 +1,7 @@
 "use client";
 
 import "./contact.css";
+import Footer from "../../components/Footer";
 
 export default function ContactPage() {
   return (
@@ -48,6 +49,7 @@ export default function ContactPage() {
 
       </div>
 
+      <Footer />
     </div>
   );
 }

@@ -13,9 +13,9 @@ export default function HomePage() {
        <TopNavBar />
       
       <Hero />
+      <ServicesSection />
       <AboutSection />
       <VenuesSection /> 
-      <ServicesSection />
        <EventGallery /> 
         <Footer />
 

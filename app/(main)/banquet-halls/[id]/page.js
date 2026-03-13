@@ -3,7 +3,9 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import "./hallDetail.css";
+import { getApiBaseUrl } from "../../../../lib/api";
 import { toAbsoluteImageUrl } from "../../../../lib/imageUrl";
+import { buildVenueMapUrls } from "../../../../lib/hallLocation";
 
 export default function HallDetailPage() {
   const { id } = useParams();
@@ -18,7 +20,7 @@ export default function HallDetailPage() {
 
     const fetchHall = async () => {
       try {
-        const res = await fetch(`https://utsavas-backend-1.onrender.com/api/halls/${id}`);
+        const res = await fetch(`${getApiBaseUrl()}/api/halls/${id}`);
         const data = await res.json();
         setHall(data);
       } catch (err) {
@@ -159,41 +161,24 @@ export default function HallDetailPage() {
     phone: "\uD83D\uDCDE",
     check: "\u2714",
   };
-  const cleanAddressPart = (value) => {
-    const text = String(value ?? "").trim();
-    if (!text || text === "0" || text.toLowerCase() === "null" || text.toLowerCase() === "undefined") {
-      return "";
-    }
-    return text;
-  };
-  const addressParts = [
-    cleanAddressPart(hall.address?.flat),
-    cleanAddressPart(hall.address?.floor),
-    cleanAddressPart(hall.address?.area),
-    cleanAddressPart(hall.address?.city),
-    cleanAddressPart(hall.address?.state),
-    cleanAddressPart(hall.address?.pincode),
-    cleanAddressPart(hall.address?.landmark)
-      ? `near ${cleanAddressPart(hall.address?.landmark)}`
-      : "",
-  ].filter(Boolean);
-  const fullAddress = addressParts.join(", ");
-  const hasCoordinates =
-    typeof hall.location?.lat === "number" &&
-    typeof hall.location?.lng === "number";
-  const mapSearchText = fullAddress || hall.hallName;
-  const mapEmbedUrl = hasCoordinates
-    ? `https://www.google.com/maps?q=${encodeURIComponent(
-        mapSearchText
-      )}&ll=${hall.location.lat},${hall.location.lng}&z=15&output=embed`
-    : `https://www.google.com/maps?q=${encodeURIComponent(
-        mapSearchText
-      )}&z=15&output=embed`;
-  const directionsUrl = hasCoordinates
-    ? `https://www.google.com/maps/dir/?api=1&destination=${hall.location.lat},${hall.location.lng}`
-    : `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
-        mapSearchText
-      )}`;
+  const { directionsUrl, fullAddress, mapEmbedUrl } = buildVenueMapUrls({
+    hallName: hall.hallName,
+    address: hall.address,
+    location: hall.location,
+  });
+  const offeringCards = [
+    { key: "event-planning", title: "\uD83C\uDF89 Event Planning" },
+    { key: "wedding-decoration", title: "\uD83C\uDF38 Wedding Decoration" },
+    { key: "catering-services", title: "\uD83C\uDF7D Catering Services" },
+    { key: "dj-entertainment", title: "\uD83C\uDFA7 DJ & Entertainment" },
+    {
+      key: "photography-videography",
+      title: "\uD83D\uDCF8 Photography & Videography",
+    },
+    { key: "valet-parking", title: "\uD83D\uDE97 Valet Parking" },
+    { key: "bar-counter", title: "\uD83C\uDF78 Bar Counter" },
+    { key: "live-music", title: "\uD83C\uDFB6 Live Music Band / Concert" },
+  ];
 
   const handleBookNow = () => {
     const token =
@@ -302,16 +287,19 @@ export default function HallDetailPage() {
         </div>
       </div>
 
-      {activeFeatures.length > 0 && (
-        <section className="hall-section">
-          <h3>What this place has to offer</h3>
-          <ul>
-            {orderedFeatureKeys.map((key) => (
-              <li key={key}>{`${icons.check} ${formatFeatureLabel(key)}`}</li>
-            ))}
-          </ul>
-        </section>
-      )}
+        {activeFeatures.length > 0 && (
+          <section className="hall-section">
+            <h3>What this place has to offer</h3>
+            <ul className="feature-list">
+              {orderedFeatureKeys.map((key) => (
+              <li key={key}>
+                <span className="feature-dot" aria-hidden="true"></span>
+                <span>{formatFeatureLabel(key)}</span>
+              </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
       {hall.about && (
         <section className="hall-section">
@@ -364,6 +352,19 @@ export default function HallDetailPage() {
           Book Now
         </button>
       </div>
+
+        {offeringCards.length > 0 && (
+          <section className="hall-section info-showcase">
+          <h3>What We Offer</h3>
+            <div className="offer-card-grid">
+              {offeringCards.map((item) => (
+                <article key={item.key} className="offer-card">
+                  <h4>{item.title}</h4>
+                </article>
+              ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

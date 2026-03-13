@@ -17,28 +17,29 @@
   width: 100%;
   overflow: hidden;
   background:
-    linear-gradient(180deg, rgba(143, 164, 135, 0.72) 0%, rgba(152, 173, 144, 0.72) 100%);
+    linear-gradient(180deg, rgba(7, 37, 97, 0.76) 0%, rgba(9, 53, 135, 0.72) 100%);
 }
 
 .hero-img {
   object-fit: cover;
   object-position: center 34%;
-  opacity: 0.16;
+  opacity: 0.18;
   transform: scale(1.06);
-  filter: saturate(0.72) blur(0.2px);
+  filter: saturate(0.82) blur(0.2px);
 }
 
 .hero-overlay {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at center, rgba(255, 248, 235, 0.12), transparent 40%),
-    linear-gradient(180deg, rgba(255, 248, 235, 0.08), rgba(120, 143, 115, 0.14));
+    radial-gradient(circle at top, rgba(255, 196, 61, 0.14), transparent 34%),
+    radial-gradient(circle at center, rgba(11, 57, 143, 0.18), transparent 48%),
+    linear-gradient(180deg, rgba(6, 35, 92, 0.16), rgba(6, 35, 92, 0.36));
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #fff2d8;
+  color: #fff8e2;
   text-align: center;
 }
 
@@ -47,14 +48,15 @@
   font-weight: 800;
   margin-bottom: 10px;
   text-shadow:
-    0 0 8px rgba(255, 242, 216, 0.34),
-    0 0 18px rgba(220, 192, 139, 0.18);
+    0 10px 30px rgba(4, 20, 53, 0.34),
+    0 0 18px rgba(255, 199, 76, 0.14);
 }
 
 .hero-overlay p {
   font-size: 18px;
   font-weight: 500;
-  text-shadow: 0 0 8px rgba(255, 242, 216, 0.18);
+  color: #e9eefb;
+  text-shadow: 0 6px 18px rgba(8, 23, 58, 0.32);
 }
 
 /* =========================

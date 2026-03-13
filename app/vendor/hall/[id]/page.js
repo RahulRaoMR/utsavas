@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import styles from "./hallDetails.module.css";
+import { toAbsoluteImageUrl } from "../../../../lib/imageUrl";
+import { getVenueCategoryLabel } from "../../../../lib/venueCategories";
 
 export default function HallDetailsPage() {
   const { id } = useParams();
@@ -31,14 +33,14 @@ export default function HallDetailsPage() {
         {/* IMAGE */}
         {hall.images?.length > 0 && (
           <img
-            src={`https://utsavas-backend-1.onrender.com${hall.images[0]}`}
+            src={toAbsoluteImageUrl(hall.images[0])}
             className={styles.image}
             alt={hall.hallName}
           />
         )}
 
         {/* BASIC INFO */}
-        <p className={styles.text}><b>Category:</b> {hall.category}</p>
+        <p className={styles.text}><b>Category:</b> {getVenueCategoryLabel(hall.category) || hall.category}</p>
         <p className={styles.text}><b>Capacity:</b> {hall.capacity}</p>
         <p className={styles.text}><b>Rooms:</b> {hall.rooms}</p>
         <p className={styles.text}><b>Parking:</b> {hall.parkingCapacity}</p>
@@ -80,7 +82,7 @@ export default function HallDetailsPage() {
 
           <button
             className={styles.editBtn}
-            onClick={() => router.push(`/vendor/edit-hall/${hall._id}`)}
+            onClick={() => router.push(`/vendor/hall/${hall._id}/edit`)}
           >
             ✏ Edit Hall
           </button>

@@ -1,7 +1,7 @@
 export default function VenuesSection() {
   return (
-    <section style={{ padding: "100px 8%", background: "#fffaf2" }}>
-      <h2 style={{ color: "#6b1d2b", fontSize: "36px", marginBottom: "40px" }}>
+    <section style={{ padding: "32px 8% 36px", background: "#fffaf2" }}>
+      <h2 style={{ color: "#6b1d2b", fontSize: "36px", marginBottom: "24px" }}>
         Venues at UTSAVAS
       </h2>
       <p style={{ color: "#444" }}>
