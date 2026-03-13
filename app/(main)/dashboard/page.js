@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { Suspense, useEffect, useState, useRef } from "react";
 import "./dashboard.css";
 import EnquiryPopup from "../../components/EnquiryPopup";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -12,7 +12,7 @@ import {
   getVenueRoute,
 } from "../../../lib/venueCategories";
 
-export default function Dashboard() {
+function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const searchRef = useRef(null);
@@ -261,5 +261,13 @@ export default function Dashboard() {
 
       <Footer />
     </>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<div className="dashboard-container"><div className="overlay" /></div>}>
+      <DashboardContent />
+    </Suspense>
   );
 }
