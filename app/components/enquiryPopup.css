@@ -2,7 +2,7 @@
 .popup-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(58, 10, 18, 0.75); /* Utsavas maroon overlay */
+  background: rgba(16, 42, 78, 0.72);
   backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
@@ -12,13 +12,14 @@
 
 /* ===== POPUP BOX ===== */
 .popup-box {
-  background: #5c2727;
+  background: linear-gradient(180deg, #f8fbff 0%, #edf4fd 100%);
   width: 92%;
   max-width: 520px;
   padding: 28px 30px 32px;
-  border-radius: 16px;
+  border-radius: 22px;
   position: relative;
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(95, 151, 214, 0.22);
+  box-shadow: 0 25px 70px rgba(18, 49, 91, 0.28);
   animation: popupFade 0.3s ease-out;
 }
 
@@ -42,7 +43,7 @@
   border: none;
   background: none;
   font-size: 20px;
-  color: #6b1d2b;
+  color: #3f6fb6;
   cursor: pointer;
 }
 
@@ -51,13 +52,13 @@
   margin: 0;
   font-size: 22px;
   font-weight: 700;
-  color: #6b1d2b; /* Utsavas maroon */
+  color: #183b63;
 }
 
 .popup-box p {
   margin: 6px 0 20px;
   font-size: 14px;
-  color: #777;
+  color: #61708a;
 }
 
 /* ===== LABELS ===== */
@@ -66,7 +67,7 @@
   margin-top: 14px;
   font-size: 14px;
   font-weight: 600;
-  color: #4a0f1c;
+  color: #183b63;
 }
 
 /* ===== ROW (CITY + LOCALITY) ===== */
@@ -82,15 +83,17 @@ input[type="date"] {
   width: 100%;
   padding: 10px 12px;
   border-radius: 10px;
-  border: 1px solid #ac7a3d;
+  border: 1px solid #bfd4f2;
   font-size: 14px;
   outline: none;
-  background: #fffaf7;
+  background: #ffffff;
+  color: #183b63;
 }
 
 select:focus,
 input[type="date"]:focus {
-  border-color: #d6a24c; /* gold focus */
+  border-color: #5f97d6;
+  box-shadow: 0 0 0 4px rgba(95, 151, 214, 0.14);
 }
 
 /* ===== OPTIONS (GUESTS / BUDGET) ===== */
@@ -104,26 +107,26 @@ input[type="date"]:focus {
 .options button {
   padding: 8px 16px;
   border-radius: 22px;
-  border: 1px solid #d3bfa7;
-  background: #fffaf7;
+  border: 1px solid #c7dcf8;
+  background: #ffffff;
   font-size: 13px;
   font-weight: 500;
-  color: #6b1d2b;
+  color: #183b63;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .options button:hover {
-  border-color: #d6a24c;
-  color: #d6a24c;
-  background: #fff;
+  border-color: #5f97d6;
+  color: #3f6fb6;
+  background: #f8fbff;
 }
 
 /* OPTIONAL ACTIVE STATE (JS can toggle this later) */
 .options button.active {
-  background: linear-gradient(135deg, #6b1d2b, #9b2c3e);
+  background: linear-gradient(135deg, #5f97d6, #3f6fb6);
   color: #ffffff;
-  border-color: #6b1d2b;
+  border-color: #3f6fb6;
 }
 
 /* ===== SUBMIT BUTTON ===== */
@@ -136,13 +139,9 @@ input[type="date"]:focus {
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  color: #3a0a12;
-  background: linear-gradient(
-    135deg,
-    #f5d28a,
-    #e4b85c
-  ); /* Utsavas gold */
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  color: #f4f9ff;
+  background: linear-gradient(135deg, #5f97d6, #3f6fb6);
+  box-shadow: 0 10px 25px rgba(18, 49, 91, 0.22);
   transition: all 0.25s ease;
 }
 
@@ -166,12 +165,12 @@ input[type="date"]:focus {
 
 /* Date input selected value */
 .popup-box input[type="date"] {
-  color: #6b1d2b;
+  color: #183b63;
 }
 
 /* Select dropdown selected value */
 .popup-box select {
-  color: #6b1d2b;
+  color: #183b63;
 }
 
 /* Placeholder / default option color */
@@ -181,7 +180,7 @@ input[type="date"]:focus {
 
 /* Fix for Chrome date icon color (optional) */
 .popup-box input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(28%) sepia(25%) saturate(1700%) hue-rotate(330deg);
+  filter: invert(32%) sepia(14%) saturate(2398%) hue-rotate(183deg);
 }
 
 /* When input is disabled (optional polish) */
@@ -202,8 +201,10 @@ input[type="date"]:focus {
   .popup-box {
     width: 100%;
     max-width: 100%;
-    padding: 20px 16px 24px;
-    border-radius: 14px;
+    padding: 22px 16px 24px;
+    border-radius: 20px;
+    max-height: min(88vh, 760px);
+    overflow-y: auto;
   }
 
   .popup-box h2 {
@@ -235,8 +236,9 @@ input[type="date"]:focus {
   }
 
   .options button {
-    font-size: 12px;
-    padding: 7px 14px;
+    font-size: 13px;
+    padding: 10px 14px;
+    min-height: 42px;
   }
 
   .submit-btn {
@@ -258,11 +260,17 @@ input[type="date"]:focus {
 }
 
 .react-select__control {
-  min-height: 44px;
-  border-radius: 10px !important;
-  border: 1px solid #e6d3a3 !important;
+  min-height: 48px;
+  border-radius: 14px !important;
+  border: 1px solid #bfd4f2 !important;
+  box-shadow: none !important;
 }
 
 .react-select__menu {
   z-index: 9999 !important;
+}
+
+.react-select__control--is-focused {
+  border-color: #5f97d6 !important;
+  box-shadow: 0 0 0 4px rgba(95, 151, 214, 0.14) !important;
 }
