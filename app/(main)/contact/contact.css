@@ -5,7 +5,7 @@
 .contact-page {
   background: #f4ecdf;
   min-height: 100vh;
-  padding-top: 90px;
+  padding-top: max(var(--top-nav-offset, 0px), 90px);
   font-family: "Poppins", sans-serif;
 }
 
@@ -207,7 +207,7 @@
 @media (max-width: 768px) {
 
   .contact-page {
-    padding-top: 80px;
+    padding-top: max(var(--top-nav-offset, 0px), 80px);
   }
 
   .contact-hero {

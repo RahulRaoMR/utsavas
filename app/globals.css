@@ -19,6 +19,8 @@
   --brand-cream: #f4ecdf;
   --brand-text: #30402f;
   --brand-surface: #fbf5ea;
+  --top-nav-offset: 148px;
+  --top-nav-main-height: 82px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -44,6 +46,27 @@ body {
 body {
   font-family: "Playfair Display", serif;
   /* ❌ REMOVED padding-top: 70px */
+}
+
+.venue-location-map-shell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.venue-location-map-stamp {
+  position: absolute;
+  right: 12px;
+  bottom: 10px;
+  z-index: 500;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #4b5a46;
+  font-size: 12px;
+  line-height: 1;
+  box-shadow: 0 4px 14px rgba(48, 64, 47, 0.14);
+  pointer-events: none;
 }
 
 /* ===============================

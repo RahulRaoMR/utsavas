@@ -4,7 +4,7 @@
 
 .wedding-page {
   padding: 40px 60px;
-  padding-top: 140px;
+  padding-top: max(var(--top-nav-offset, 0px), 140px);
   background: #fff7ef;
   min-height: 100vh;
 }
@@ -25,6 +25,13 @@
   box-shadow: 0 14px 30px rgba(124, 106, 82, 0.08);
 }
 
+.page-hero-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
 .page-link-back {
   border: none;
   background: transparent;
@@ -42,6 +49,67 @@
   margin: 10px 0 0;
   font-size: 16px;
   color: #5d5660;
+}
+
+.desktop-filters-wrap {
+  display: block;
+}
+
+.mobile-filter-trigger,
+.mobile-filter-overlay {
+  display: none;
+}
+
+.mobile-filter-trigger {
+  border: 1px solid rgba(95, 151, 214, 0.24);
+  background: #ffffff;
+  color: #183b63;
+  border-radius: 999px;
+  padding: 10px 14px;
+  min-height: 46px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 10px 24px rgba(29, 74, 138, 0.08);
+}
+
+.mobile-filter-icon {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mobile-filter-icon span {
+  display: block;
+  width: 16px;
+  height: 2px;
+  border-radius: 999px;
+  background: #3f6fb6;
+}
+
+.mobile-filter-icon span:nth-child(2) {
+  width: 12px;
+}
+
+.mobile-filter-icon span:nth-child(3) {
+  width: 8px;
+}
+
+.mobile-filter-overlay {
+  position: fixed;
+  inset: var(--top-nav-offset, 0px) 0 0 0;
+  background: rgba(11, 33, 77, 0.24);
+  z-index: 9997;
+  padding: 16px;
+}
+
+.mobile-filter-panel {
+  width: min(100%, 420px);
+  margin-left: auto;
+  max-height: calc(100vh - var(--top-nav-offset, 0px) - 32px);
+  overflow-y: auto;
 }
 
 .page-note {
@@ -257,13 +325,18 @@
     padding: 20px;
   }
 
+  .page-hero-head {
+    align-items: center;
+    gap: 12px;
+  }
+
   .page-title {
     font-size: 30px;
   }
 
   .wedding-page {
     padding: 30px 20px;
-    padding-top: 150px;
+    padding-top: max(var(--top-nav-offset, 0px), 150px);
   }
 
   .page-title {
@@ -275,6 +348,18 @@
   .wedding-layout {
     grid-template-columns: 1fr;
     gap: 16px;
+  }
+
+  .desktop-filters-wrap {
+    display: none;
+  }
+
+  .mobile-filter-trigger {
+    display: inline-flex;
+  }
+
+  .mobile-filter-overlay {
+    display: block;
   }
 
   .hall-card-grid {
@@ -322,7 +407,7 @@
 
   .wedding-page {
     padding: 25px 16px;
-    padding-top: 178px;
+    padding-top: max(var(--top-nav-offset, 0px), 178px);
   }
 
   .page-title {
@@ -335,6 +420,16 @@
   .page-hero {
     padding: 20px 18px;
     border-radius: 20px;
+  }
+
+  .page-hero-head {
+    margin-bottom: 10px;
+  }
+
+  .mobile-filter-trigger {
+    padding: 9px 12px;
+    min-height: 42px;
+    font-size: 13px;
   }
 
   .page-subtitle {

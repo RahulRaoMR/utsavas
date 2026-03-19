@@ -16,12 +16,13 @@ function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const searchRef = useRef(null);
+  const activeSearchLocation =
+    (searchParams.get("city") || searchParams.get("location") || "").trim();
 
   const [search, setSearch] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
-  const [selectedLocation, setSelectedLocation] = useState("");
   const categoryCards = getVenueCategoryCards();
 
   /* ===================================
@@ -31,22 +32,17 @@ function DashboardContent() {
     const filled = localStorage.getItem("enquiryFilled");
     if (!filled) setShowPopup(true);
 
-    const locationFromQuery =
-      (searchParams.get("city") || searchParams.get("location") || "").trim();
+    const locationFromQuery = activeSearchLocation;
     const savedLocation = localStorage.getItem("utsavasSearchedLocation") || "";
     const nextLocation = locationFromQuery || savedLocation;
 
     if (nextLocation) {
-      setSelectedLocation(nextLocation);
       localStorage.setItem("utsavasSearchedLocation", nextLocation);
-    } else {
-      setSelectedLocation("");
     }
-  }, [searchParams]);
+  }, [activeSearchLocation]);
 
   const openCategoryListing = (route, title, categoryKey) => {
     const params = new URLSearchParams();
-    const pickedLocation = selectedLocation.trim();
 
     if (title) {
       params.set("title", title);
@@ -56,8 +52,8 @@ function DashboardContent() {
       params.set("category", categoryKey);
     }
 
-    if (pickedLocation) {
-      params.set("city", pickedLocation);
+    if (activeSearchLocation) {
+      params.set("location", activeSearchLocation);
     }
 
     const queryString = params.toString();
@@ -139,7 +135,7 @@ function DashboardContent() {
 
     const preferredCategory = results[0]?.category || "";
     const listingRoute = getVenueRoute(preferredCategory) || DEFAULT_VENUE_ROUTE;
-    const pickedLocation = selectedLocation.trim();
+    const pickedLocation = activeSearchLocation;
 
     setResults([]);
     const params = new URLSearchParams({ q: query });

@@ -4,10 +4,31 @@
   min-height: 100vh;
 }
 
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
 .title {
   font-size: 28px;
   color: #183b63;
-  margin-bottom: 30px;
+  margin: 0;
+}
+
+.backButton {
+  background: linear-gradient(135deg, #5f97d6, #3f6fb6);
+  color: #f4f9ff;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(29, 74, 138, 0.16);
+  transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
 .loading,
@@ -99,7 +120,8 @@
 
 .viewBtn:hover,
 .editBtn:hover,
-.deleteBtn:hover {
+.deleteBtn:hover,
+.backButton:hover {
   opacity: 0.95;
   transform: translateY(-1px);
 }
@@ -114,6 +136,15 @@
 }
 
 @media (max-width: 768px) {
+  .header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .backButton {
+    align-self: flex-end;
+  }
+
   .image {
     height: 220px;
   }

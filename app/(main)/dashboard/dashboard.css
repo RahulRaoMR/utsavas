@@ -23,7 +23,7 @@
     radial-gradient(circle at center, rgba(11, 57, 143, 0.14), transparent 58%);
   width: 100%;
   min-height: 100vh;
-  padding: 188px 20px 60px;
+  padding: max(calc(var(--top-nav-offset, 0px) + 40px), 188px) 20px 60px;
   text-align: center;
 }
 
@@ -253,7 +253,7 @@
   }
 
   .overlay {
-    padding: 138px 16px 40px;
+    padding: max(var(--top-nav-offset, 0px), 138px) 16px 40px;
   }
 
   /* SEARCH */
@@ -310,7 +310,7 @@
 
 @media (max-width: 560px) {
   .overlay {
-    padding: 126px 12px 36px;
+    padding: max(var(--top-nav-offset, 0px), 126px) 12px 36px;
   }
 
   .card-container {

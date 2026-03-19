@@ -161,23 +161,56 @@ export default function HallDetailPage() {
     phone: "\uD83D\uDCDE",
     check: "\u2714",
   };
-  const { directionsUrl, fullAddress, mapEmbedUrl } = buildVenueMapUrls({
+  const { fullAddress, mapEmbedUrl, directionsUrl } = buildVenueMapUrls({
     hallName: hall.hallName,
     address: hall.address,
     location: hall.location,
   });
   const offeringCards = [
-    { key: "event-planning", title: "\uD83C\uDF89 Event Planning" },
-    { key: "wedding-decoration", title: "\uD83C\uDF38 Wedding Decoration" },
-    { key: "catering-services", title: "\uD83C\uDF7D Catering Services" },
-    { key: "dj-entertainment", title: "\uD83C\uDFA7 DJ & Entertainment" },
     {
-      key: "photography-videography",
-      title: "\uD83D\uDCF8 Photography & Videography",
+      key: "discover-wedding-venues",
+      title: "\uD83C\uDFDB\uFE0F Discover Wedding Venues",
     },
-    { key: "valet-parking", title: "\uD83D\uDE97 Valet Parking" },
-    { key: "bar-counter", title: "\uD83C\uDF78 Bar Counter" },
-    { key: "live-music", title: "\uD83C\uDFB6 Live Music Band / Concert" },
+    {
+      key: "explore-decoration-themes",
+      title: "\uD83C\uDFA8 Explore Decoration Themes",
+    },
+    {
+      key: "check-venue-availability",
+      title: "\uD83D\uDCC5 Check Venue Availability",
+    },
+    {
+      key: "compare-pricing-capacity",
+      title: "\uD83D\uDCB0 Compare Pricing & Capacity",
+    },
+    {
+      key: "view-real-venue-photos",
+      title: "\uD83D\uDCF8 View Real Venue Photos",
+    },
+    {
+      key: "entertainment-options",
+      title: "\uD83C\uDFB5 Entertainment Options",
+    },
+    {
+      key: "parking-facilities",
+      title: "\uD83D\uDE97 Parking & Facilities",
+    },
+    {
+      key: "makeup-artists",
+      title: "\uD83D\uDC84 Makeup Artists",
+    },
+    {
+      key: "mehndi",
+      title: "\uD83C\uDF3F Mehndi",
+    },
+    {
+      key: "bridal-wear",
+      title: "\uD83D\uDC57 Bridal Wear",
+    },
+    {
+      key: "quick-booking-requests",
+      title: "\u26A1 Quick Booking Requests",
+    },
   ];
 
   const handleBookNow = () => {
@@ -320,8 +353,8 @@ export default function HallDetailPage() {
             <span>{fullAddress || "Address unavailable"}</span>
           </div>
           <a
-            className="directions-btn"
             href={directionsUrl}
+            className="directions-btn"
             target="_blank"
             rel="noreferrer"
           >

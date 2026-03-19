@@ -56,7 +56,7 @@ export default function PaymentPage() {
         description: "Hall Booking Payment",
         order_id: order.id,
         theme: {
-          color: "#788f73",
+          color: "#3f6fb6",
         },
         handler: function () {
           alert("✅ Payment Successful!");

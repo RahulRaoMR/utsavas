@@ -13,6 +13,12 @@
   align-items: center;
 }
 
+.pageTitle {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+
 .logo {
   font-size: 20px;
   font-weight: bold;
@@ -29,8 +35,25 @@
   cursor: pointer;
 }
 
+.backButton {
+  background: #fbf5ea;
+  color: #183b63;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(29, 74, 138, 0.12);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
 .logoutBtn:hover {
   opacity: 0.92;
+}
+
+.backButton:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
 }
 
 .welcomeBox {
@@ -309,4 +332,17 @@
 .revenueHighlight p,
 .revenueHighlight h3 {
   color: #fff;
+}
+
+@media (max-width: 768px) {
+  .header {
+    gap: 12px;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .backButton,
+  .logoutBtn {
+    align-self: flex-end;
+  }
 }

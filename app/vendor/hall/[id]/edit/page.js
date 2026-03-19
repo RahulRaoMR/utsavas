@@ -8,7 +8,6 @@ import { toAbsoluteImageUrl } from "../../../../../lib/imageUrl";
 import {
   buildAddressQuery,
   buildAddressQueries,
-  buildVenueMapUrls,
   geocodeAddress,
   hasMinimumVenueAddress,
   INDIA_MAP_CENTER,
@@ -232,12 +231,6 @@ export default function VendorEditHallPage() {
     location,
   ]);
 
-  const { openMapUrl } = buildVenueMapUrls({
-    hallName: form.hallName,
-    address,
-    location,
-  });
-
   const mapStatus = !addressQuery
     ? "Enter the venue address, then click the map if you need to place the exact location manually."
     : !hasMinimumAddress
@@ -438,14 +431,6 @@ export default function VendorEditHallPage() {
                   ? `Lat: ${location.lat.toFixed(5)} | Lng: ${location.lng.toFixed(5)}`
                   : "Pin not set yet"}
               </span>
-              <a
-                href={openMapUrl}
-                target="_blank"
-                rel="noreferrer"
-                className={styles.mapLink}
-              >
-                Open in Google Maps
-              </a>
             </div>
 
             <p className={styles.mapNote}>

@@ -77,24 +77,6 @@
   font-weight: 500;
 }
 
-.mapLink {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 16px;
-  border-radius: 10px;
-  background: #788f73;
-  color: #fff2d8;
-  text-decoration: none;
-  font-weight: 600;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-.mapLink:hover {
-  background: #657d5f;
-  transform: translateY(-1px);
-}
-
 .mapNote {
   margin-top: 10px;
   color: #30402f;
@@ -154,9 +136,5 @@
 
   .mapMeta {
     align-items: stretch;
-  }
-
-  .mapLink {
-    width: 100%;
   }
 }

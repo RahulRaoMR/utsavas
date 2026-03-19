@@ -35,8 +35,8 @@ export default function AdminSidebar() {
         },
         {
           name: "Total Vendors",
-          href: "/admin/vendors?status=approved",
-          active: isActive("/admin/vendors", () => vendorStatus === "approved"),
+          href: "/admin/vendors?status=all",
+          active: isActive("/admin/vendors", () => vendorStatus === "all"),
         },
       ],
     },
@@ -50,8 +50,8 @@ export default function AdminSidebar() {
         },
         {
           name: "Total Halls",
-          href: "/admin/halls?status=approved",
-          active: isActive("/admin/halls", () => hallStatus === "approved"),
+          href: "/admin/halls?status=all",
+          active: isActive("/admin/halls", () => hallStatus === "all"),
         },
       ],
     },

@@ -60,44 +60,73 @@ export default function VenueLocationMap({
   selectedZoom = 15,
 }) {
   const selectedLocation = normalizeLocation(position);
-  const initialCenter = normalizeLocation(position) || normalizeLocation(fallbackCenter) || INDIA_MAP_CENTER;
+  const initialCenter =
+    normalizeLocation(position) ||
+    normalizeLocation(fallbackCenter) ||
+    INDIA_MAP_CENTER;
 
   return (
-    <MapContainer
-      center={[initialCenter.lat, initialCenter.lng]}
-      zoom={selectedLocation ? selectedZoom : fallbackZoom}
-      scrollWheelZoom
-      className="venue-location-map"
+    <div
+      className="venue-location-map-shell"
+      style={{ position: "relative", width: "100%", height: "100%" }}
     >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-
-      <MapInteractions
-        fallbackCenter={fallbackCenter}
-        fallbackZoom={fallbackZoom}
-        onChange={onChange}
-        position={position}
-        selectedZoom={selectedZoom}
-      />
-
-      {selectedLocation ? (
-        <Marker
-          position={[selectedLocation.lat, selectedLocation.lng]}
-          icon={venuePinIcon}
-          draggable
-          eventHandlers={{
-            dragend: (event) => {
-              const nextPoint = event.target.getLatLng();
-              onChange({
-                lat: nextPoint.lat,
-                lng: nextPoint.lng,
-              });
-            },
-          }}
+      <MapContainer
+        center={[initialCenter.lat, initialCenter.lng]}
+        zoom={selectedLocation ? selectedZoom : fallbackZoom}
+        scrollWheelZoom
+        className="venue-location-map"
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-      ) : null}
-    </MapContainer>
+
+        <MapInteractions
+          fallbackCenter={fallbackCenter}
+          fallbackZoom={fallbackZoom}
+          onChange={onChange}
+          position={position}
+          selectedZoom={selectedZoom}
+        />
+
+        {selectedLocation ? (
+          <Marker
+            position={[selectedLocation.lat, selectedLocation.lng]}
+            icon={venuePinIcon}
+            draggable
+            eventHandlers={{
+              dragend: (event) => {
+                const nextPoint = event.target.getLatLng();
+                onChange({
+                  lat: nextPoint.lat,
+                  lng: nextPoint.lng,
+                });
+              },
+            }}
+          />
+        ) : null}
+      </MapContainer>
+
+      <div
+        className="venue-location-map-stamp"
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          right: "12px",
+          bottom: "10px",
+          zIndex: 800,
+          padding: "4px 8px",
+          borderRadius: "8px",
+          background: "rgba(255, 255, 255, 0.92)",
+          color: "#4b5a46",
+          fontSize: "12px",
+          lineHeight: 1,
+          boxShadow: "0 4px 14px rgba(48, 64, 47, 0.14)",
+          pointerEvents: "none",
+        }}
+      >
+        Map data 2026
+      </div>
+    </div>
   );
 }

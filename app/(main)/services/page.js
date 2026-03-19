@@ -35,6 +35,8 @@ export default function ServicesPage() {
           <div className="service-card">🚗 Valet Parking</div>
           <div className="service-card">🍸Bar Counter</div>
           <div className="service-card">🎶Live Music Band / Concert</div>
+          <div className="service-card">🌿Mehndi</div>
+          <div className="service-card">👰Bridal Wear</div>
         </div>
       </section>
 

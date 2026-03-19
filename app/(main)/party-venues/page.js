@@ -20,6 +20,7 @@ function PartyVenuesContent() {
 
   const [halls, setHalls] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [priceRange, setPriceRange] = useState({
     min: 0,
     max: 500000,
@@ -45,7 +46,7 @@ function PartyVenuesContent() {
   const queryText = normalize(searchParams.get("q"));
   const cityFilter = normalize(searchParams.get("city"));
   const areaFilter = normalize(searchParams.get("location"));
-  const requestedCategoryParam = normalize(searchParams.get("category"));
+  const requestedCategoryParam = normalizeVenueCategory(searchParams.get("category"));
   const requestedCategory = normalizeVenueCategory(searchParams.get("category"));
   const requestedTitle =
     getVenueCategoryLabel(requestedCategory) ||
@@ -55,20 +56,17 @@ function PartyVenuesContent() {
     searchParams.get("location") || searchParams.get("city") || "";
   const activeLocationFilter = areaFilter || cityFilter;
 
-  const routeMatchedHalls = useMemo(() => {
+  const baseFilteredHalls = useMemo(() => {
     return halls.filter((hall) => {
-      const category = normalizeVenueCategory(hall.category);
-      if (!categoryBelongsToRoute(category, "/party-venues")) {
-        return false;
-      }
-
       let locationMatch = true;
       if (activeLocationFilter) {
         const city = normalize(hall.address?.city);
         const area = normalize(hall.address?.area);
+        const pincode = normalize(hall.address?.pincode);
         locationMatch =
           city.includes(activeLocationFilter) ||
-          area.includes(activeLocationFilter);
+          area.includes(activeLocationFilter) ||
+          pincode.includes(activeLocationFilter);
       }
 
       const hallPrice =
@@ -80,20 +78,35 @@ function PartyVenuesContent() {
         !queryText ||
         normalize(hall.hallName).includes(queryText) ||
         normalize(hall.address?.area).includes(queryText) ||
-        normalize(hall.address?.city).includes(queryText);
+        normalize(hall.address?.city).includes(queryText) ||
+        normalize(hall.address?.pincode).includes(queryText);
 
       return locationMatch && priceMatch && queryMatch;
     });
   }, [activeLocationFilter, halls, priceRange, queryText]);
 
+  const routeMatchedHalls = useMemo(() => {
+    const matches = baseFilteredHalls.filter((hall) => {
+      const category = normalizeVenueCategory(hall.category);
+      return categoryBelongsToRoute(category, "/party-venues");
+    });
+
+    if (matches.length === 0) {
+      return baseFilteredHalls;
+    }
+
+    return matches;
+  }, [baseFilteredHalls]);
+
   const exactCategoryHalls = useMemo(() => {
     if (!requestedCategoryParam) {
       return routeMatchedHalls;
     }
-
-    return routeMatchedHalls.filter(
-      (hall) => normalize(hall.category) === requestedCategoryParam
+    const exactMatches = routeMatchedHalls.filter(
+      (hall) => normalizeVenueCategory(hall.category) === requestedCategoryParam
     );
+
+    return exactMatches;
   }, [requestedCategoryParam, routeMatchedHalls]);
 
   const filteredHalls = requestedCategoryParam ? exactCategoryHalls : routeMatchedHalls;
@@ -101,32 +114,73 @@ function PartyVenuesContent() {
   return (
     <div className="wedding-page">
       <div className="page-hero">
-        <button
-          type="button"
-          className="page-link-back"
-          onClick={() => router.push("/party-venues")}
-        >
-          All Party Venues
-        </button>
+        <div className="page-hero-head">
+          <button
+            type="button"
+            className="page-link-back"
+            onClick={() => router.push("/party-venues")}
+          >
+            All Party Venues
+          </button>
+
+          <button
+            type="button"
+            className="mobile-filter-trigger"
+            onClick={() => setShowMobileFilters(true)}
+          >
+            <span className="mobile-filter-icon" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+            </span>
+            <span>Filters</span>
+          </button>
+        </div>
         <h1 className="page-title">{requestedTitle}</h1>
         <p className="page-subtitle">
           {displayLocationLabel
-            ? `Showing venues in ${displayLocationLabel}`
-            : "Showing all venues in this section"}
+            ? `Showing registered ${requestedTitle} venues in ${displayLocationLabel}`
+            : requestedCategoryParam
+              ? `Showing all registered ${requestedTitle} venues`
+              : "Showing all registered venues in this section"}
         </p>
       </div>
 
       {loading && <p style={{ color: "#777" }}>Loading halls...</p>}
 
+      {showMobileFilters && (
+        <div
+          className="mobile-filter-overlay"
+          onClick={() => setShowMobileFilters(false)}
+        >
+          <div
+            className="mobile-filter-panel"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <FiltersSidebar
+              priceRange={priceRange}
+              setPriceRange={setPriceRange}
+              onClose={() => setShowMobileFilters(false)}
+            />
+          </div>
+        </div>
+      )}
+
       <div className="wedding-layout">
-        <FiltersSidebar
-          priceRange={priceRange}
-          setPriceRange={setPriceRange}
-        />
+        <div className="desktop-filters-wrap">
+          <FiltersSidebar
+            priceRange={priceRange}
+            setPriceRange={setPriceRange}
+          />
+        </div>
 
         <div className="hall-card-grid">
           {!loading && filteredHalls.length === 0 && (
-            <p style={{ color: "#777" }}>No venues found for this selection.</p>
+            <p style={{ color: "#777" }}>
+              {requestedCategoryParam
+                ? `No registered ${requestedTitle} venues found.`
+                : "No venues found for this selection."}
+            </p>
           )}
 
           {filteredHalls.map((hall) => {

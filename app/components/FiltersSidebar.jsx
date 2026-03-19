@@ -6,17 +6,11 @@ import "./filtersSidebar.css";
 export default function FiltersSidebar({
   priceRange = { min: 0, max: 300000 }, // ✅ SAFETY FIX
   setPriceRange = () => {},
+  onClose,
 }) {
   /* =========================
      PRICE HANDLERS
   ========================= */
-  const handleMinChange = (e) => {
-    setPriceRange((prev) => ({
-      ...prev,
-      min: Number(e.target.value),
-    }));
-  };
-
   const handleMaxChange = (e) => {
     setPriceRange((prev) => ({
       ...prev,
@@ -98,7 +92,14 @@ export default function FiltersSidebar({
   ========================= */
   return (
     <aside className="filters-sidebar">
-      <h3 className="filter-title">Filters</h3>
+      <div className="filters-header-row">
+        <h3 className="filter-title">Filters</h3>
+        {onClose ? (
+          <button type="button" className="filters-close-btn" onClick={onClose}>
+            Close
+          </button>
+        ) : null}
+      </div>
 
       {/* ================= PRICE ================= */}
       <div className="filter-group">

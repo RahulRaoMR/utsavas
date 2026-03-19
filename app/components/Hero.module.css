@@ -9,7 +9,7 @@
   background-position: center 34%;
   background-repeat: no-repeat;
   overflow: hidden;
-  padding: 144px 24px 96px;
+  padding: max(calc(var(--top-nav-offset, 0px) + 32px), 144px) 24px 96px;
   margin-top: 0;
   display: flex;
   align-items: flex-end;
@@ -111,7 +111,7 @@
 @media (max-width: 768px) {
   .hero {
     min-height: auto;
-    padding: 116px 16px 48px;
+    padding: max(calc(var(--top-nav-offset, 0px) + 28px), 116px) 16px 48px;
     background-position: center 30%;
     align-items: flex-end;
   }
@@ -142,7 +142,7 @@
 
 @media (max-width: 480px) {
   .hero {
-    padding: 108px 12px 40px;
+    padding: max(calc(var(--top-nav-offset, 0px) + 24px), 108px) 12px 40px;
   }
 
   .content h1 {

@@ -5,6 +5,9 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import "./topnavbar.css";
 import { getGeolocationErrorMessage } from "./geolocationError";
+import { karnatakaDistricts } from "./karnatakaDistricts";
+import { karnatakaTaluksAndTowns } from "./karnatakaTaluksAndTowns";
+import { bengaluruPincodes } from "./bengaluruPincodes";
 
 const API =
   process.env.NEXT_PUBLIC_API_URL ||
@@ -22,8 +25,80 @@ type LocationSuggestion = {
   label: string;
   sublabel?: string;
   value: string;
-  source: "search" | "popular" | "recent" | "current";
+  searchValue?: string;
+  source: "search" | "popular" | "recent" | "current" | "local" | "postal";
 };
+
+const normalizeText = (value: string) => String(value || "").trim().toLowerCase();
+
+const KARNATAKA_LOCATION_LIBRARY: LocationSuggestion[] = [
+  ...karnatakaDistricts.map((place) => ({
+    label: place,
+    sublabel: "District, Karnataka",
+    value: place,
+    searchValue: place,
+    source: "local" as const,
+  })),
+  ...karnatakaTaluksAndTowns.map((place) => ({
+    label: place,
+    sublabel: "Karnataka, India",
+    value: place,
+    searchValue: place,
+    source: "local" as const,
+  })),
+  ...bengaluruPincodes.map((place) => ({
+    label: place.area,
+    sublabel: `Bengaluru, Karnataka - ${place.pincode}`,
+    value: place.area,
+    searchValue: place.area,
+    source: "local" as const,
+  })),
+];
+
+function mergeLocationSuggestions(...groups: LocationSuggestion[][]) {
+  const seen = new Set<string>();
+
+  return groups.flat().filter((item) => {
+    const key = `${normalizeText(item.label)}|${normalizeText(
+      item.searchValue || item.value
+    )}`;
+
+    if (seen.has(key)) {
+      return false;
+    }
+
+    seen.add(key);
+    return true;
+  });
+}
+
+function buildLocalLocationMatches(query: string) {
+  const normalizedQuery = normalizeText(query);
+
+  if (normalizedQuery.length < 2) {
+    return [];
+  }
+
+  const startsWithMatches: LocationSuggestion[] = [];
+  const containsMatches: LocationSuggestion[] = [];
+
+  KARNATAKA_LOCATION_LIBRARY.forEach((item) => {
+    const searchText = normalizeText(
+      `${item.label} ${item.sublabel || ""} ${item.searchValue || item.value}`
+    );
+
+    if (searchText.startsWith(normalizedQuery)) {
+      startsWithMatches.push(item);
+      return;
+    }
+
+    if (searchText.includes(normalizedQuery)) {
+      containsMatches.push(item);
+    }
+  });
+
+  return mergeLocationSuggestions(startsWithMatches, containsMatches).slice(0, 8);
+}
 
 const POPULAR_DESTINATIONS: LocationSuggestion[] = [
   { label: "Bengaluru", sublabel: "Karnataka, India", value: "Bengaluru", source: "popular" },
@@ -43,6 +118,8 @@ export default function TopNavBar() {
   const router = useRouter();
   const pathname = usePathname();
 
+  const navRef = useRef<HTMLElement | null>(null);
+  const navMainRef = useRef<HTMLDivElement | null>(null);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const locationRef = useRef<HTMLDivElement | null>(null);
 
@@ -82,6 +159,47 @@ export default function TopNavBar() {
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
   }, [menuOpen]);
+
+  useEffect(() => {
+    const root = document.documentElement;
+
+    const syncNavMetrics = () => {
+      const navHeight = Math.ceil(navRef.current?.getBoundingClientRect().height || 0);
+      const navMainHeight = Math.ceil(
+        navMainRef.current?.getBoundingClientRect().height || 0
+      );
+
+      if (navHeight > 0) {
+        root.style.setProperty("--top-nav-offset", `${navHeight}px`);
+      }
+
+      if (navMainHeight > 0) {
+        root.style.setProperty("--top-nav-main-height", `${navMainHeight}px`);
+      }
+    };
+
+    syncNavMetrics();
+
+    const resizeObserver =
+      typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(() => syncNavMetrics())
+        : null;
+
+    if (navRef.current && resizeObserver) {
+      resizeObserver.observe(navRef.current);
+    }
+
+    if (navMainRef.current && resizeObserver) {
+      resizeObserver.observe(navMainRef.current);
+    }
+
+    window.addEventListener("resize", syncNavMetrics);
+
+    return () => {
+      resizeObserver?.disconnect();
+      window.removeEventListener("resize", syncNavMetrics);
+    };
+  }, [menuOpen, pathname, user]);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -161,58 +279,31 @@ export default function TopNavBar() {
     }
 
     const controller = new AbortController();
+    const localMatches = buildLocalLocationMatches(query);
+    setLocationSuggestions(localMatches);
 
     const timer = setTimeout(async () => {
       try {
-        const url =
-          "https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=10&countrycodes=in&q=" +
-          encodeURIComponent(`${query}, Karnataka, India`);
-
-        const res = await fetch(url, { signal: controller.signal });
-        const data = await res.json();
-        const list = Array.isArray(data) ? data : [];
-
-        const formatted = list
-          .map((item) => {
-            const address = item?.address || {};
-            const name =
-              address.city ||
-              address.town ||
-              address.village ||
-              address.suburb ||
-              address.county ||
-              "";
-            const district =
-              address.county ||
-              address.state_district ||
-              address.state ||
-              "";
-
-            if (!name) return null;
-
-            return {
-              label: name,
-              sublabel:
-                district && district !== name
-                  ? `${district}, Karnataka`
-                  : "Karnataka, India",
-              value: district && district !== name ? `${name}, ${district}` : name,
-              source: "search" as const,
-            };
-          })
-          .filter(Boolean) as LocationSuggestion[];
-
-        const unique = formatted.filter(
-          (item, index, self) =>
-            self.findIndex((entry) => entry.value === item.value) === index
+        const res = await fetch(
+          `/api/location-suggestions?q=${encodeURIComponent(query)}`,
+          { signal: controller.signal, cache: "no-store" }
         );
+        const data = await res.json();
+        const postalMatches = Array.isArray(data) ? data : [];
 
-        setLocationSuggestions(unique.slice(0, 8));
+        setLocationSuggestions(
+          mergeLocationSuggestions(postalMatches, localMatches).slice(0, 10)
+        );
         setLocationError("");
       } catch (err) {
         if ((err as Error).name !== "AbortError") {
           console.error("Location search failed:", err);
-          setLocationError("Unable to load destinations right now.");
+          setLocationSuggestions(localMatches);
+          setLocationError(
+            localMatches.length === 0
+              ? "Unable to load destinations right now."
+              : ""
+          );
         }
       }
     }, 250);
@@ -232,14 +323,14 @@ export default function TopNavBar() {
     router.push("/");
   };
 
-  const saveLocationAndGo = (value: string) => {
-    setLocation(value);
-    setRecentLocation(value);
-    localStorage.setItem("utsavasLocation", value);
-    localStorage.setItem("utsavasRecentLocation", value);
-    localStorage.setItem("utsavasSearchedLocation", value);
+  const saveLocationAndGo = (searchValue: string, displayValue = searchValue) => {
+    setLocation(displayValue);
+    setRecentLocation(displayValue);
+    localStorage.setItem("utsavasLocation", displayValue);
+    localStorage.setItem("utsavasRecentLocation", displayValue);
+    localStorage.setItem("utsavasSearchedLocation", searchValue);
     setShowLocationSuggestions(false);
-    router.push(`/dashboard?city=${encodeURIComponent(value)}`);
+    router.push(`/dashboard?location=${encodeURIComponent(searchValue)}`);
   };
 
   const handleLocationSearch = () => {
@@ -248,8 +339,11 @@ export default function TopNavBar() {
     saveLocationAndGo(picked);
   };
 
-  const handlePickSuggestion = (value: string) => {
-    saveLocationAndGo(value);
+  const handlePickSuggestion = (suggestion: LocationSuggestion) => {
+    saveLocationAndGo(
+      suggestion.searchValue || suggestion.value,
+      suggestion.label
+    );
   };
 
   const handleDetectLocation = () => {
@@ -347,8 +441,8 @@ export default function TopNavBar() {
 
   return (
     <>
-      <nav className={`top-nav ${scrolled ? "scrolled" : ""}`}>
-        <div className="top-nav-main">
+      <nav ref={navRef} className={`top-nav ${scrolled ? "scrolled" : ""}`}>
+        <div ref={navMainRef} className="top-nav-main">
           <div className="brand-cluster">
             <div className="logo">
               <Link href="/">
@@ -368,7 +462,7 @@ export default function TopNavBar() {
                 <span className="search-field-icon" aria-hidden="true"></span>
                 <input
                   type="text"
-                  placeholder="Search for venue, city, or area"
+                  placeholder="Search place, area, or PIN code"
                   value={location}
                   onChange={(e) => {
                     setLocation(e.target.value);
@@ -416,7 +510,7 @@ export default function TopNavBar() {
                       onClick={() =>
                         place.value === "__current__"
                           ? handleDetectLocation()
-                          : handlePickSuggestion(place.value)
+                          : handlePickSuggestion(place)
                       }
                     >
                       <span className="location-suggestion-icon">
@@ -424,6 +518,8 @@ export default function TopNavBar() {
                           ? "GPS"
                           : place.source === "recent"
                           ? "REC"
+                          : place.source === "local"
+                          ? "KTK"
                           : "PIN"}
                       </span>
                       <span className="location-suggestion-copy">

@@ -8,7 +8,6 @@ import styles from "./addHall.module.css";
 import {
   buildAddressQuery,
   buildAddressQueries,
-  buildVenueMapUrls,
   geocodeAddress,
   hasMinimumVenueAddress,
   INDIA_MAP_CENTER,
@@ -208,12 +207,6 @@ export default function AddHallPage() {
     hasMinimumAddress,
   ]);
 
-  const { openMapUrl } = buildVenueMapUrls({
-    hallName: form.hallName,
-    address,
-    location: geoLocation,
-  });
-
   const mapStatus = !addressQuery
     ? "Enter the venue address, then click the map if you need to place the exact location manually."
     : !hasMinimumAddress
@@ -386,14 +379,6 @@ export default function AddHallPage() {
                 ? `Lat: ${geoLocation.lat.toFixed(5)} | Lng: ${geoLocation.lng.toFixed(5)}`
                 : "Pin not set yet"}
             </span>
-            <a
-              href={openMapUrl}
-              target="_blank"
-              rel="noreferrer"
-              className={styles.mapLink}
-            >
-              Open in Google Maps
-            </a>
           </div>
 
           <p className={styles.mapNote}>

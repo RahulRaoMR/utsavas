@@ -9,6 +9,15 @@ export default function VendorBookingsPage() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      router.back();
+      return;
+    }
+
+    router.push("/vendor/dashboard");
+  };
+
   /* =========================
      FETCH BOOKINGS (MEMOIZED)
   ========================= */
@@ -78,7 +87,12 @@ export default function VendorBookingsPage() {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.header}>Booking Requests</h1>
+      <div className={styles.header}>
+        <h1 className={styles.pageTitle}>Booking Requests</h1>
+        <button className={styles.backButton} onClick={handleBack} type="button">
+          Back
+        </button>
+      </div>
 
       {loading && <p style={{ marginTop: 20 }}>Loading...</p>}
 

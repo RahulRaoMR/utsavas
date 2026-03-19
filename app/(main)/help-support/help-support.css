@@ -1,7 +1,7 @@
 .help-page {
   min-height: 100vh;
   background: #f5f2eb;
-  padding-top: 90px;
+  padding-top: max(var(--top-nav-offset, 0px), 90px);
   font-family: "Poppins", sans-serif;
 }
 
@@ -125,7 +125,7 @@
 
 @media (max-width: 768px) {
   .help-page {
-    padding-top: 80px;
+    padding-top: max(var(--top-nav-offset, 0px), 80px);
   }
 
   .help-hero {

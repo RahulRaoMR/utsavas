@@ -10,8 +10,16 @@
   height: fit-content;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
   position: sticky;
-  top: 120px;
+  top: calc(var(--top-nav-offset, 0px) + 12px);
   transition: all 0.25s ease;
+}
+
+.filters-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
 }
 
 /* =========================================
@@ -21,8 +29,19 @@
 .filter-title {
   color: #6b1d2b; /* UTSAVAM theme */
   font-size: 18px;
-  margin-bottom: 18px;
+  margin: 0;
   font-weight: 700;
+}
+
+.filters-close-btn {
+  border: none;
+  background: #eff6ff;
+  color: #3f6fb6;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 /* =========================================
@@ -141,7 +160,7 @@
     position: static;
     top: auto;
     border-radius: 12px;
-    margin-bottom: 16px;
+    margin-bottom: 0;
   }
 
   .filter-title {

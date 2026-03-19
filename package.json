@@ -5,6 +5,7 @@
   "homepage": "https://rahulraomr.github.io/utsavas",
   "scripts": {
     "dev": "next dev",
+    "dev:network": "next dev -H 0.0.0.0 -p 3000",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"

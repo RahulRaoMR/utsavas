@@ -16,6 +16,15 @@ export default function MyHallsPage() {
   const [loading, setLoading] = useState(true);
   const [deletingHallId, setDeletingHallId] = useState(null);
 
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      router.back();
+      return;
+    }
+
+    router.push("/vendor/dashboard");
+  };
+
   useEffect(() => {
     try {
       const vendorData = localStorage.getItem("vendor");
@@ -96,7 +105,12 @@ export default function MyHallsPage() {
 
   return (
     <div className={styles.page}>
-      <h1 className={styles.title}>My Approved Halls</h1>
+      <div className={styles.header}>
+        <h1 className={styles.title}>My Approved Halls</h1>
+        <button className={styles.backButton} onClick={handleBack} type="button">
+          Back
+        </button>
+      </div>
 
       {halls.length === 0 && (
         <p className={styles.empty}>

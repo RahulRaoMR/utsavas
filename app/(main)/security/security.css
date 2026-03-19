@@ -1,7 +1,7 @@
 .security-page {
   min-height: 100vh;
   background: #f4ecdf;
-  padding-top: 90px;
+  padding-top: max(var(--top-nav-offset, 0px), 90px);
   font-family: "Poppins", sans-serif;
 }
 
@@ -86,7 +86,7 @@
 
 @media (max-width: 768px) {
   .security-page {
-    padding-top: 80px;
+    padding-top: max(var(--top-nav-offset, 0px), 80px);
   }
 
   .security-hero {

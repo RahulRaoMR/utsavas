@@ -4,6 +4,10 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "../vendorDashboard.module.css";
 
+const API =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://utsavas-backend-1.onrender.com";
+
 export default function VendorDashboard() {
   const router = useRouter();
 
@@ -22,21 +26,77 @@ export default function VendorDashboard() {
      AUTH + FETCH BOOKINGS
   ========================= */
   useEffect(() => {
-    const storedVendor = localStorage.getItem("vendor");
+    const loadDashboard = async () => {
+      try {
+        const storedVendor = localStorage.getItem("vendor");
 
-    if (!storedVendor) {
-      router.replace("/vendor/vendor-login");
-      return;
-    }
+        if (!storedVendor) {
+          router.replace("/vendor/vendor-login");
+          return;
+        }
 
-    const parsedVendor = JSON.parse(storedVendor);
-    setVendor(parsedVendor);
-    setLoading(false);
+        const parsedVendor = JSON.parse(storedVendor);
+        const vendorId = parsedVendor?._id || parsedVendor?.id;
 
-    fetch(`https://utsavas-backend-1.onrender.com/api/bookings/vendor/${parsedVendor._id}`)
-      .then((res) => res.json())
-      .then((data) => setBookings(data))
-      .catch((err) => console.error("Error fetching bookings", err));
+        if (!vendorId) {
+          router.replace("/vendor/vendor-login");
+          return;
+        }
+
+        setVendor(parsedVendor);
+
+        const [vendorRes, bookingsRes] = await Promise.allSettled([
+          fetch(`${API}/api/vendor/all`, {
+            cache: "no-store",
+          }),
+          fetch(`${API}/api/bookings/vendor/${vendorId}`, {
+            cache: "no-store",
+          }),
+        ]);
+
+        if (vendorRes.status === "fulfilled" && vendorRes.value.ok) {
+          const vendorData = await vendorRes.value.json();
+          const vendorList = Array.isArray(vendorData?.vendors)
+            ? vendorData.vendors
+            : Array.isArray(vendorData)
+              ? vendorData
+              : [];
+
+          const fullVendor = vendorList.find((item) => {
+            const itemId = item?._id || item?.id;
+            return (
+              (itemId && itemId === vendorId) ||
+              (parsedVendor?.email && item?.email === parsedVendor.email)
+            );
+          });
+
+          if (fullVendor) {
+            const mergedVendor = {
+              ...parsedVendor,
+              ...fullVendor,
+              _id: fullVendor._id || parsedVendor._id || parsedVendor.id,
+              id: fullVendor._id || fullVendor.id || parsedVendor.id || parsedVendor._id,
+            };
+
+            setVendor(mergedVendor);
+            localStorage.setItem("vendor", JSON.stringify(mergedVendor));
+          }
+        }
+
+        if (bookingsRes.status === "fulfilled" && bookingsRes.value.ok) {
+          const bookingsData = await bookingsRes.value.json();
+          setBookings(Array.isArray(bookingsData) ? bookingsData : []);
+        } else {
+          setBookings([]);
+        }
+      } catch (err) {
+        console.error("Error loading vendor dashboard", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadDashboard();
   }, [router]);
 
   /* =========================
@@ -86,6 +146,11 @@ export default function VendorDashboard() {
   // TEMP revenue logic (₹50,000 per approved booking)
   const estimatedRevenue = approvedBookings.length * 50000;
 
+  const displayOwnerName =
+    vendor?.ownerName || vendor?.name || vendor?.businessName || "-";
+  const displayEmail = vendor?.email || "-";
+  const displayCity = vendor?.city || vendor?.address?.city || "-";
+
   if (loading) {
     return <p className={styles.loading}>Loading dashboard...</p>;
   }
@@ -109,9 +174,9 @@ export default function VendorDashboard() {
         </p>
 
         <p className={styles.muted}>
-          <b>Owner:</b> {vendor?.ownerName} &nbsp;|&nbsp;
-          <b>Email:</b> {vendor?.email} &nbsp;|&nbsp;
-          <b>City:</b> {vendor?.city}
+          <b>Owner:</b> {displayOwnerName} &nbsp;|&nbsp;
+          <b>Email:</b> {displayEmail} &nbsp;|&nbsp;
+          <b>City:</b> {displayCity}
         </p>
       </div>
 

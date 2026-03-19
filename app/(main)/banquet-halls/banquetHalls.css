@@ -4,7 +4,7 @@
 
 .wedding-page {
   padding: 40px 60px;
-  padding-top: 140px;
+  padding-top: max(var(--top-nav-offset, 0px), 140px);
   background: #fff7ef;
   min-height: 100vh;
 }
@@ -218,7 +218,7 @@
 
   .wedding-page {
     padding: 30px 20px;
-    padding-top: 110px;
+    padding-top: max(var(--top-nav-offset, 0px), 110px);
   }
 
   .page-title {

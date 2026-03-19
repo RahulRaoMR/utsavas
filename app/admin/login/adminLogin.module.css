@@ -1,31 +1,31 @@
 .page {
   min-height: 100vh;
   width: 100%;
-  background: linear-gradient(135deg, #476a43, #6d8f62);
+  background: linear-gradient(135deg, #3f6fb6, #7aa9e6);
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .loginCard {
-  background: #fff7ef;
+  background: #fdfefe;
   width: 420px;
   padding: 40px 35px;
   border-radius: 18px;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 25px 60px rgba(24, 59, 99, 0.22);
   text-align: center;
 }
 
 .title {
   font-size: 36px;
-  color: #355332;
+  color: #183b63;
   margin-bottom: 6px;
   font-weight: 800;
 }
 
 .subtitle {
   font-size: 15px;
-  color: #5f7d59;
+  color: #5b7eaf;
   margin-bottom: 26px;
 }
 
@@ -39,19 +39,20 @@
   padding: 14px 16px;
   font-size: 15px;
   border-radius: 10px;
-  border: 1px solid #bdd0b7;
+  border: 1px solid #c6d8f4;
   outline: none;
-  color: #355332;
-  background: #fffaf5;
+  color: #183b63;
+  background: #f7fbff;
 }
 
 .form input::placeholder {
-  color: #8ea286;
+  color: #7f9cc6;
   opacity: 1;
 }
 
 .form input:focus {
-  border-color: #5f7d59;
+  border-color: #5f97d6;
+  box-shadow: 0 0 0 3px rgba(95, 151, 214, 0.18);
 }
 
 .form button {
@@ -59,8 +60,8 @@
   padding: 14px;
   font-size: 16px;
   font-weight: 600;
-  background: #486a43;
-  color: #f6e3a8;
+  background: linear-gradient(135deg, #5f97d6, #3f6fb6);
+  color: #f4f9ff;
   border: none;
   border-radius: 12px;
   cursor: pointer;
@@ -68,7 +69,8 @@
 }
 
 .form button:hover {
-  background: #3d5b39;
+  opacity: 0.96;
+  transform: translateY(-1px);
 }
 
 .form button:disabled {

@@ -1,12 +1,14 @@
 /* ===== POPUP OVERLAY ===== */
 .popup-overlay {
   position: fixed;
-  inset: 0;
+  inset: var(--top-nav-offset, 0px) 0 0 0;
   background: rgba(16, 42, 78, 0.72);
   backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
+  overflow-y: auto;
+  padding: 20px;
   z-index: 3000;
 }
 
@@ -194,8 +196,6 @@ input[type="date"]:focus {
 
   .popup-overlay {
     padding: 16px;
-    align-items: flex-start;
-    overflow-y: auto;
   }
 
   .popup-box {
