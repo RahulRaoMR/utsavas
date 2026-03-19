@@ -6,6 +6,10 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import styles from "./booking.module.css";
 
+const API =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://utsavas-backend-1.onrender.com";
+
 export default function BookingPage() {
   const { hallId } = useParams();
   const router = useRouter();
@@ -60,7 +64,7 @@ export default function BookingPage() {
     const fetchHall = async () => {
       try {
         const res = await fetch(
-          `https://utsavas-backend-1.onrender.com/api/halls/${hallId}`
+          `${API}/api/halls/${hallId}`
         );
         if (!res.ok) throw new Error("Failed to fetch hall");
         const data = await res.json();
@@ -82,7 +86,7 @@ export default function BookingPage() {
     const fetchBookedDates = async () => {
       try {
         const res = await fetch(
-          `https://utsavas-backend-1.onrender.com/api/bookings/hall/${hallId}`
+          `${API}/api/bookings/hall/${hallId}`
         );
         const data = await res.json();
 
@@ -198,7 +202,7 @@ export default function BookingPage() {
 
     try {
       const res = await fetch(
-        "https://utsavas-backend-1.onrender.com/api/bookings/create",
+        `${API}/api/bookings/create`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -215,7 +219,10 @@ export default function BookingPage() {
       );
 
       if (res.ok) {
-        router.push(`/booking/${hallId}/payment`);
+        const data = await res.json();
+        const bookingId = data?.booking?._id;
+        const query = bookingId ? `?bookingId=${encodeURIComponent(bookingId)}` : "";
+        router.push(`/booking/${hallId}/payment${query}`);
       } else {
         const data = await res.json();
         alert(data.message || "Something went wrong");
