@@ -4,6 +4,10 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./vendorCalendar.module.css";
 
+const API =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://utsavas-backend-1.onrender.com";
+
 export default function VendorCalendarPage() {
   const router = useRouter();
   const [bookings, setBookings] = useState([]);
@@ -11,13 +15,16 @@ export default function VendorCalendarPage() {
 
   useEffect(() => {
     const vendor = JSON.parse(localStorage.getItem("vendor"));
+    const vendorId = vendor?._id || vendor?.id;
 
-    if (!vendor) {
-      router.push("/login");
+    if (!vendor || !vendorId) {
+      router.push("/vendor/vendor-login");
       return;
     }
 
-    fetch(`https://utsavas-backend-1.onrender.com/api/bookings/vendor/${vendor._id}`)
+    fetch(`${API}/api/bookings/vendor/${vendorId}`, {
+      cache: "no-store",
+    })
       .then((res) => res.json())
       .then((data) => setBookings(data))
       .catch((err) => console.error(err));

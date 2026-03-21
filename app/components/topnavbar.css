@@ -565,6 +565,13 @@
     margin: 0;
   }
 
+  .logo img {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    padding: 6px;
+  }
+
   .brand-copy,
   .user-wrapper,
   .list-btn,
@@ -574,9 +581,7 @@
   }
 
   .top-nav-categories {
-    display: flex;
-    justify-content: flex-start;
-    padding: 6px 0;
+    display: none;
   }
 
   .location-search-wrap {

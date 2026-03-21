@@ -4,6 +4,10 @@ import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import styles from "../vendorDashboard.module.css";
 
+const API =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://utsavas-backend-1.onrender.com";
+
 export default function VendorBookingsPage() {
   const router = useRouter();
   const [bookings, setBookings] = useState([]);
@@ -34,9 +38,18 @@ export default function VendorBookingsPage() {
       }
 
       const vendor = JSON.parse(vendorData);
+      const vendorId = vendor?._id || vendor?.id;
+
+      if (!vendorId) {
+        router.push("/vendor/vendor-login");
+        return;
+      }
 
       const res = await fetch(
-        `https://utsavas-backend-1.onrender.com/api/bookings/vendor/${vendor._id}`
+        `${API}/api/bookings/vendor/${vendorId}`,
+        {
+          cache: "no-store",
+        }
       );
 
       const data = await res.json();
@@ -61,7 +74,7 @@ export default function VendorBookingsPage() {
   const updateStatus = async (bookingId, status) => {
     try {
       const res = await fetch(
-        `https://utsavas-backend-1.onrender.com/api/bookings/status/${bookingId}`,
+        `${API}/api/bookings/status/${bookingId}`,
         {
           method: "PATCH",
           headers: {
@@ -74,8 +87,14 @@ export default function VendorBookingsPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.message || "Failed to update status");
+        alert(data?.email?.error || data.message || "Failed to update status");
         return;
+      }
+
+      if (data?.email?.error) {
+        alert(`${data.message}\n\n${data.email.error}`);
+      } else if (data?.message) {
+        alert(data.message);
       }
 
       // ✅ refresh list once

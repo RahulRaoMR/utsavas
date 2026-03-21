@@ -288,9 +288,18 @@ export default function BookingSummaryPage() {
     try {
       setSubmitting(true);
 
+      const token =
+        typeof window !== "undefined" ? localStorage.getItem("token") : "";
+      const storedUser =
+        typeof window !== "undefined" ? localStorage.getItem("user") : "";
+      const parsedUser = storedUser ? JSON.parse(storedUser) : null;
+
       const res = await fetch(`${API}/api/bookings/create`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({
           hallId,
           checkIn: draft.booking.checkIn,
@@ -299,6 +308,14 @@ export default function BookingSummaryPage() {
           guests: Number(draft.booking.guests) || 0,
           customerName: draft.booking.customerName,
           phone: draft.booking.phone,
+          customerEmail: parsedUser?.email || "",
+          amount: pricing.total,
+          venueAmount: pricing.venuePrice,
+          supportFee: pricing.supportFee,
+          subtotalAmount: pricing.subtotal,
+          discountAmount: pricing.discount,
+          couponCode: appliedCoupon,
+          pricingBasis: pricing.pricingBasis,
         }),
       });
 
