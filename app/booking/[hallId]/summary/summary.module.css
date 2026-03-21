@@ -1,0 +1,456 @@
+.page {
+  min-height: 100vh;
+  padding: 36px 20px 56px;
+  background:
+    radial-gradient(circle at top left, rgba(95, 151, 214, 0.18), transparent 22%),
+    radial-gradient(circle at bottom right, rgba(232, 207, 157, 0.16), transparent 28%),
+    linear-gradient(180deg, #edf4ff 0%, #f4ecdf 52%, #fbf5ea 100%);
+}
+
+.hero {
+  max-width: 1160px;
+  margin: 0 auto 24px;
+  padding: 26px 28px;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #5f97d6, #3f6fb6);
+  color: #f4f9ff;
+  box-shadow: 0 20px 48px rgba(29, 74, 138, 0.18);
+}
+
+.heroEyebrow {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.88;
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: 34px;
+  line-height: 1.15;
+}
+
+.heroText {
+  max-width: 760px;
+  margin: 12px 0 0;
+  font-size: 15px;
+  line-height: 1.7;
+  opacity: 0.94;
+}
+
+.layout {
+  max-width: 1160px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.85fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.mainColumn,
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card {
+  background: linear-gradient(180deg, rgba(251, 245, 234, 0.97), rgba(245, 236, 223, 0.95));
+  border: 1px solid rgba(95, 151, 214, 0.22);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 22px 52px rgba(29, 74, 138, 0.12);
+}
+
+.card h3 {
+  margin: 0 0 18px;
+  color: #183b63;
+  font-size: 24px;
+}
+
+.venueHeader {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.venueImage {
+  width: 100%;
+  height: 190px;
+  object-fit: cover;
+  border-radius: 20px;
+  display: block;
+  box-shadow: 0 16px 34px rgba(29, 74, 138, 0.14);
+}
+
+.badge {
+  width: fit-content;
+  margin: 0 0 10px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(95, 151, 214, 0.12);
+  color: #3f6fb6;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.venueCopy h2 {
+  margin: 0 0 10px;
+  color: #183b63;
+  font-size: 30px;
+  line-height: 1.18;
+}
+
+.venueCopy p {
+  margin: 0;
+  color: #5e5551;
+  line-height: 1.7;
+}
+
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.metaRow span {
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(95, 151, 214, 0.16);
+  color: #30402f;
+  font-weight: 600;
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.detailGrid div {
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.56);
+  border: 1px solid rgba(95, 151, 214, 0.16);
+}
+
+.label {
+  display: block;
+  margin-bottom: 8px;
+  color: #7c6a52;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.detailGrid strong {
+  color: #183b63;
+  font-size: 18px;
+}
+
+.couponRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+}
+
+.couponList {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.couponChip {
+  padding: 14px;
+  border: 1px solid rgba(95, 151, 214, 0.18);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.7);
+  color: #183b63;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.couponChip strong,
+.couponChip span {
+  display: block;
+}
+
+.couponChip strong {
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+.couponChip span {
+  color: #5e5551;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.couponChipActive {
+  border-color: #5f97d6;
+  box-shadow: 0 14px 26px rgba(29, 74, 138, 0.12);
+  background: rgba(95, 151, 214, 0.12);
+}
+
+.benefitsList {
+  display: grid;
+  gap: 14px;
+}
+
+.benefitItem {
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.58);
+  border: 1px solid rgba(95, 151, 214, 0.14);
+}
+
+.benefitItem strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #183b63;
+}
+
+.benefitItem p {
+  margin: 0;
+  color: #5e5551;
+  line-height: 1.7;
+}
+
+.couponInput {
+  width: 100%;
+  min-height: 54px;
+  padding: 0 16px;
+  border-radius: 16px;
+  border: 1px solid #c6d8f4;
+  background: rgba(255, 255, 255, 0.8);
+  color: #183b63;
+  font-size: 15px;
+  outline: none;
+}
+
+.couponInput:focus {
+  border-color: #5f97d6;
+  box-shadow: 0 0 0 4px rgba(95, 151, 214, 0.14);
+}
+
+.applyButton,
+.primaryButton,
+.secondaryButton {
+  min-height: 54px;
+  border-radius: 16px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.applyButton,
+.primaryButton {
+  border: none;
+  background: linear-gradient(135deg, #5f97d6, #3f6fb6);
+  color: #f4f9ff;
+}
+
+.secondaryButton {
+  border: 1px solid #5f97d6;
+  background: rgba(255, 255, 255, 0.72);
+  color: #183b63;
+}
+
+.applyButton {
+  padding: 0 20px;
+}
+
+.couponMessage {
+  margin: 12px 0 0;
+  color: #5e5551;
+  line-height: 1.6;
+}
+
+.stickyCard {
+  position: sticky;
+  top: 24px;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  color: #30402f;
+  border-bottom: 1px solid rgba(95, 151, 214, 0.12);
+}
+
+.summaryRow strong {
+  color: #183b63;
+}
+
+.rateBanner {
+  margin: 0 0 16px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(95, 151, 214, 0.1);
+  border: 1px solid rgba(95, 151, 214, 0.14);
+}
+
+.rateBanner span,
+.rateBanner strong {
+  display: block;
+}
+
+.rateBanner span {
+  margin-bottom: 6px;
+  color: #5e5551;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.rateBanner strong {
+  color: #183b63;
+  line-height: 1.6;
+}
+
+.discountValue {
+  color: #2f855a !important;
+}
+
+.totalRow {
+  border-bottom: none;
+  padding-top: 18px;
+  font-size: 19px;
+}
+
+.noteBox {
+  margin: 18px 0 20px;
+  padding: 18px;
+  border-radius: 18px;
+  background: rgba(95, 151, 214, 0.1);
+  color: #30402f;
+}
+
+.noteBox strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #183b63;
+}
+
+.noteBox p {
+  margin: 0;
+  line-height: 1.7;
+}
+
+.bookingSnapshot {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  color: #5e5551;
+}
+
+.bookingSnapshot strong {
+  color: #183b63;
+  text-align: right;
+}
+
+.inlineNote {
+  margin: 0 0 18px;
+  color: #5e5551;
+  line-height: 1.6;
+}
+
+.primaryButton {
+  width: 100%;
+}
+
+.secondaryButton {
+  width: 100%;
+  margin-top: 12px;
+}
+
+.applyButton:hover,
+.primaryButton:hover,
+.secondaryButton:hover {
+  transform: translateY(-1px);
+}
+
+.applyButton:hover,
+.primaryButton:hover {
+  box-shadow: 0 14px 30px rgba(29, 74, 138, 0.18);
+  filter: brightness(1.03);
+}
+
+.secondaryButton:hover {
+  box-shadow: 0 12px 24px rgba(29, 74, 138, 0.1);
+  background: rgba(95, 151, 214, 0.08);
+}
+
+.couponChip:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(29, 74, 138, 0.08);
+}
+
+.loading {
+  padding: 60px;
+  text-align: center;
+  font-size: 16px;
+  color: #183b63;
+}
+
+@media (max-width: 980px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .stickyCard {
+    position: static;
+  }
+}
+
+@media (max-width: 720px) {
+  .page {
+    padding: 18px 12px 36px;
+  }
+
+  .hero {
+    padding: 22px 18px;
+    border-radius: 22px;
+  }
+
+  .hero h1 {
+    font-size: 28px;
+  }
+
+  .card {
+    padding: 18px;
+    border-radius: 20px;
+  }
+
+  .venueHeader,
+  .detailGrid,
+  .couponList,
+  .couponRow {
+    grid-template-columns: 1fr;
+  }
+
+  .venueImage {
+    height: 210px;
+  }
+
+  .venueCopy h2 {
+    font-size: 24px;
+  }
+
+  .detailGrid strong {
+    font-size: 16px;
+  }
+}

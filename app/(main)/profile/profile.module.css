@@ -1,9 +1,13 @@
 .page {
   max-width: 980px;
-  margin: 110px auto 40px;
-  padding: 0 16px;
+  margin: 0 auto 40px;
+  padding: max(calc(var(--top-nav-offset, 0px) + 20px), 170px) 16px 0;
   display: grid;
   gap: 16px;
+}
+
+.page section[id] {
+  scroll-margin-top: calc(var(--top-nav-offset, 0px) + 18px);
 }
 
 .card {
@@ -93,6 +97,10 @@
 }
 
 @media (max-width: 768px) {
+  .page {
+    padding-top: max(calc(var(--top-nav-offset, 0px) + 14px), 112px);
+  }
+
   .grid {
     grid-template-columns: 1fr;
   }

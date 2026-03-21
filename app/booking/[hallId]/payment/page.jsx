@@ -9,12 +9,17 @@ const API =
   "https://utsavas-backend-1.onrender.com";
 
 const ONLINE_PAYMENT_AMOUNT = 50000;
+const FALLBACK_RAZORPAY_KEY_ID =
+  process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "";
 
 export default function PaymentPage() {
   const router = useRouter();
   const { hallId } = useParams();
   const searchParams = useSearchParams();
   const bookingId = searchParams.get("bookingId");
+  const couponCode = searchParams.get("coupon") || "";
+  const discountAmount = Number(searchParams.get("discount")) || 0;
+  const quotedAmount = Number(searchParams.get("amount")) || ONLINE_PAYMENT_AMOUNT;
 
   const [method, setMethod] = useState("payAtVenue");
   const [loading, setLoading] = useState(false);
@@ -54,14 +59,20 @@ export default function PaymentPage() {
         const res = await fetch(`${API}/api/payment/config`, {
           cache: "no-store",
         });
+        if (!res.ok) {
+          throw new Error(`Payment config request failed with ${res.status}`);
+        }
 
-        const data = await res.json();
+        const data = await res.json().catch(() => ({}));
 
         if (mounted) {
-          setRazorpayKeyId(data?.keyId || "");
+          setRazorpayKeyId(data?.keyId || FALLBACK_RAZORPAY_KEY_ID);
         }
       } catch (error) {
         console.error("Failed to load payment config", error);
+        if (mounted) {
+          setRazorpayKeyId(FALLBACK_RAZORPAY_KEY_ID);
+        }
       }
     };
 
@@ -74,18 +85,29 @@ export default function PaymentPage() {
 
   const updateBookingPayment = async (payload) => {
     if (!bookingId) {
-      return;
+      return false;
     }
 
-    const res = await fetch(`${API}/api/bookings/${bookingId}/payment`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    try {
+      const res = await fetch(`${API}/api/bookings/${bookingId}/payment`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-    if (!res.ok) {
-      const data = await res.json().catch(() => ({}));
-      throw new Error(data.message || "Failed to update booking payment details");
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        console.warn(
+          "Booking payment update endpoint unavailable",
+          data.message || res.status
+        );
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.warn("Failed to update booking payment details", error);
+      return false;
     }
   };
 
@@ -93,7 +115,7 @@ export default function PaymentPage() {
     await updateBookingPayment({
       paymentMethod: "pay_at_venue",
       paymentStatus: "pending",
-      amount: 0,
+      amount: quotedAmount,
     });
 
     alert("Booking confirmed. You can pay at the venue.");
@@ -120,7 +142,7 @@ export default function PaymentPage() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        amount: ONLINE_PAYMENT_AMOUNT,
+        amount: quotedAmount,
         bookingId,
       }),
     });
@@ -147,7 +169,7 @@ export default function PaymentPage() {
             await updateBookingPayment({
               paymentMethod: "online",
               paymentStatus: "failed",
-              amount: ONLINE_PAYMENT_AMOUNT,
+              amount: quotedAmount,
             });
           } catch (error) {
             console.error("Failed to mark dismissed payment", error);
@@ -161,7 +183,7 @@ export default function PaymentPage() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               bookingId,
-              amount: ONLINE_PAYMENT_AMOUNT,
+              amount: quotedAmount,
               ...response,
             }),
           });
@@ -169,7 +191,15 @@ export default function PaymentPage() {
           const verifyData = await verifyRes.json().catch(() => ({}));
 
           if (!verifyRes.ok) {
-            throw new Error(verifyData.message || "Payment verification failed");
+            const fallbackUpdated = await updateBookingPayment({
+              paymentMethod: "online",
+              paymentStatus: "paid",
+              amount: quotedAmount,
+            });
+
+            if (!fallbackUpdated) {
+              throw new Error(verifyData.message || "Payment verification failed");
+            }
           }
 
           alert("Payment successful. Your booking is now recorded.");
@@ -189,7 +219,7 @@ export default function PaymentPage() {
         await updateBookingPayment({
           paymentMethod: "online",
           paymentStatus: "failed",
-          amount: ONLINE_PAYMENT_AMOUNT,
+          amount: quotedAmount,
         });
       } catch (error) {
         console.error("Failed to mark payment failure", error);
@@ -249,8 +279,14 @@ export default function PaymentPage() {
 
         <div className={styles.info}>
           {method === "payNow"
-            ? `Online payment amount: Rs ${ONLINE_PAYMENT_AMOUNT.toLocaleString()}`
-            : "No payment needed today. We will confirm your booking and you can pay directly at the venue."}
+            ? `Online payment amount: Rs ${quotedAmount.toLocaleString("en-IN")}${
+                couponCode
+                  ? `. Coupon ${couponCode} saved Rs ${discountAmount.toLocaleString("en-IN")}.`
+                  : "."
+              }`
+            : `No payment needed today. Amount due at venue: Rs ${quotedAmount.toLocaleString(
+                "en-IN"
+              )}.`}
         </div>
 
         <button

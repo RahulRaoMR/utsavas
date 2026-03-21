@@ -9,6 +9,7 @@ import styles from "./booking.module.css";
 const API =
   process.env.NEXT_PUBLIC_API_URL ||
   "https://utsavas-backend-1.onrender.com";
+const BOOKING_DRAFT_STORAGE_KEY = "utsavas-booking-draft";
 
 export default function BookingPage() {
   const { hallId } = useParams();
@@ -198,35 +199,41 @@ export default function BookingPage() {
       if (!proceed) return;
     }
 
-    setLoading(true);
-
     try {
-      const res = await fetch(
-        `${API}/api/bookings/create`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            hallId: hallId,
+      setLoading(true);
+
+      if (typeof window !== "undefined") {
+        const bookingDraft = {
+          hallId,
+          hall: {
+            _id: hall?._id,
+            hallName: hall?.hallName,
+            category: hall?.category,
+            capacity: hall?.capacity,
+            pricePerEvent: hall?.pricePerEvent,
+            pricePerDay: hall?.pricePerDay,
+            pricePerPlate: hall?.pricePerPlate,
+            images: hall?.images || [],
+            address: hall?.address || {},
+          },
+          booking: {
             checkIn: form.checkIn,
             checkOut: form.checkOut,
             eventType: form.eventType,
-            guests: Number(form.guests),
+            guests: Number(form.guests) || 0,
             customerName: form.name,
             phone: form.phone,
-          }),
-        }
-      );
+          },
+          savedAt: Date.now(),
+        };
 
-      if (res.ok) {
-        const data = await res.json();
-        const bookingId = data?.booking?._id;
-        const query = bookingId ? `?bookingId=${encodeURIComponent(bookingId)}` : "";
-        router.push(`/booking/${hallId}/payment${query}`);
-      } else {
-        const data = await res.json();
-        alert(data.message || "Something went wrong");
+        sessionStorage.setItem(
+          `${BOOKING_DRAFT_STORAGE_KEY}:${hallId}`,
+          JSON.stringify(bookingDraft)
+        );
       }
+
+      router.push(`/booking/${hallId}/summary`);
     } catch (error) {
       alert("Server error. Try again later.");
     } finally {
@@ -372,7 +379,7 @@ export default function BookingPage() {
         </label>
 
         <button className={styles.button} disabled={loading}>
-          {loading ? "Booking..." : "Confirm Booking"}
+          {loading ? "Preparing..." : "Review Order Summary"}
         </button>
       </form>
     </div>
