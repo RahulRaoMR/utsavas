@@ -108,6 +108,30 @@
   color: #d7e4ff;
 }
 
+@media (max-width: 1024px) {
+  .hero {
+    min-height: auto;
+    padding: max(calc(var(--top-nav-offset, 0px) + 24px), 112px) 18px 56px;
+    background-position: center 30%;
+    align-items: flex-end;
+  }
+
+  .content {
+    padding-top: 28px;
+  }
+
+  .content h1 {
+    font-size: clamp(3.1rem, 9vw, 5rem);
+    line-height: 1.08;
+  }
+
+  .content p {
+    max-width: 680px;
+    font-size: 0.92rem;
+    letter-spacing: 0.14em;
+  }
+}
+
 @media (max-width: 768px) {
   .hero {
     min-height: auto;
