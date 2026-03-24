@@ -346,7 +346,7 @@ export default function MyBookingDetailPage() {
               <strong>{formatCurrency(booking.venueAmount)}</strong>
             </div>
             <div className={styles.summaryRow}>
-              <span>Support fee</span>
+              <span>GST (2%)</span>
               <strong>{formatCurrency(booking.supportFee)}</strong>
             </div>
             <div className={styles.summaryRow}>

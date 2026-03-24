@@ -4,6 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./vendorLogin.module.css";
 
+const API =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://utsavas-backend-1.onrender.com";
+
 export default function VendorLoginPage() {
   const router = useRouter();
 
@@ -20,7 +24,7 @@ export default function VendorLoginPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("https://utsavas-backend-1.onrender.com/api/vendor/login", {
+      const res = await fetch(`${API}/api/vendor/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ identifier, password }),

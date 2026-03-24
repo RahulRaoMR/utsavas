@@ -10,6 +10,7 @@ const API =
   process.env.NEXT_PUBLIC_API_URL ||
   "https://utsavas-backend-1.onrender.com";
 const BOOKING_DRAFT_STORAGE_KEY = "utsavas-booking-draft";
+const GST_RATE = 0.02;
 
 const COUPONS = {
   UTSAVAS10: {
@@ -207,7 +208,7 @@ export default function BookingSummaryPage() {
       return {
         nights: 1,
         venuePrice: 0,
-        supportFee: 0,
+        gstAmount: 0,
         subtotal: 0,
         discount: 0,
         total: 0,
@@ -223,9 +224,8 @@ export default function BookingSummaryPage() {
     const nights = pricingRule.selectedDays;
     const venuePrice = pricingRule.venuePrice;
 
-    const supportFee =
-      venuePrice > 0 ? Math.max(Math.round(venuePrice * 0.02), 299) : 0;
-    const subtotal = venuePrice + supportFee;
+    const gstAmount = venuePrice > 0 ? Math.round(venuePrice * GST_RATE) : 0;
+    const subtotal = venuePrice + gstAmount;
     const discount = appliedCoupon
       ? COUPONS[appliedCoupon]?.apply(subtotal) || 0
       : 0;
@@ -234,7 +234,7 @@ export default function BookingSummaryPage() {
     return {
       nights,
       venuePrice,
-      supportFee,
+      gstAmount,
       subtotal,
       discount,
       total,
@@ -311,7 +311,7 @@ export default function BookingSummaryPage() {
           customerEmail: parsedUser?.email || "",
           amount: pricing.total,
           venueAmount: pricing.venuePrice,
-          supportFee: pricing.supportFee,
+          supportFee: pricing.gstAmount,
           subtotalAmount: pricing.subtotal,
           discountAmount: pricing.discount,
           couponCode: appliedCoupon,
@@ -331,12 +331,20 @@ export default function BookingSummaryPage() {
         throw new Error("Booking reference missing");
       }
 
+      const createdBooking = data?.booking || {};
+      const nextAmount = parsePrice(createdBooking.amount) || pricing.total;
+      const nextBaseAmount =
+        parsePrice(createdBooking.subtotalAmount) || pricing.subtotal;
+      const nextDiscount =
+        parsePrice(createdBooking.discountAmount) || pricing.discount;
+      const nextCouponCode = createdBooking.couponCode || appliedCoupon;
+
       router.push(
         `/booking/${hallId}/payment?bookingId=${encodeURIComponent(
           bookingId
-        )}&amount=${pricing.total}&baseAmount=${pricing.subtotal}&discount=${
-          pricing.discount
-        }&coupon=${encodeURIComponent(appliedCoupon)}`
+        )}&amount=${nextAmount}&baseAmount=${nextBaseAmount}&discount=${nextDiscount}&coupon=${encodeURIComponent(
+          nextCouponCode
+        )}`
       );
     } catch (error) {
       alert(error.message || "Unable to continue to payment right now.");
@@ -507,8 +515,8 @@ export default function BookingSummaryPage() {
               <strong>{formatCurrency(pricing.venuePrice)}</strong>
             </div>
             <div className={styles.summaryRow}>
-              <span>Support fee</span>
-              <strong>{formatCurrency(pricing.supportFee)}</strong>
+              <span>GST (2%)</span>
+              <strong>{formatCurrency(pricing.gstAmount)}</strong>
             </div>
             <div className={styles.summaryRow}>
               <span>Subtotal</span>

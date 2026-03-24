@@ -163,7 +163,13 @@ function AdminVendorsContent() {
         </div>
       </div>
 
-      {searchedVendors.length === 0 && <p>No vendors found</p>}
+      {searchedVendors.length === 0 && (
+        <p>
+          {statusFilter === "pending"
+            ? "No pending vendors found in the current backend."
+            : "No vendors found."}
+        </p>
+      )}
 
       {searchedVendors.map((vendor) => (
         <div key={vendor._id} className={styles.card}>
