@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import styles from "./login.module.css";
 import { useRouter, useSearchParams } from "next/navigation";
 import { clearUserSession, sanitizeRedirectPath } from "../../../lib/authRedirect";
@@ -10,7 +10,7 @@ const API =
   process.env.NEXT_PUBLIC_API_URL ||
   "https://utsavas-backend-1.onrender.com";
 
-export default function LoginPage() {
+function LoginPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -220,5 +220,13 @@ export default function LoginPage() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className={styles.loginContainer}></div>}>
+      <LoginPageContent />
+    </Suspense>
   );
 }

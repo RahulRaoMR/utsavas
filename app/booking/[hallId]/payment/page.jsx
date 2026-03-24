@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import styles from "./payment.module.css";
 
 const API =
@@ -12,9 +12,8 @@ const ONLINE_PAYMENT_AMOUNT = 50000;
 const FALLBACK_RAZORPAY_KEY_ID =
   process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "";
 
-export default function PaymentPage() {
+function PaymentPageContent() {
   const router = useRouter();
-  const { hallId } = useParams();
   const searchParams = useSearchParams();
   const bookingId = searchParams.get("bookingId");
   const couponCode = searchParams.get("coupon") || "";
@@ -306,5 +305,13 @@ export default function PaymentPage() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function PaymentPage() {
+  return (
+    <Suspense fallback={<div className={styles.page}></div>}>
+      <PaymentPageContent />
+    </Suspense>
   );
 }

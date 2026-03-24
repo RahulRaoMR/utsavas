@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { Suspense, useState, useEffect, useRef } from "react";
 import styles from "../login/login.module.css";
 import { useRouter, useSearchParams } from "next/navigation";
 import { karnatakaDistricts } from "../../components/karnatakaDistricts";
@@ -10,7 +10,7 @@ const API =
   process.env.NEXT_PUBLIC_API_URL ||
   "https://utsavas-backend-1.onrender.com";
 
-export default function RegisterPage() {
+function RegisterPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -412,5 +412,13 @@ export default function RegisterPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div className={styles.loginContainer}></div>}>
+      <RegisterPageContent />
+    </Suspense>
   );
 }
