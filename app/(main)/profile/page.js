@@ -1,14 +1,13 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import styles from "./profile.module.css";
 
 const API =
   process.env.NEXT_PUBLIC_API_URL ||
   "https://utsavas-backend-1.onrender.com";
-
-const normalizePhone = (value) => (value || "").toString().replace(/\D/g, "");
 
 const formatDate = (value) => {
   if (!value) return "-";
@@ -20,6 +19,14 @@ const formatDate = (value) => {
     year: "numeric",
   });
 };
+
+const formatCurrency = (value) =>
+  `Rs ${Number(value || 0).toLocaleString("en-IN")}`;
+
+const formatLabel = (value) =>
+  String(value || "")
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase()) || "-";
 
 const buildDisplayName = (u) => {
   if (!u) return "User";
@@ -112,30 +119,34 @@ export default function ProfilePage() {
   useEffect(() => {
     if (!user) return;
 
-    const userPhone = normalizePhone(user.phone);
-
-    if (!userPhone) {
-      setLoading(false);
-      return;
-    }
-
     const fetchMyBookings = async () => {
       try {
-        const res = await fetch(`${API}/api/bookings/admin/bookings`);
+        const token =
+          typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+        if (!token) {
+          setBookings([]);
+          setLoading(false);
+          return;
+        }
+
+        const res = await fetch(`${API}/api/bookings/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (res.status === 401) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          router.replace("/login?redirect=%2Fprofile");
+          return;
+        }
+
         if (!res.ok) throw new Error("Failed to fetch bookings");
 
         const data = await res.json();
-        const allBookings = Array.isArray(data) ? data : [];
-
-        const mine = allBookings.filter((b) => {
-          const bPhone = normalizePhone(b.phone);
-          return (
-            bPhone === userPhone ||
-            bPhone.slice(-10) === userPhone.slice(-10)
-          );
-        });
-
-        setBookings(mine);
+        setBookings(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Failed to load user bookings:", error);
         setBookings([]);
@@ -145,7 +156,7 @@ export default function ProfilePage() {
     };
 
     fetchMyBookings();
-  }, [user]);
+  }, [router, user]);
 
   const fullName = useMemo(() => {
     return buildDisplayName(user);
@@ -207,22 +218,38 @@ export default function ProfilePage() {
 
         {!loading &&
           bookings.map((b) => (
-            <div key={b._id} className={styles.bookingCard}>
+            <Link
+              key={b._id}
+              href={`/my-bookings/${b._id}`}
+              className={styles.bookingCard}
+            >
               <div>
                 <strong>{b.hallName || "Venue"}</strong>
                 <p>{b.eventType || "Event"}</p>
+                <small className={styles.bookingHint}>View order summary</small>
               </div>
               <div>
                 <span>Status</span>
                 <p className={styles[b.status] || styles.pending}>
-                  {b.status || "pending"}
+                  {formatLabel(b.status || "pending")}
                 </p>
               </div>
               <div>
-                <span>Dates</span>
-                <p>{formatDate(b.checkIn)} to {formatDate(b.checkOut)}</p>
+                <span>Payment</span>
+                <p className={styles[b.paymentStatus] || styles.pending}>
+                  {formatLabel(b.paymentStatus || "pending")}
+                </p>
+                <small className={styles.amountMeta}>
+                  {formatCurrency(b.amount)}
+                </small>
               </div>
-            </div>
+              <div>
+                <span>Dates</span>
+                <p>
+                  {formatDate(b.checkIn)} to {formatDate(b.checkOut)}
+                </p>
+              </div>
+            </Link>
           ))}
       </section>
 

@@ -1,28 +1,79 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./login.module.css";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { clearUserSession, sanitizeRedirectPath } from "../../../lib/authRedirect";
+
+const API =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://utsavas-backend-1.onrender.com";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [emailOrPhone, setEmailOrPhone] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const getQueryParam = (key) => {
-    if (typeof window === "undefined") return null;
-    const params = new URLSearchParams(window.location.search);
-    return params.get(key);
-  };
+  const redirectPath = sanitizeRedirectPath(
+    searchParams.get("redirect"),
+    "/dashboard"
+  );
 
-  const getRedirectPath = () => {
-    const redirect = getQueryParam("redirect");
-    if (redirect && redirect.startsWith("/")) return redirect;
-    return "/dashboard";
-  };
+  useEffect(() => {
+    let cancelled = false;
+
+    const restoreSession = async () => {
+      const token =
+        typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+      if (!token) {
+        return;
+      }
+
+      try {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+          JSON.parse(storedUser);
+        }
+
+        const res = await fetch(`${API}/api/auth/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          cache: "no-store",
+        });
+
+        if (!res.ok) {
+          throw new Error("Stored session is invalid");
+        }
+
+        const data = await res.json();
+
+        if (!data?.success || !data?.user) {
+          throw new Error("Stored session is invalid");
+        }
+
+        localStorage.setItem("user", JSON.stringify(data.user));
+
+        if (!cancelled) {
+          router.replace(redirectPath);
+        }
+      } catch (error) {
+        console.error("Stored user data is invalid:", error);
+        clearUserSession();
+      }
+    };
+
+    restoreSession();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [redirectPath, router]);
 
   const formatInput = (value) => {
     if (/^\d+$/.test(value)) {
@@ -47,19 +98,16 @@ export default function LoginPage() {
         payloadValue = "91" + payloadValue;
       }
 
-      const res = await fetch(
-        "https://utsavas-backend-1.onrender.com/api/auth/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            emailOrPhone: payloadValue,
-            password,
-          }),
-        }
-      );
+      const res = await fetch(`${API}/api/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          emailOrPhone: payloadValue,
+          password,
+        }),
+      });
 
       const data = await res.json();
 
@@ -87,7 +135,7 @@ export default function LoginPage() {
         localStorage.setItem("user", JSON.stringify(normalizedUser));
 
         alert("Login successful");
-        router.push(getRedirectPath());
+        router.replace(redirectPath);
       } else {
         alert(data.message || "Login failed");
       }
@@ -141,12 +189,9 @@ export default function LoginPage() {
           Don&apos;t have an account?{" "}
           <span
             onClick={() => {
-              const redirect = getQueryParam("redirect");
-              if (redirect && redirect.startsWith("/")) {
-                router.push(`/register?redirect=${encodeURIComponent(redirect)}`);
-                return;
-              }
-              router.push("/register");
+              router.push(
+                `/register?redirect=${encodeURIComponent(redirectPath)}`
+              );
             }}
           >
             Register

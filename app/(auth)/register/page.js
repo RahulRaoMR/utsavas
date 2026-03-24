@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useRef } from "react";
 import styles from "../login/login.module.css";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { karnatakaDistricts } from "../../components/karnatakaDistricts";
+import { clearUserSession, sanitizeRedirectPath } from "../../../lib/authRedirect";
 
 const API =
   process.env.NEXT_PUBLIC_API_URL ||
@@ -11,6 +12,7 @@ const API =
 
 export default function RegisterPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [verified, setVerified] = useState(false);
   const [phone, setPhone] = useState("+91");
@@ -31,18 +33,10 @@ export default function RegisterPage() {
   });
 
   const inputsRef = useRef([]);
-
-  const getQueryParam = (key) => {
-    if (typeof window === "undefined") return null;
-    const params = new URLSearchParams(window.location.search);
-    return params.get(key);
-  };
-
-  const getRedirectPath = () => {
-    const redirect = getQueryParam("redirect");
-    if (redirect && redirect.startsWith("/")) return redirect;
-    return "/dashboard";
-  };
+  const redirectPath = sanitizeRedirectPath(
+    searchParams.get("redirect"),
+    "/dashboard"
+  );
 
   useEffect(() => {
     let interval;
@@ -55,6 +49,58 @@ export default function RegisterPage() {
 
     return () => clearInterval(interval);
   }, [timer]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const restoreSession = async () => {
+      const token =
+        typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+      if (!token) {
+        return;
+      }
+
+      try {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+          JSON.parse(storedUser);
+        }
+
+        const res = await fetch(`${API}/api/auth/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          cache: "no-store",
+        });
+
+        if (!res.ok) {
+          throw new Error("Stored session is invalid");
+        }
+
+        const data = await res.json();
+
+        if (!data?.success || !data?.user) {
+          throw new Error("Stored session is invalid");
+        }
+
+        localStorage.setItem("user", JSON.stringify(data.user));
+
+        if (!cancelled) {
+          router.replace(redirectPath);
+        }
+      } catch (error) {
+        console.error("Stored user data is invalid:", error);
+        clearUserSession();
+      }
+    };
+
+    restoreSession();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [redirectPath, router]);
 
   const sendOTP = async () => {
     if (loading || timer > 0) return;
@@ -196,7 +242,7 @@ export default function RegisterPage() {
         );
 
         alert("Registration successful");
-        router.push(getRedirectPath());
+        router.replace(redirectPath);
       } else {
         alert(data.message || "Registration failed");
       }

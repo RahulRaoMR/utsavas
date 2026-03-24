@@ -8,6 +8,7 @@ import { getGeolocationErrorMessage } from "./geolocationError";
 import { karnatakaDistricts } from "./karnatakaDistricts";
 import { karnatakaTaluksAndTowns } from "./karnatakaTaluksAndTowns";
 import { bengaluruPincodes } from "./bengaluruPincodes";
+import { clearUserSession } from "../../lib/authRedirect";
 
 const API =
   process.env.NEXT_PUBLIC_API_URL ||
@@ -216,8 +217,10 @@ export default function TopNavBar() {
 
         let storedUser: UserLike | null = null;
 
-        if (userStr) {
+        if (userStr && token) {
           storedUser = JSON.parse(userStr);
+        } else if (userStr && !token) {
+          clearUserSession();
         } else if (vendorStr) {
           storedUser = JSON.parse(vendorStr);
         }
@@ -231,16 +234,25 @@ export default function TopNavBar() {
           const res = await fetch(`${API}/api/auth/me`, {
             headers: { Authorization: `Bearer ${token}` },
           });
-          if (!res.ok) return;
+          if (!res.ok) {
+            clearUserSession();
+            setUser(null);
+            return;
+          }
 
           const data = await res.json();
           if (data?.success && data?.user) {
             localStorage.setItem("user", JSON.stringify(data.user));
             setUser(data.user);
+          } else {
+            clearUserSession();
+            setUser(null);
           }
         }
       } catch (err) {
         console.error("User parse error:", err);
+        clearUserSession();
+        setUser(null);
       }
     };
 
@@ -315,6 +327,7 @@ export default function TopNavBar() {
   }, [location]);
 
   const handleLogout = () => {
+    localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("vendor");
 

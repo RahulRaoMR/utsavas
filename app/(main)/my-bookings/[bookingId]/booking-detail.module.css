@@ -1,0 +1,275 @@
+.page {
+  max-width: 1180px;
+  margin: 0 auto 48px;
+  padding: max(calc(var(--top-nav-offset, 0px) + 24px), 172px) 16px 0;
+  color: #2f2a27;
+}
+
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.backLink,
+.backLinkButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  border: 1px solid #dbc9b7;
+  border-radius: 999px;
+  padding: 10px 16px;
+  background: #fff;
+  color: #6b1d2b;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.reference {
+  margin: 0;
+  color: #6e625a;
+}
+
+.heroCard,
+.card,
+.stateCard {
+  background: #fff9f2;
+  border: 1px solid #eadfcf;
+  border-radius: 18px;
+  box-shadow: 0 18px 34px rgba(117, 86, 53, 0.08);
+}
+
+.heroCard {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 24px;
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+
+.imageWrap {
+  position: relative;
+  min-height: 280px;
+  background: #ece0d1;
+}
+
+.heroImage {
+  object-fit: cover;
+}
+
+.heroContent {
+  padding: 28px 28px 28px 0;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: #8b6d45;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.heroContent h1 {
+  margin: 0 0 10px;
+  color: #6b1d2b;
+  font-size: clamp(1.9rem, 3vw, 2.6rem);
+}
+
+.heroMeta,
+.heroAddress {
+  margin: 0;
+  color: #5e5148;
+  line-height: 1.7;
+}
+
+.heroAddress {
+  margin-top: 8px;
+}
+
+.badgeRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.badgePending {
+  background: rgba(245, 191, 36, 0.14);
+  color: #9a6900;
+}
+
+.badgeSuccess {
+  background: rgba(35, 119, 68, 0.12);
+  color: #237744;
+}
+
+.badgeDanger {
+  background: rgba(177, 38, 38, 0.1);
+  color: #b12626;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(320px, 0.9fr);
+  gap: 18px;
+}
+
+.mainColumn,
+.sideColumn {
+  display: grid;
+  gap: 18px;
+  align-content: start;
+}
+
+.card {
+  padding: 20px;
+}
+
+.card h2,
+.stateCard h1 {
+  margin: 0 0 16px;
+  color: #6b1d2b;
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.detailGrid div {
+  border: 1px solid #efdfd8;
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.detailGrid span {
+  display: inline-block;
+  margin-bottom: 6px;
+  color: #8a6a5d;
+  font-size: 13px;
+}
+
+.detailGrid strong {
+  color: #2f2f2f;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.summaryCard {
+  position: sticky;
+  top: calc(var(--top-nav-offset, 0px) + 22px);
+}
+
+.summaryRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid #efe3d4;
+}
+
+.summaryRow span {
+  color: #6f6259;
+}
+
+.summaryRow strong {
+  color: #2f2f2f;
+}
+
+.summaryHighlight strong {
+  color: #6b1d2b;
+}
+
+.discountValue {
+  color: #237744 !important;
+}
+
+.noteBox {
+  margin-top: 18px;
+  border-radius: 14px;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid #efdfd8;
+}
+
+.noteBox strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #6b1d2b;
+}
+
+.noteBox p {
+  margin: 0;
+  color: #5e5148;
+  line-height: 1.7;
+}
+
+.statePage {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: max(calc(var(--top-nav-offset, 0px) + 24px), 172px) 16px 48px;
+}
+
+.stateCard {
+  padding: 24px;
+}
+
+.stateText,
+.stateCard p {
+  margin: 0;
+  color: #5e5148;
+  line-height: 1.7;
+}
+
+@media (max-width: 960px) {
+  .page {
+    padding-top: max(calc(var(--top-nav-offset, 0px) + 18px), 124px);
+  }
+
+  .topBar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .heroCard {
+    grid-template-columns: 1fr;
+  }
+
+  .heroContent {
+    padding: 0 20px 20px;
+  }
+
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .summaryCard {
+    position: static;
+  }
+}
+
+@media (max-width: 640px) {
+  .detailGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .imageWrap {
+    min-height: 220px;
+  }
+}
