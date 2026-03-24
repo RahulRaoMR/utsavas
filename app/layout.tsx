@@ -13,11 +13,13 @@ export const metadata: Metadata = {
   manifest: "/manifest.webmanifest",
   icons: {
     icon: [
-      { url: "/pwa/icon-192.png", type: "image/png" },
-      { url: "/favicon.ico", type: "image/x-icon", sizes: "any" },
+      { url: "/favicon.ico?v=3", sizes: "any" },
+      { url: "/pwa/favicon-32-v3.png", sizes: "32x32", type: "image/png" },
+      { url: "/pwa/icon-192-v3.png", sizes: "192x192", type: "image/png" },
+      { url: "/pwa/icon-512-v3.png", sizes: "512x512", type: "image/png" },
     ],
-    shortcut: "/favicon.ico",
-    apple: "/pwa/apple-touch-icon.png",
+    shortcut: "/favicon.ico?v=3",
+    apple: "/pwa/apple-touch-icon-v3.png",
   },
   appleWebApp: {
     capable: true,
@@ -48,7 +50,9 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
-        <link rel="apple-touch-icon" href="/pwa/apple-touch-icon.png" />
+        <link rel="icon" href="/favicon.ico?v=3" sizes="any" />
+        <link rel="icon" href="/pwa/favicon-32-v3.png" type="image/png" sizes="32x32" />
+        <link rel="apple-touch-icon" href="/pwa/apple-touch-icon-v3.png" />
       </head>
       <body>
         <PwaRegistration />

@@ -1,13 +1,15 @@
-const CACHE_NAME = "utsavas-pwa-v1";
+const CACHE_NAME = "utsavas-pwa-v3";
 const OFFLINE_URL = "/offline.html";
 const APP_SHELL = [
   "/",
   OFFLINE_URL,
   "/manifest.webmanifest",
-  "/pwa/icon-192.png",
-  "/pwa/icon-512.png",
-  "/pwa/icon-512-maskable.png",
-  "/pwa/apple-touch-icon.png",
+  "/favicon.ico?v=3",
+  "/pwa/favicon-32-v3.png",
+  "/pwa/icon-192-v3.png",
+  "/pwa/icon-512-v3.png",
+  "/pwa/icon-512-maskable-v3.png",
+  "/pwa/apple-touch-icon-v3.png",
   "/utsavas-logo.png",
 ];
 
