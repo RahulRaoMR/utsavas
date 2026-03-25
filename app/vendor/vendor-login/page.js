@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./vendorLogin.module.css";
@@ -57,7 +58,11 @@ export default function VendorLoginPage() {
     <div className={styles.container}>
       <div className={styles.content}>
         <div className={styles.card}>
-          <h1 className={styles.title}>Vendor Login</h1>
+          <h1 className={styles.title}>
+            <Link href="/" className={styles.titleLink}>
+              Vendor Login
+            </Link>
+          </h1>
 
           <input
             className={styles.input}

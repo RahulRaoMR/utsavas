@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./vendorRegister.module.css";
@@ -222,13 +223,15 @@ export default function VendorRegisterPage() {
         />
 
         <div className={styles.card}>
-          <Image
-            src="/logo/utsavaa-gold.png"
-            alt="UTSAVAS"
-            width={100}
-            height={100}
-            className={styles.logo}
-          />
+          <Link href="/" className={styles.logoLink} aria-label="Go to home page">
+            <Image
+              src="/logo/utsavaa-gold.png"
+              alt="UTSAVAS"
+              width={100}
+              height={100}
+              className={styles.logo}
+            />
+          </Link>
 
           <h1 className={styles.title}>Register as Vendor</h1>
           <p className={styles.subtitle}>
