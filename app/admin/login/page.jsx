@@ -4,6 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./adminLogin.module.css";
 
+const API =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://utsavas-backend-1.onrender.com";
+
 export default function AdminLogin() {
   const router = useRouter();
 
@@ -16,7 +20,7 @@ export default function AdminLogin() {
     setLoading(true);
 
     try {
-      const res = await fetch("https://utsavas-backend-1.onrender.com/api/admin/login", {
+      const res = await fetch(`${API}/api/admin/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -26,6 +30,7 @@ export default function AdminLogin() {
 
       if (res.ok) {
         localStorage.setItem("adminToken", data.token);
+        localStorage.setItem("admin", JSON.stringify(data.admin || {}));
         router.push("/admin/dashboard");
       } else {
         alert(data.message || "Login failed");

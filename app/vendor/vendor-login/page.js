@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./vendorLogin.module.css";
+import VendorPlansInfo from "../../components/VendorPlansInfo";
 
 const API =
   process.env.NEXT_PUBLIC_API_URL ||
@@ -10,8 +11,7 @@ const API =
 
 export default function VendorLoginPage() {
   const router = useRouter();
-
-  const [identifier, setIdentifier] = useState(""); // email or phone
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -42,9 +42,8 @@ export default function VendorLoginPage() {
         return;
       }
 
-      // ✅ success
+      localStorage.setItem("vendorToken", data.token);
       localStorage.setItem("vendor", JSON.stringify(data.vendor));
-      alert("Vendor login successful!");
       router.push("/vendor/dashboard");
     } catch (err) {
       console.error("Login error:", err);
@@ -56,38 +55,45 @@ export default function VendorLoginPage() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.card}>
-        <h1 className={styles.title}>Vendor Login</h1>
+      <div className={styles.content}>
+        <div className={styles.card}>
+          <h1 className={styles.title}>Vendor Login</h1>
 
-        <input
-          className={styles.input}
-          placeholder="Email or Phone Number"
-          value={identifier}
-          onChange={(e) => setIdentifier(e.target.value)}
+          <input
+            className={styles.input}
+            placeholder="Email or Phone Number"
+            value={identifier}
+            onChange={(e) => setIdentifier(e.target.value)}
+          />
+
+          <input
+            type="password"
+            className={styles.input}
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+          <button
+            className={styles.submitBtn}
+            onClick={handleLogin}
+            disabled={loading}
+          >
+            {loading ? "Logging in..." : "Login"}
+          </button>
+
+          <p
+            className={styles.backText}
+            onClick={() => router.push("/vendor-register")}
+          >
+            New vendor? Register
+          </p>
+        </div>
+
+        <VendorPlansInfo
+          title="Vendor listing plans"
+          intro="Review the listing plans and platform commission before logging in to manage your venue with UTSAVAS."
         />
-
-        <input
-          type="password"
-          className={styles.input}
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-
-        <button
-          className={styles.submitBtn}
-          onClick={handleLogin}
-          disabled={loading}
-        >
-          {loading ? "Logging in..." : "Login"}
-        </button>
-
-        <p
-          className={styles.backText}
-          onClick={() => router.push("/vendor-register")}
-        >
-          New vendor? Register →
-        </p>
       </div>
     </div>
   );

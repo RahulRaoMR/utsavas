@@ -3,6 +3,11 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "../admin.module.css";
+import {
+  clearAdminSession,
+  getAdminAuthHeaders,
+  getAdminToken,
+} from "../../../lib/panelAuth";
 
 const API =
   process.env.NEXT_PUBLIC_API_URL ||
@@ -23,9 +28,24 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
+        const adminToken = getAdminToken();
+
+        if (!adminToken) {
+          clearAdminSession();
+          router.replace("/admin/login");
+          return;
+        }
+
         const res = await fetch(`${API}/api/admin/dashboard-stats`, {
+          headers: getAdminAuthHeaders(),
           cache: "no-store",
         });
+
+        if (res.status === 401 || res.status === 403) {
+          clearAdminSession();
+          router.replace("/admin/login");
+          return;
+        }
 
         const data = await res.json();
 
@@ -57,10 +77,10 @@ export default function AdminDashboard() {
       window.removeEventListener("focus", fetchStats);
       document.removeEventListener("visibilitychange", handleVisibility);
     };
-  }, []);
+  }, [router]);
 
   const handleLogout = () => {
-    localStorage.removeItem("admin");
+    clearAdminSession();
     router.push("/admin/login");
   };
 
