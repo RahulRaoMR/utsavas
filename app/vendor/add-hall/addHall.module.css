@@ -37,6 +37,13 @@
   margin-bottom: 18px;
 }
 
+.helperText {
+  margin: -4px 0 14px;
+  color: #5b7eaf;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
 .card input,
 .card textarea,
 .card select {

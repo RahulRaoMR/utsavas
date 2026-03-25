@@ -18,6 +18,7 @@ import {
   normalizeVenueCategory,
   VENUE_TYPE_OPTIONS,
 } from "../../../../../lib/venueCategories";
+import { LISTING_PLANS } from "../../../../../lib/listingPlans";
 
 const API =
   process.env.NEXT_PUBLIC_API_URL ||
@@ -31,6 +32,7 @@ const VenueLocationMap = dynamic(
 const DEFAULT_FORM = {
   hallName: "",
   category: "wedding",
+  listingPlan: "basic",
   capacity: "",
   parkingCapacity: "",
   rooms: "",
@@ -118,6 +120,7 @@ export default function VendorEditHallPage() {
         setForm({
           hallName: hall.hallName || "",
           category: normalizeVenueCategory(hall.category) || "wedding",
+          listingPlan: hall.listingPlan || "basic",
           capacity: hall.capacity || "",
           parkingCapacity: hall.parkingCapacity || "",
           rooms: hall.rooms || "",
@@ -277,6 +280,7 @@ export default function VendorEditHallPage() {
         body: JSON.stringify({
           ...form,
           vendorId,
+          listingPlan: form.listingPlan,
           capacity: Number(form.capacity) || 0,
           parkingCapacity: Number(form.parkingCapacity) || 0,
           rooms: Number(form.rooms) || 0,
@@ -344,6 +348,23 @@ export default function VendorEditHallPage() {
               </option>
             ))}
           </select>
+
+          <select
+            name="listingPlan"
+            value={form.listingPlan}
+            onChange={handleFormChange}
+          >
+            {LISTING_PLANS.map((plan) => (
+              <option key={plan.value} value={plan.value}>
+                {`${plan.name} - ${plan.price}`}
+              </option>
+            ))}
+          </select>
+
+          <p className={styles.helperText}>
+            User-side city and PIN code results show Premium plans first, then
+            Featured, then Basic listings.
+          </p>
 
           <input
             name="capacity"

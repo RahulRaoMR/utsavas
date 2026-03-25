@@ -34,6 +34,13 @@
   margin-bottom: 8px;
 }
 
+.helperText {
+  margin: -2px 0 12px;
+  color: #647d5f;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
 .mapBlock {
   margin: 8px 0 18px;
 }

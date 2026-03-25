@@ -17,6 +17,7 @@ import {
   normalizeVenueCategory,
   VENUE_TYPE_OPTIONS,
 } from "../../../lib/venueCategories";
+import { LISTING_PLANS } from "../../../lib/listingPlans";
 
 const API =
   process.env.NEXT_PUBLIC_API_URL ||
@@ -33,6 +34,7 @@ export default function AddHallPage() {
   const [form, setForm] = useState({
     hallName: "",
     category: "wedding",
+    listingPlan: "basic",
     capacity: "",
     parkingCapacity: "",
     rooms: "",
@@ -241,6 +243,7 @@ export default function AddHallPage() {
     const formData = new FormData();
     formData.append("hallName", form.hallName);
     formData.append("category", form.category);
+    formData.append("listingPlan", form.listingPlan);
     formData.append("capacity", Number(form.capacity) || 0);
     formData.append("parkingCapacity", Number(form.parkingCapacity) || 0);
     formData.append("rooms", Number(form.rooms) || 0);
@@ -293,6 +296,23 @@ export default function AddHallPage() {
               </option>
             ))}
           </select>
+
+          <select
+            name="listingPlan"
+            value={form.listingPlan}
+            onChange={handleChange}
+          >
+            {LISTING_PLANS.map((plan) => (
+              <option key={plan.value} value={plan.value}>
+                {`${plan.name} - ${plan.price}`}
+              </option>
+            ))}
+          </select>
+
+          <p className={styles.helperText}>
+            User-side city and PIN code results show Premium plans first, then
+            Featured, then Basic listings.
+          </p>
 
           <input
             name="capacity"

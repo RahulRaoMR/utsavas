@@ -1,56 +1,7 @@
 "use client";
 
 import styles from "./VendorPlansInfo.module.css";
-
-const LISTING_PLANS = [
-  {
-    name: "Basic Listing",
-    badge: "Entry Plan",
-    price: "Rs 1,000",
-    bestFor: "Small halls, new properties",
-    validity: "Valid for 3 months",
-    features: [
-      "1 property listing",
-      "Photos upload",
-      "Contact number visible",
-      "Appears in normal search",
-      "Direct customer contact",
-    ],
-    note: "Goal: Bring maximum properties onto platform",
-  },
-  {
-    name: "Featured Listing",
-    badge: "Standard Plan",
-    price: "Rs 3,999 per property / year",
-    bestFor: "Medium banquet halls, resorts, farms",
-    validity: "Validity - 1 year",
-    features: [
-      "Featured in top search results",
-      "Highlighted listing badge",
-      "WhatsApp enquiry button",
-      "10 lead credits",
-      "Social media promotion (1 post)",
-      "Analytics (views, enquiries)",
-    ],
-  },
-  {
-    name: "Premium / Exclusive Listing",
-    badge: "Pro Plan",
-    price: "Rs 9,999 per property / year",
-    bestFor: "Premium wedding venues, resorts, convention halls",
-    validity: "Validity - 1 year",
-    features: [
-      "Top placement on homepage",
-      "Professional photoshoot (optional add-on)",
-      "Unlimited leads",
-      "Dedicated relationship manager",
-      "Google Ads promotion",
-      "Instagram promotion",
-      "Featured tag + verified badge",
-      "Priority customer support",
-    ],
-  },
-];
+import { LISTING_PLANS } from "../../lib/listingPlans";
 
 export default function VendorPlansInfo({
   title = "Vendor listing plans",
@@ -95,6 +46,12 @@ export default function VendorPlansInfo({
           If customer payment is completed through our platform, UTSAVAS
           collects a <strong>3% commission</strong> on the booking transaction
           value.
+        </p>
+        <p>
+          Search priority on the user side follows the paid plan: Premium /
+          Exclusive Listing halls appear first in matching city or PIN code
+          results, followed by Featured Listing halls and then Basic Listing
+          halls.
         </p>
       </div>
     </section>

@@ -1,4 +1,9 @@
 import mongoose from "mongoose";
+import {
+  LISTING_PLAN_VALUES,
+  getListingPlanPriority,
+  normalizeListingPlan,
+} from "../lib/listingPlans";
 
 const HallSchema = new mongoose.Schema(
   {
@@ -66,6 +71,17 @@ const HallSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
+    listingPlan: {
+      type: String,
+      enum: LISTING_PLAN_VALUES,
+      default: "basic",
+      index: true,
+    },
+    listingPriority: {
+      type: Number,
+      default: getListingPlanPriority("basic"),
+      index: true,
+    },
     status: {
       type: String,
       enum: ["pending", "approved", "rejected"],
@@ -75,5 +91,11 @@ const HallSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+HallSchema.pre("validate", function (next) {
+  this.listingPlan = normalizeListingPlan(this.listingPlan);
+  this.listingPriority = getListingPlanPriority(this.listingPlan);
+  next();
+});
 
 export default mongoose.models.Hall || mongoose.model("Hall", HallSchema);

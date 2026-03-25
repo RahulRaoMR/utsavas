@@ -89,12 +89,14 @@ function DashboardContent() {
           const hallName = hall?.hallName?.toLowerCase?.() || "";
           const area = hall?.address?.area?.toLowerCase?.() || "";
           const city = hall?.address?.city?.toLowerCase?.() || "";
+          const pincode = hall?.address?.pincode?.toLowerCase?.() || "";
           const category = hall?.category?.toLowerCase?.() || "";
 
           return (
             hallName.includes(qLower) ||
             area.includes(qLower) ||
             city.includes(qLower) ||
+            pincode.includes(qLower) ||
             category.includes(qLower)
           );
         });

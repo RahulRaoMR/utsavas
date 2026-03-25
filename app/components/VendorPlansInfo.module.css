@@ -152,6 +152,10 @@
   line-height: 1.7;
 }
 
+.commissionBox p + p {
+  margin-top: 10px;
+}
+
 @media (max-width: 900px) {
   .planGrid {
     grid-template-columns: 1fr;
