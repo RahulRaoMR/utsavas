@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import FiltersSidebar from "../../components/FiltersSidebar";
 import { getApiBaseUrl } from "../../../lib/api";
+import { trackHallView } from "../../../lib/hallAnalytics";
 import { toAbsoluteImageUrl } from "../../../lib/imageUrl";
 import {
   categoryBelongsToRoute,
@@ -111,6 +112,11 @@ function PartyVenuesContent() {
 
   const filteredHalls = requestedCategoryParam ? exactCategoryHalls : routeMatchedHalls;
 
+  const openHallDetails = async (hall) => {
+    await trackHallView(hall._id);
+    router.push(`/party-venues/${hall._id}`);
+  };
+
   return (
     <div className="wedding-page">
       <div className="page-hero">
@@ -199,7 +205,9 @@ function PartyVenuesContent() {
               <div
                 key={hall._id}
                 className="hall-card"
-                onClick={() => router.push(`/party-venues/${hall._id}`)}
+                onClick={() => {
+                  void openHallDetails(hall);
+                }}
               >
                 <img
                   src={

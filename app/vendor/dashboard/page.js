@@ -100,6 +100,69 @@ const getStatusClassName = (status) => {
   return "";
 };
 
+const EMPTY_ANALYTICS = {
+  month: "",
+  chartData: [],
+  hallBreakdown: [],
+  totals: {
+    hallViews: 0,
+    phoneViews: 0,
+    monthlyPlanCost: 0,
+    estimatedCpc: 0,
+  },
+};
+
+const formatMonthQuery = (value) =>
+  `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, "0")}`;
+
+const formatCurrency = (value) =>
+  `Rs ${Math.round(Number(value) || 0).toLocaleString("en-IN")}`;
+
+const buildChartPoints = (data, metricKey, chartWidth, chartHeight, padding) => {
+  const maxValue = Math.max(
+    1,
+    ...data.map((entry) =>
+      Math.max(Number(entry?.hallViews) || 0, Number(entry?.phoneViews) || 0)
+    )
+  );
+  const usableWidth = chartWidth - padding * 2;
+  const usableHeight = chartHeight - padding * 2;
+
+  return data.map((entry, index) => {
+    const value = Number(entry?.[metricKey]) || 0;
+    const x =
+      padding +
+      (usableWidth * index) / Math.max((data.length || 1) - 1, 1);
+    const y = chartHeight - padding - (value / maxValue) * usableHeight;
+
+    return {
+      x,
+      y,
+      value,
+      label: entry?.label || "",
+    };
+  });
+};
+
+const buildSvgLinePath = (points) =>
+  points
+    .map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`)
+    .join(" ");
+
+const buildSvgAreaPath = (points, chartHeight, padding) => {
+  if (!points.length) {
+    return "";
+  }
+
+  const linePath = buildSvgLinePath(points);
+  const firstPoint = points[0];
+  const lastPoint = points[points.length - 1];
+
+  return `${linePath} L ${lastPoint.x} ${chartHeight - padding} L ${firstPoint.x} ${
+    chartHeight - padding
+  } Z`;
+};
+
 export default function VendorDashboard() {
   const router = useRouter();
 
@@ -115,6 +178,8 @@ export default function VendorDashboard() {
   const [offlineEnd, setOfflineEnd] = useState("");
   const [savingOfflineBooking, setSavingOfflineBooking] = useState(false);
   const [removingOfflineBooking, setRemovingOfflineBooking] = useState(false);
+  const [analytics, setAnalytics] = useState(EMPTY_ANALYTICS);
+  const [analyticsLoading, setAnalyticsLoading] = useState(true);
 
   const loadDashboard = useCallback(async (preferredHallId = "") => {
     const session = getVendorSession();
@@ -125,11 +190,21 @@ export default function VendorDashboard() {
     }
 
     setVendor(session.vendor);
+    setAnalyticsLoading(true);
 
     try {
       const headers = getVendorHeaders(session.token);
+      const analyticsMonth = formatMonthQuery(currentMonth);
+      const analyticsHallId = preferredHallId || selectedHallId;
+      const analyticsQuery = new URLSearchParams({
+        month: analyticsMonth,
+      });
 
-      const [hallsRes, bookingsRes] = await Promise.allSettled([
+      if (analyticsHallId) {
+        analyticsQuery.set("hallId", analyticsHallId);
+      }
+
+      const [hallsRes, bookingsRes, analyticsRes] = await Promise.allSettled([
         fetch(`${API}/api/halls/vendor/${session.vendorId}`, {
           cache: "no-store",
           headers,
@@ -138,6 +213,13 @@ export default function VendorDashboard() {
           cache: "no-store",
           headers,
         }),
+        fetch(
+          `${API}/api/halls/vendor/${session.vendorId}/analytics?${analyticsQuery.toString()}`,
+          {
+            cache: "no-store",
+            headers,
+          }
+        ),
       ]);
 
       let resolvedHalls = [];
@@ -152,8 +234,15 @@ export default function VendorDashboard() {
         resolvedBookings = Array.isArray(bookingsPayload) ? bookingsPayload : [];
       }
 
+      let resolvedAnalytics = EMPTY_ANALYTICS;
+      if (analyticsRes.status === "fulfilled" && analyticsRes.value.ok) {
+        const analyticsPayload = await analyticsRes.value.json();
+        resolvedAnalytics = analyticsPayload?.data || EMPTY_ANALYTICS;
+      }
+
       setHalls(resolvedHalls);
       setBookings(resolvedBookings);
+      setAnalytics(resolvedAnalytics);
       setSelectedHallId((currentValue) => {
         const nextValue = preferredHallId || currentValue;
         const matchedHall = resolvedHalls.find(
@@ -166,10 +255,12 @@ export default function VendorDashboard() {
       console.error("Error loading vendor dashboard", error);
       setHalls([]);
       setBookings([]);
+      setAnalytics(EMPTY_ANALYTICS);
     } finally {
       setLoading(false);
+      setAnalyticsLoading(false);
     }
-  }, [router]);
+  }, [currentMonth, router, selectedHallId]);
 
   useEffect(() => {
     loadDashboard();
@@ -480,6 +571,54 @@ export default function VendorDashboard() {
   );
 
   const estimatedRevenue = approvedBookings.length * 50000;
+  const analyticsChartData = Array.isArray(analytics?.chartData)
+    ? analytics.chartData
+    : [];
+  const analyticsHallBreakdown = Array.isArray(analytics?.hallBreakdown)
+    ? analytics.hallBreakdown
+    : [];
+  const selectedAnalyticsHall =
+    analyticsHallBreakdown.find(
+      (hall) => String(hall.hallId) === String(selectedHallId)
+    ) || analyticsHallBreakdown[0] || null;
+  const analyticsTotals = analytics?.totals || EMPTY_ANALYTICS.totals;
+  const chartWidth = 760;
+  const chartHeight = 280;
+  const chartPadding = 28;
+  const chartGridLines = 4;
+  const hallViewPoints = buildChartPoints(
+    analyticsChartData,
+    "hallViews",
+    chartWidth,
+    chartHeight,
+    chartPadding
+  );
+  const phoneViewPoints = buildChartPoints(
+    analyticsChartData,
+    "phoneViews",
+    chartWidth,
+    chartHeight,
+    chartPadding
+  );
+  const hallViewLinePath = buildSvgLinePath(hallViewPoints);
+  const hallViewAreaPath = buildSvgAreaPath(
+    hallViewPoints,
+    chartHeight,
+    chartPadding
+  );
+  const phoneViewLinePath = buildSvgLinePath(phoneViewPoints);
+  const maxHallViews = Math.max(
+    1,
+    ...analyticsHallBreakdown.map((hall) => Number(hall?.hallViews) || 0)
+  );
+  const maxPhoneViews = Math.max(
+    1,
+    ...analyticsHallBreakdown.map((hall) => Number(hall?.phoneViews) || 0)
+  );
+  const selectedMonthLabel = currentMonth.toLocaleString("default", {
+    month: "long",
+    year: "numeric",
+  });
 
   const displayOwnerName =
     vendor?.ownerName || vendor?.name || vendor?.businessName || "-";
@@ -721,6 +860,259 @@ export default function VendorDashboard() {
             <p>Estimated Revenue</p>
             <h3>Rs {estimatedRevenue.toLocaleString()}</h3>
           </div>
+        </div>
+
+        <div className={styles.analyticsSection}>
+          <div className={styles.analyticsHeader}>
+            <div>
+              <p className={styles.analyticsEyebrow}>Hall Performance</p>
+              <h3 className={styles.analyticsHeadline}>
+                Hall clicks and phone views
+              </h3>
+              <p className={styles.analyticsCopy}>
+                {selectedHall
+                  ? `This graph tracks public hall detail visits and phone-number reveals for ${selectedHall.hallName} in ${selectedMonthLabel}.`
+                  : `This graph tracks public hall detail visits and phone-number reveals for your approved halls in ${selectedMonthLabel}.`}
+              </p>
+            </div>
+
+            <div className={styles.analyticsHeaderActions}>
+              <label className={styles.analyticsFilterField}>
+                Hall
+                <select
+                  className={styles.analyticsFilterSelect}
+                  value={selectedHallId}
+                  onChange={(event) => {
+                    setSelectedHallId(event.target.value);
+                    resetOfflineDraft();
+                  }}
+                >
+                  {halls.length === 0 ? (
+                    <option value="">No approved halls</option>
+                  ) : null}
+                  {halls.map((hall) => (
+                    <option key={hall._id} value={hall._id}>
+                      {hall.hallName}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <div className={styles.analyticsMonthBadge}>{selectedMonthLabel}</div>
+            </div>
+          </div>
+
+          <div className={styles.analyticsStatsGrid}>
+            <div className={styles.analyticsStatCard}>
+              <span>Hall clicks</span>
+              <strong>{analyticsTotals.hallViews}</strong>
+            </div>
+
+            <div className={styles.analyticsStatCard}>
+              <span>Phone views</span>
+              <strong>{analyticsTotals.phoneViews}</strong>
+            </div>
+
+            <div className={styles.analyticsStatCard}>
+              <span>Estimated CPC</span>
+              <strong>{formatCurrency(analyticsTotals.estimatedCpc)}</strong>
+            </div>
+
+            <div className={styles.analyticsStatCard}>
+              <span>Selected hall</span>
+              <strong>{selectedHall ? selectedHall.hallName : "-"}</strong>
+            </div>
+          </div>
+
+          <div className={styles.analyticsLayout}>
+            <article className={styles.analyticsChartCard}>
+              <div className={styles.analyticsChartHeader}>
+                <div>
+                  <h4>Daily interaction trend</h4>
+                  <p>Public hall page opens and phone-number reveals.</p>
+                </div>
+
+                <div className={styles.analyticsLegend}>
+                  <span className={styles.analyticsLegendViews}>Hall clicks</span>
+                  <span className={styles.analyticsLegendPhone}>Phone views</span>
+                </div>
+              </div>
+
+              {analyticsLoading ? (
+                <p className={styles.analyticsEmpty}>Loading chart...</p>
+              ) : analyticsChartData.length === 0 ? (
+                <p className={styles.analyticsEmpty}>
+                  No user interaction tracked for this month yet.
+                </p>
+              ) : (
+                <>
+                  <svg
+                    className={styles.analyticsChart}
+                    viewBox={`0 0 ${chartWidth} ${chartHeight}`}
+                    role="img"
+                    aria-label="Vendor hall analytics chart"
+                  >
+                    <defs>
+                      <linearGradient
+                        id="hallViewsGradient"
+                        x1="0"
+                        x2="0"
+                        y1="0"
+                        y2="1"
+                      >
+                        <stop offset="0%" stopColor="#4a79be" stopOpacity="0.28" />
+                        <stop offset="100%" stopColor="#4a79be" stopOpacity="0.02" />
+                      </linearGradient>
+                    </defs>
+
+                    {Array.from({ length: chartGridLines }).map((_, index) => {
+                      const y =
+                        chartPadding +
+                        ((chartHeight - chartPadding * 2) * index) /
+                          Math.max(chartGridLines - 1, 1);
+
+                      return (
+                        <line
+                          key={index}
+                          x1={chartPadding}
+                          x2={chartWidth - chartPadding}
+                          y1={y}
+                          y2={y}
+                          className={styles.analyticsGridLine}
+                        />
+                      );
+                    })}
+
+                    {hallViewAreaPath ? (
+                      <path
+                        d={hallViewAreaPath}
+                        fill="url(#hallViewsGradient)"
+                        stroke="none"
+                      />
+                    ) : null}
+
+                    {hallViewLinePath ? (
+                      <path
+                        d={hallViewLinePath}
+                        fill="none"
+                        className={styles.analyticsHallViewsLine}
+                      />
+                    ) : null}
+
+                    {phoneViewLinePath ? (
+                      <path
+                        d={phoneViewLinePath}
+                        fill="none"
+                        className={styles.analyticsPhoneViewsLine}
+                      />
+                    ) : null}
+
+                    {hallViewPoints.map((point, index) => (
+                      <circle
+                        key={`views-${index}`}
+                        cx={point.x}
+                        cy={point.y}
+                        r="4"
+                        className={styles.analyticsHallViewsPoint}
+                      />
+                    ))}
+
+                    {phoneViewPoints.map((point, index) => (
+                      <circle
+                        key={`phone-${index}`}
+                        cx={point.x}
+                        cy={point.y}
+                        r="4"
+                        className={styles.analyticsPhoneViewsPoint}
+                      />
+                    ))}
+                  </svg>
+
+                  <div className={styles.analyticsChartLabels}>
+                    {analyticsChartData.map((entry) => (
+                      <span key={entry.dateKey}>{entry.label}</span>
+                    ))}
+                  </div>
+                </>
+              )}
+            </article>
+
+            <aside className={styles.analyticsHallCard}>
+              <div className={styles.analyticsChartHeader}>
+                <div>
+                  <h4>Hall-wise performance</h4>
+                  <p>
+                    The selected registered hall shows its own clicks, phone
+                    views, and CPC here.
+                  </p>
+                </div>
+              </div>
+
+              {!selectedAnalyticsHall ? (
+                <p className={styles.analyticsEmpty}>
+                  Select an approved hall and wait for user traffic to see hall
+                  performance here.
+                </p>
+              ) : (
+                <div className={styles.analyticsHallList}>
+                  <div
+                    key={selectedAnalyticsHall.hallId}
+                    className={styles.analyticsHallRow}
+                  >
+                    <div className={styles.analyticsHallTop}>
+                      <div>
+                        <strong>{selectedAnalyticsHall.hallName}</strong>
+                        <span>{selectedAnalyticsHall.listingPlan}</span>
+                      </div>
+
+                      <b>{formatCurrency(selectedAnalyticsHall.estimatedCpc)}</b>
+                    </div>
+
+                    <div className={styles.analyticsBarGroup}>
+                      <div>
+                        <label>Hall clicks</label>
+                        <div className={styles.analyticsBarTrack}>
+                          <span
+                            className={styles.analyticsBarViews}
+                            style={{
+                              width: `${Math.max(
+                                (Number(selectedAnalyticsHall.hallViews) || 0) /
+                                  maxHallViews,
+                                0
+                              ) * 100}%`,
+                            }}
+                          />
+                        </div>
+                        <small>{selectedAnalyticsHall.hallViews}</small>
+                      </div>
+
+                      <div>
+                        <label>Phone views</label>
+                        <div className={styles.analyticsBarTrack}>
+                          <span
+                            className={styles.analyticsBarPhone}
+                            style={{
+                              width: `${Math.max(
+                                (Number(selectedAnalyticsHall.phoneViews) || 0) /
+                                  maxPhoneViews,
+                                0
+                              ) * 100}%`,
+                            }}
+                          />
+                        </div>
+                        <small>{selectedAnalyticsHall.phoneViews}</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </aside>
+          </div>
+
+          <p className={styles.analyticsNote}>
+            Estimated CPC is calculated from the hall listing plan fee spread
+            across its billing cycle for the selected month.
+          </p>
         </div>
       </div>
 

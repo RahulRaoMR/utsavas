@@ -1,15 +1,22 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import styles from "../admin.module.css";
+import {
+  clearAdminSession,
+  getAdminAuthHeaders,
+  getAdminToken,
+} from "../../../lib/panelAuth";
 
 const API =
   process.env.NEXT_PUBLIC_API_URL ||
   "https://utsavas-backend-1.onrender.com";
 
 export default function AdminBookingsPage() {
+  const router = useRouter();
   const [events, setEvents] = useState([]);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -17,12 +24,32 @@ export default function AdminBookingsPage() {
   useEffect(() => {
     const fetchBookings = async () => {
       try {
+        const adminToken = getAdminToken();
+
+        if (!adminToken) {
+          clearAdminSession();
+          router.replace("/admin/login");
+          return;
+        }
+
         const res = await fetch(`${API}/api/bookings/admin/bookings`, {
           cache: "no-store",
+          headers: getAdminAuthHeaders(),
         });
+
+        if (res.status === 401 || res.status === 403) {
+          clearAdminSession();
+          router.replace("/admin/login");
+          return;
+        }
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch bookings");
+        }
+
         const data = await res.json();
 
-        const formatted = data.map((b) => {
+        const formatted = (Array.isArray(data) ? data : []).map((b) => {
           let bgColor = "#3b82f6";
 
           if (b.status === "approved") bgColor = "#16a34a";
@@ -41,7 +68,7 @@ export default function AdminBookingsPage() {
 
         setEvents(formatted);
       } catch (err) {
-        console.error("Failed to load bookings", err);
+      console.error("Failed to load bookings", err);
       } finally {
         setLoading(false);
       }
@@ -62,7 +89,7 @@ export default function AdminBookingsPage() {
       window.removeEventListener("focus", fetchBookings);
       document.removeEventListener("visibilitychange", handleVisibility);
     };
-  }, []);
+  }, [router]);
 
   const handleEventClick = (info) => {
     setSelectedBooking(info.event.extendedProps);

@@ -3,6 +3,11 @@
 import { Suspense, useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import styles from "../admin.module.css";
+import {
+  clearAdminSession,
+  getAdminAuthHeaders,
+  getAdminToken,
+} from "../../../lib/panelAuth";
 import { toAbsoluteImageUrl } from "../../../lib/imageUrl";
 import {
   getVenueCategoryLabel,
@@ -25,9 +30,25 @@ function AdminHallsContent() {
 
   const fetchHalls = useCallback(async () => {
     try {
+      const adminToken = getAdminToken();
+
+      if (!adminToken) {
+        clearAdminSession();
+        router.replace("/admin/login");
+        return;
+      }
+
       const res = await fetch(`${API}/api/admin/halls?status=${statusFilter}`, {
         cache: "no-store",
+        headers: getAdminAuthHeaders(),
       });
+
+      if (res.status === 401 || res.status === 403) {
+        clearAdminSession();
+        router.replace("/admin/login");
+        return;
+      }
+
       const data = await res.json();
 
       setHalls(Array.isArray(data) ? data : []);
@@ -38,7 +59,7 @@ function AdminHallsContent() {
     } finally {
       setLoading(false);
     }
-  }, [statusFilter]);
+  }, [router, statusFilter]);
 
   useEffect(() => {
     setLoading(true);
@@ -62,9 +83,24 @@ function AdminHallsContent() {
   const approveHall = async (id) => {
     if (!confirm("Approve this hall?")) return;
 
-    await fetch(`${API}/api/admin/halls/${id}/approve`, {
+    const adminToken = getAdminToken();
+
+    if (!adminToken) {
+      clearAdminSession();
+      router.replace("/admin/login");
+      return;
+    }
+
+    const res = await fetch(`${API}/api/admin/halls/${id}/approve`, {
       method: "PUT",
+      headers: getAdminAuthHeaders(),
     });
+
+    if (res.status === 401 || res.status === 403) {
+      clearAdminSession();
+      router.replace("/admin/login");
+      return;
+    }
 
     fetchHalls();
   };
@@ -72,9 +108,24 @@ function AdminHallsContent() {
   const rejectHall = async (id) => {
     if (!confirm("Reject this hall?")) return;
 
-    await fetch(`${API}/api/admin/halls/${id}/reject`, {
+    const adminToken = getAdminToken();
+
+    if (!adminToken) {
+      clearAdminSession();
+      router.replace("/admin/login");
+      return;
+    }
+
+    const res = await fetch(`${API}/api/admin/halls/${id}/reject`, {
       method: "PUT",
+      headers: getAdminAuthHeaders(),
     });
+
+    if (res.status === 401 || res.status === 403) {
+      clearAdminSession();
+      router.replace("/admin/login");
+      return;
+    }
 
     fetchHalls();
   };
@@ -90,9 +141,24 @@ function AdminHallsContent() {
 
     try {
       setDeletingHallId(id);
+      const adminToken = getAdminToken();
+
+      if (!adminToken) {
+        clearAdminSession();
+        router.replace("/admin/login");
+        return;
+      }
+
       const res = await fetch(`${API}/api/admin/halls/${id}`, {
         method: "DELETE",
+        headers: getAdminAuthHeaders(),
       });
+
+      if (res.status === 401 || res.status === 403) {
+        clearAdminSession();
+        router.replace("/admin/login");
+        return;
+      }
 
       const data = await res.json().catch(() => ({}));
 

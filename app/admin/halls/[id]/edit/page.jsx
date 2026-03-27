@@ -3,6 +3,11 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import styles from "./editHall.module.css";
+import {
+  clearAdminSession,
+  getAdminAuthHeaders,
+  getAdminToken,
+} from "../../../../../lib/panelAuth";
 import { toAbsoluteImageUrl } from "../../../../../lib/imageUrl";
 import {
   normalizeVenueCategory,
@@ -124,9 +129,25 @@ export default function AdminEditHallPage() {
   useEffect(() => {
     async function loadHall() {
       try {
+        const adminToken = getAdminToken();
+
+        if (!adminToken) {
+          clearAdminSession();
+          router.replace("/admin/login");
+          return;
+        }
+
         const res = await fetch(`${API}/api/admin/halls/${id}`, {
           cache: "no-store",
+          headers: getAdminAuthHeaders(),
         });
+
+        if (res.status === 401 || res.status === 403) {
+          clearAdminSession();
+          router.replace("/admin/login");
+          return;
+        }
+
         const hall = await res.json();
 
         if (!res.ok) {
@@ -161,7 +182,7 @@ export default function AdminEditHallPage() {
     }
 
     loadHall();
-  }, [id]);
+  }, [id, router]);
 
   const handleFormChange = (e) => {
     setForm((prev) => ({
@@ -199,12 +220,19 @@ export default function AdminEditHallPage() {
 
     try {
       setSaving(true);
+      const adminToken = getAdminToken();
+
+      if (!adminToken) {
+        clearAdminSession();
+        router.replace("/admin/login");
+        return;
+      }
 
       const res = await fetch(`${API}/api/admin/halls/${id}`, {
         method: "PUT",
-        headers: {
+        headers: getAdminAuthHeaders({
           "Content-Type": "application/json",
-        },
+        }),
         body: JSON.stringify({
           ...form,
           capacity: Number(form.capacity) || 0,
@@ -221,6 +249,12 @@ export default function AdminEditHallPage() {
           features,
         }),
       });
+
+      if (res.status === 401 || res.status === 403) {
+        clearAdminSession();
+        router.replace("/admin/login");
+        return;
+      }
 
       const data = await res.json().catch(() => ({}));
 

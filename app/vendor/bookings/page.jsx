@@ -1,12 +1,22 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "../vendorDashboard.module.css";
+import {
+  clearVendorSession,
+  getVendorAuthHeaders,
+  getVendorSession,
+} from "../../../lib/panelAuth";
 
 const API =
   process.env.NEXT_PUBLIC_API_URL ||
   "https://utsavas-backend-1.onrender.com";
+
+const formatDate = (value) => {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? "-" : date.toDateString();
+};
 
 export default function VendorBookingsPage() {
   const router = useRouter();
@@ -22,72 +32,74 @@ export default function VendorBookingsPage() {
     router.push("/vendor/dashboard");
   };
 
-  /* =========================
-     FETCH BOOKINGS (MEMOIZED)
-  ========================= */
   const fetchBookings = useCallback(async () => {
     try {
-      const vendorData =
-        typeof window !== "undefined"
-          ? localStorage.getItem("vendor")
-          : null;
+      const session = getVendorSession();
 
-      if (!vendorData) {
-        router.push("/login");
+      if (!session.vendor || !session.vendorId || !session.token) {
+        clearVendorSession();
+        router.replace("/vendor/vendor-login");
         return;
       }
 
-      const vendor = JSON.parse(vendorData);
-      const vendorId = vendor?._id || vendor?.id;
+      const res = await fetch(`${API}/api/bookings/vendor/${session.vendorId}`, {
+        cache: "no-store",
+        headers: getVendorAuthHeaders(),
+      });
 
-      if (!vendorId) {
-        router.push("/vendor/vendor-login");
+      if (res.status === 401 || res.status === 403) {
+        clearVendorSession();
+        router.replace("/vendor/vendor-login");
         return;
       }
-
-      const res = await fetch(
-        `${API}/api/bookings/vendor/${vendorId}`,
-        {
-          cache: "no-store",
-        }
-      );
 
       const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data?.message || "Failed to fetch bookings");
+      }
+
       setBookings(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error("Fetch bookings error ❌", err);
+    } catch (error) {
+      console.error("Fetch bookings error", error);
+      setBookings([]);
     } finally {
       setLoading(false);
     }
   }, [router]);
 
-  /* =========================
-     RUN ONLY ONCE ✅
-  ========================= */
   useEffect(() => {
     fetchBookings();
   }, [fetchBookings]);
 
-  /* =========================
-     UPDATE BOOKING STATUS
-  ========================= */
   const updateStatus = async (bookingId, status) => {
     try {
-      const res = await fetch(
-        `${API}/api/bookings/status/${bookingId}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ status }),
-        }
-      );
+      const session = getVendorSession();
+
+      if (!session.token) {
+        clearVendorSession();
+        router.replace("/vendor/vendor-login");
+        return;
+      }
+
+      const res = await fetch(`${API}/api/bookings/status/${bookingId}`, {
+        method: "PATCH",
+        headers: getVendorAuthHeaders({
+          "Content-Type": "application/json",
+        }),
+        body: JSON.stringify({ status }),
+      });
+
+      if (res.status === 401 || res.status === 403) {
+        clearVendorSession();
+        router.replace("/vendor/vendor-login");
+        return;
+      }
 
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data?.email?.error || data.message || "Failed to update status");
+        alert(data?.email?.error || data?.message || "Failed to update status");
         return;
       }
 
@@ -97,10 +109,9 @@ export default function VendorBookingsPage() {
         alert(data.message);
       }
 
-      // ✅ refresh list once
       fetchBookings();
     } catch (error) {
-      console.error("Error updating booking status ❌", error);
+      console.error("Error updating booking status", error);
     }
   };
 
@@ -113,29 +124,27 @@ export default function VendorBookingsPage() {
         </button>
       </div>
 
-      {loading && <p style={{ marginTop: 20 }}>Loading...</p>}
+      {loading ? <p style={{ marginTop: 20 }}>Loading...</p> : null}
 
-      {!loading && bookings.length === 0 && (
+      {!loading && bookings.length === 0 ? (
         <p style={{ marginTop: 20 }}>No booking requests yet.</p>
-      )}
+      ) : null}
 
       <div className={styles.cardGrid}>
         {bookings.map((booking) => (
           <div key={booking._id} className={styles.card}>
-            {/* LEFT */}
             <div className={styles.cardLeft}>
               <h3 className={styles.hallName}>
-                {booking.hall?.hallName || "Hall"}
+                {booking.hall?.hallName || booking.hallName || "Hall"}
               </h3>
 
               <p>
-                <span>Dates:</span>{" "}
-                {new Date(booking.checkIn).toDateString()} →{" "}
-                {new Date(booking.checkOut).toDateString()}
+                <span>Dates:</span> {formatDate(booking.checkIn)} {"->"}{" "}
+                {formatDate(booking.checkOut)}
               </p>
 
               <p>
-                <span>Event:</span> {booking.eventType}
+                <span>Event:</span> {booking.eventType || "-"}
               </p>
 
               <p>
@@ -143,43 +152,40 @@ export default function VendorBookingsPage() {
               </p>
 
               <p>
-                <span>Customer:</span> {booking.customerName}
+                <span>Customer:</span> {booking.customerName || "-"}
               </p>
 
               <p>
-                <span>Phone:</span> {booking.phone}
+                <span>Phone:</span> {booking.phone || "-"}
               </p>
 
               <p>
                 <span>Status:</span>{" "}
                 <strong className={styles.status}>
-                  {booking.status?.toUpperCase()}
+                  {String(booking.status || "").toUpperCase()}
                 </strong>
               </p>
             </div>
 
-            {/* RIGHT */}
-            {booking.status === "pending" && (
+            {booking.status === "pending" ? (
               <div className={styles.cardActions}>
                 <button
                   className={styles.approveBtn}
-                  onClick={() =>
-                    updateStatus(booking._id, "approved")
-                  }
+                  onClick={() => updateStatus(booking._id, "approved")}
+                  type="button"
                 >
                   Approve
                 </button>
 
                 <button
                   className={styles.rejectBtn}
-                  onClick={() =>
-                    updateStatus(booking._id, "rejected")
-                  }
+                  onClick={() => updateStatus(booking._id, "rejected")}
+                  type="button"
                 >
                   Reject
                 </button>
               </div>
-            )}
+            ) : null}
           </div>
         ))}
       </div>

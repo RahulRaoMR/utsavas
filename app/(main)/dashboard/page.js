@@ -6,6 +6,7 @@ import EnquiryPopup from "../../components/EnquiryPopup";
 import { useRouter, useSearchParams } from "next/navigation";
 import Footer from "../../components/Footer";
 import { getApiBaseUrl } from "../../../lib/api";
+import { trackHallView } from "../../../lib/hallAnalytics";
 import {
   DEFAULT_VENUE_ROUTE,
   getVenueCategoryCards,
@@ -118,7 +119,10 @@ function DashboardContent() {
   =================================== */
   const openHall = (hall) => {
     setResults([]);
-    router.push(`${getVenueRoute(hall.category)}/${hall._id}`);
+    void (async () => {
+      await trackHallView(hall._id);
+      router.push(`${getVenueRoute(hall.category)}/${hall._id}`);
+    })();
   };
 
   const handleSearchSubmit = () => {

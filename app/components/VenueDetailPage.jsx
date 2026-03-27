@@ -3,6 +3,11 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getApiBaseUrl } from "../../lib/api";
+import {
+  markHallAnalyticsEventTracked,
+  shouldTrackHallAnalyticsEvent,
+  trackHallPhoneView,
+} from "../../lib/hallAnalytics";
 import { toAbsoluteImageUrl } from "../../lib/imageUrl";
 import { buildVenueMapUrls } from "../../lib/hallLocation";
 
@@ -19,9 +24,17 @@ export default function VenueDetailPage() {
 
     const fetchHall = async () => {
       try {
-        const res = await fetch(`${getApiBaseUrl()}/api/halls/${id}`);
+        const shouldTrackView = shouldTrackHallAnalyticsEvent(id, "view");
+        const url = `${getApiBaseUrl()}/api/halls/${id}${
+          shouldTrackView ? "?trackView=true" : ""
+        }`;
+        const res = await fetch(url);
         const data = await res.json();
         setHall(data);
+
+        if (res.ok && data?._id && shouldTrackView) {
+          markHallAnalyticsEventTracked(data._id, "view");
+        }
       } catch (err) {
         console.error("Failed to load hall details", err);
       } finally {
@@ -278,7 +291,10 @@ export default function VenueDetailPage() {
           {hall.vendor?.phone && (
             <button
               className="contact-btn"
-              onClick={() => alert(`${icons.phone} Phone Number: ${hall.vendor.phone}`)}
+              onClick={() => {
+                void trackHallPhoneView(hall._id);
+                alert(`${icons.phone} Phone Number: ${hall.vendor.phone}`);
+              }}
             >
               View phone number
             </button>

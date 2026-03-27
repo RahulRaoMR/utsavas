@@ -3,6 +3,11 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./myHalls.module.css";
+import {
+  clearVendorSession,
+  getVendorAuthHeaders,
+  getVendorSession,
+} from "../../../lib/panelAuth";
 import { toAbsoluteImageUrl } from "../../../lib/imageUrl";
 import { getVenueCategoryLabel } from "../../../lib/venueCategories";
 
@@ -26,39 +31,51 @@ export default function MyHallsPage() {
   };
 
   useEffect(() => {
-    try {
-      const vendorData = localStorage.getItem("vendor");
-      const vendor = vendorData ? JSON.parse(vendorData) : null;
-      const vendorId = vendor?._id || vendor?.id;
+    const fetchHalls = async () => {
+      try {
+        const session = getVendorSession();
 
-      if (!vendorId) {
-        router.replace("/vendor/vendor-login");
-        return;
-      }
+        if (!session.vendor || !session.vendorId || !session.token) {
+          clearVendorSession();
+          router.replace("/vendor/vendor-login");
+          return;
+        }
 
-      fetch(`${API}/api/halls/vendor/${vendorId}`)
-        .then((res) => res.json())
-        .then((data) => {
-          setHalls(Array.isArray(data?.data) ? data.data : []);
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.error("Fetch halls error:", err);
-          setLoading(false);
+        const res = await fetch(`${API}/api/halls/vendor/${session.vendorId}`, {
+          cache: "no-store",
+          headers: getVendorAuthHeaders(),
         });
-    } catch (err) {
-      console.error("Vendor parse error:", err);
-      setLoading(false);
-    }
+
+        if (res.status === 401 || res.status === 403) {
+          clearVendorSession();
+          router.replace("/vendor/vendor-login");
+          return;
+        }
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data?.message || "Failed to fetch halls");
+        }
+
+        setHalls(Array.isArray(data?.data) ? data.data : []);
+      } catch (err) {
+        console.error("Fetch halls error:", err);
+        setHalls([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHalls();
   }, [router]);
 
   const handleDeleteHall = async (hallId) => {
     try {
-      const vendorData = localStorage.getItem("vendor");
-      const vendor = vendorData ? JSON.parse(vendorData) : null;
-      const vendorId = vendor?._id || vendor?.id;
+      const session = getVendorSession();
 
-      if (!vendorId) {
+      if (!session.vendorId || !session.token) {
+        clearVendorSession();
         alert("Vendor session expired. Please login again.");
         router.replace("/vendor/vendor-login");
         return;
@@ -70,16 +87,27 @@ export default function MyHallsPage() {
       setDeletingHallId(hallId);
 
       let res = await fetch(
-        `${API}/api/halls/${hallId}?vendorId=${vendorId}`,
-        { method: "DELETE" }
+        `${API}/api/halls/${hallId}?vendorId=${session.vendorId}`,
+        {
+          method: "DELETE",
+          headers: getVendorAuthHeaders(),
+        }
       );
 
       if (!res.ok) {
         res = await fetch(`${API}/api/halls/delete/${hallId}`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ vendorId }),
+          headers: getVendorAuthHeaders({
+            "Content-Type": "application/json",
+          }),
+          body: JSON.stringify({ vendorId: session.vendorId }),
         });
+      }
+
+      if (res.status === 401 || res.status === 403) {
+        clearVendorSession();
+        router.replace("/vendor/vendor-login");
+        return;
       }
 
       const data = await res.json().catch(() => ({}));

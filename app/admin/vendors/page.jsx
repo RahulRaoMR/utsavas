@@ -1,14 +1,20 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { Suspense, useCallback, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import styles from "../admin.module.css";
+import {
+  clearAdminSession,
+  getAdminAuthHeaders,
+  getAdminToken,
+} from "../../../lib/panelAuth";
 
 const API =
   process.env.NEXT_PUBLIC_API_URL ||
   "https://utsavas-backend-1.onrender.com";
 
 function AdminVendorsContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [vendors, setVendors] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -18,11 +24,26 @@ function AdminVendorsContent() {
 
   const statusFilter = (searchParams.get("status") || "all").toLowerCase();
 
-  const fetchVendors = async () => {
+  const fetchVendors = useCallback(async () => {
     try {
+      const adminToken = getAdminToken();
+
+      if (!adminToken) {
+        clearAdminSession();
+        router.replace("/admin/login");
+        return;
+      }
+
       const res = await fetch(`${API}/api/vendor/all`, {
         cache: "no-store",
+        headers: getAdminAuthHeaders(),
       });
+
+      if (res.status === 401 || res.status === 403) {
+        clearAdminSession();
+        router.replace("/admin/login");
+        return;
+      }
 
       if (!res.ok) {
         throw new Error("Failed to fetch vendors");
@@ -43,7 +64,7 @@ function AdminVendorsContent() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [router]);
 
   useEffect(() => {
     fetchVendors();
@@ -61,7 +82,7 @@ function AdminVendorsContent() {
       window.removeEventListener("focus", fetchVendors);
       document.removeEventListener("visibilitychange", handleVisibility);
     };
-  }, []);
+  }, [fetchVendors]);
 
   const updateStatus = async (id, status) => {
     const confirmAction = confirm(
@@ -70,13 +91,27 @@ function AdminVendorsContent() {
     if (!confirmAction) return;
 
     try {
+      const adminToken = getAdminToken();
+
+      if (!adminToken) {
+        clearAdminSession();
+        router.replace("/admin/login");
+        return;
+      }
+
       const res = await fetch(`${API}/api/vendor/status/${id}`, {
         method: "PUT",
-        headers: {
+        headers: getAdminAuthHeaders({
           "Content-Type": "application/json",
-        },
+        }),
         body: JSON.stringify({ status }),
       });
+
+      if (res.status === 401 || res.status === 403) {
+        clearAdminSession();
+        router.replace("/admin/login");
+        return;
+      }
 
       if (!res.ok) {
         throw new Error("Failed to update status");
@@ -94,11 +129,27 @@ function AdminVendorsContent() {
 
     try {
       setIsDeleting(true);
+      const adminToken = getAdminToken();
+
+      if (!adminToken) {
+        clearAdminSession();
+        router.replace("/admin/login");
+        return;
+      }
 
       const res = await fetch(
         `${API}/api/admin/vendors/${deleteVendorId}`,
-        { method: "DELETE" }
+        {
+          method: "DELETE",
+          headers: getAdminAuthHeaders(),
+        }
       );
+
+      if (res.status === 401 || res.status === 403) {
+        clearAdminSession();
+        router.replace("/admin/login");
+        return;
+      }
 
       const data = await res.json();
 

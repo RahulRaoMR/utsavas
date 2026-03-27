@@ -490,6 +490,321 @@
   color: #fff;
 }
 
+.analyticsSection {
+  margin-top: 28px;
+  background: linear-gradient(180deg, rgba(251, 245, 234, 0.92), #fffdf9);
+  border-radius: 24px;
+  padding: 28px;
+  box-shadow: 0 18px 36px rgba(29, 74, 138, 0.08);
+}
+
+.analyticsHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.analyticsHeaderActions {
+  display: flex;
+  gap: 14px;
+  align-items: flex-end;
+}
+
+.analyticsEyebrow {
+  margin: 0 0 8px;
+  color: #5f97d6;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.analyticsHeadline {
+  margin: 0;
+  color: #183b63;
+  font-size: 24px;
+}
+
+.analyticsCopy {
+  margin: 10px 0 0;
+  max-width: 640px;
+  color: #5b6574;
+  line-height: 1.5;
+}
+
+.analyticsMonthBadge {
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: rgba(74, 121, 190, 0.12);
+  color: #183b63;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.analyticsFilterField {
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #183b63;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.analyticsFilterSelect {
+  width: 100%;
+  min-height: 44px;
+  border-radius: 14px;
+  border: 1px solid rgba(63, 111, 182, 0.24);
+  background: #fffdf8;
+  color: #183b63;
+  padding: 10px 12px;
+  font-size: 14px;
+  box-shadow: 0 8px 18px rgba(29, 74, 138, 0.06);
+}
+
+.analyticsFilterSelect:focus {
+  outline: none;
+  border-color: #3f6fb6;
+  box-shadow: 0 0 0 4px rgba(63, 111, 182, 0.12);
+}
+
+.analyticsStatsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.analyticsStatCard {
+  padding: 18px 20px;
+  border-radius: 18px;
+  background: #fff;
+  border: 1px solid rgba(95, 151, 214, 0.16);
+  box-shadow: 0 10px 24px rgba(29, 74, 138, 0.06);
+}
+
+.analyticsStatCard span {
+  display: block;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.analyticsStatCard strong {
+  display: block;
+  margin-top: 10px;
+  color: #183b63;
+  font-size: 28px;
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+.analyticsLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(300px, 0.9fr);
+  gap: 22px;
+}
+
+.analyticsChartCard,
+.analyticsHallCard {
+  background: #fff;
+  border-radius: 22px;
+  padding: 22px;
+  border: 1px solid rgba(95, 151, 214, 0.16);
+  box-shadow: 0 12px 24px rgba(29, 74, 138, 0.06);
+}
+
+.analyticsChartHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+.analyticsChartHeader h4 {
+  margin: 0;
+  color: #183b63;
+  font-size: 18px;
+}
+
+.analyticsChartHeader p {
+  margin: 8px 0 0;
+  color: #6b7280;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.analyticsLegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.analyticsLegend span {
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.analyticsLegendViews {
+  background: rgba(74, 121, 190, 0.14);
+  color: #31588f;
+}
+
+.analyticsLegendPhone {
+  background: rgba(213, 111, 95, 0.14);
+  color: #9a4739;
+}
+
+.analyticsChart {
+  width: 100%;
+  height: 280px;
+  overflow: visible;
+}
+
+.analyticsGridLine {
+  stroke: rgba(24, 59, 99, 0.12);
+  stroke-width: 1;
+  stroke-dasharray: 6 8;
+}
+
+.analyticsHallViewsLine {
+  stroke: #4a79be;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.analyticsPhoneViewsLine {
+  stroke: #d56f5f;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.analyticsHallViewsPoint {
+  fill: #4a79be;
+}
+
+.analyticsPhoneViewsPoint {
+  fill: #d56f5f;
+}
+
+.analyticsChartLabels {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(52px, 1fr));
+  gap: 6px;
+  color: #6b7280;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.analyticsHallList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.analyticsHallRow {
+  padding: 16px;
+  border-radius: 18px;
+  background: #fbf8f1;
+  border: 1px solid rgba(95, 151, 214, 0.12);
+}
+
+.analyticsHallTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.analyticsHallTop strong {
+  display: block;
+  color: #183b63;
+  font-size: 15px;
+}
+
+.analyticsHallTop span {
+  display: block;
+  margin-top: 4px;
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.analyticsHallTop b {
+  color: #183b63;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.analyticsBarGroup {
+  display: grid;
+  gap: 12px;
+}
+
+.analyticsBarGroup label {
+  display: block;
+  margin-bottom: 6px;
+  color: #46566c;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.analyticsBarTrack {
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(24, 59, 99, 0.08);
+}
+
+.analyticsBarViews,
+.analyticsBarPhone {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+}
+
+.analyticsBarViews {
+  background: linear-gradient(90deg, #5f97d6, #3f6fb6);
+}
+
+.analyticsBarPhone {
+  background: linear-gradient(90deg, #efc2ba, #d56f5f);
+}
+
+.analyticsBarGroup small {
+  display: inline-block;
+  margin-top: 6px;
+  color: #183b63;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.analyticsEmpty {
+  margin: 0;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+.analyticsNote {
+  margin: 18px 0 0;
+  color: #6b7280;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
 @media (max-width: 768px) {
   .header {
     gap: 12px;
@@ -508,7 +823,40 @@
     margin-right: 20px;
   }
 
+  .analyticsSection {
+    padding: 20px;
+  }
+
   .calendarControls {
     grid-template-columns: 1fr;
+  }
+
+  .analyticsHeader,
+  .analyticsChartHeader,
+  .analyticsHallTop {
+    flex-direction: column;
+  }
+
+  .analyticsHeaderActions {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .analyticsFilterField {
+    min-width: 0;
+  }
+
+  .analyticsLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .analyticsChart {
+    height: 220px;
+  }
+
+  .analyticsChartLabels {
+    grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+    font-size: 10px;
   }
 }

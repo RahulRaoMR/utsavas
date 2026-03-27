@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import FiltersSidebar from "./FiltersSidebar";
 import { getApiBaseUrl } from "../../lib/api";
+import { trackHallView } from "../../lib/hallAnalytics";
 import { toAbsoluteImageUrl } from "../../lib/imageUrl";
 import {
   getVenueRoute,
@@ -15,7 +16,6 @@ const normalize = (value) => String(value || "").trim().toLowerCase();
 export default function VenueCategoryPage({
   routePath,
   title,
-  section,
   categoryValue,
 }) {
   const router = useRouter();
@@ -96,6 +96,12 @@ export default function VenueCategoryPage({
       (hall) => normalizeVenueCategory(hall.category) === categoryValue
     );
   }, [baseFilteredHalls, categoryValue]);
+
+  const openHallDetails = async (hall) => {
+    const hallRoute = `${getVenueRoute(hall.category)}/${hall._id}`;
+    await trackHallView(hall._id);
+    router.push(hallRoute);
+  };
 
   return (
     <div className="wedding-page">
@@ -180,7 +186,9 @@ export default function VenueCategoryPage({
               <div
                 key={hall._id}
                 className="hall-card"
-                onClick={() => router.push(`${getVenueRoute(hall.category)}/${hall._id}`)}
+                onClick={() => {
+                  void openHallDetails(hall);
+                }}
               >
                 <img
                   src={
