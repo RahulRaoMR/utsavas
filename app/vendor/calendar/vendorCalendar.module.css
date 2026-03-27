@@ -78,6 +78,38 @@
   margin-bottom: 20px;
 }
 
+.controls {
+  display: grid;
+  grid-template-columns: minmax(220px, 320px);
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #30402f;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.select {
+  min-height: 44px;
+  border-radius: 12px;
+  border: 1px solid rgba(120, 143, 115, 0.24);
+  background: #fffdf8;
+  color: #30402f;
+  padding: 10px 12px;
+  font-size: 14px;
+}
+
+.helper {
+  margin: 0 0 20px;
+  color: #6c6c6c;
+  font-size: 13px;
+}
+
 .monthBar h2 {
   color: #30402f;
 }
@@ -103,9 +135,19 @@
   height: 90px;
   border-radius: 14px;
   padding: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
   box-shadow: 0 4px 10px rgba(48, 64, 47, 0.08);
   font-weight: 600;
   color: #333;
+}
+
+.dayStatus {
+  font-size: 11px;
+  font-weight: 700;
 }
 
 .pending {
@@ -118,9 +160,10 @@
   border: 2px solid #28a745;
 }
 
-.rejected {
-  background: #f8d7da;
-  border: 2px solid #dc3545;
+.offline {
+  background: #d4edda;
+  border: 2px solid #28a745;
+  color: #155724;
 }
 
 .legend {
@@ -146,9 +189,9 @@
   color: #155724;
 }
 
-.legendRejected {
-  background: #f8d7da;
-  color: #721c24;
+.legendOffline {
+  background: #d4edda;
+  color: #155724;
 }
 
 @media (max-width: 640px) {
@@ -162,5 +205,9 @@
 
   .title {
     font-size: 26px;
+  }
+
+  .controls {
+    grid-template-columns: 1fr;
   }
 }

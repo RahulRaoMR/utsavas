@@ -11,6 +11,31 @@ const API =
   "https://utsavas-backend-1.onrender.com";
 const BOOKING_DRAFT_STORAGE_KEY = "utsavas-booking-draft";
 
+const toDayStart = (value) => {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  date.setHours(0, 0, 0, 0);
+  return date;
+};
+
+const toDayEnd = (value) => {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  date.setHours(23, 59, 59, 999);
+  return date;
+};
+
+const rangesOverlap = (startA, endA, startB, endB) =>
+  startA <= endB && endA >= startB;
+
 export default function BookingPage() {
   const { hallId } = useParams();
   const router = useRouter();
@@ -18,14 +43,11 @@ export default function BookingPage() {
   const [hall, setHall] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isAuthorized, setIsAuthorized] = useState(null);
-
-  /* ⭐ AIRBNB RANGE STATE */
   const [dateRange, setDateRange] = useState([null, null]);
   const [checkInDate, checkOutDate] = dateRange;
-
-  /* 🔥 separate by status */
   const [approvedRanges, setApprovedRanges] = useState([]);
   const [pendingRanges, setPendingRanges] = useState([]);
+  const [offlineRanges, setOfflineRanges] = useState([]);
 
   const [form, setForm] = useState({
     checkIn: "",
@@ -56,17 +78,12 @@ export default function BookingPage() {
     setIsAuthorized(true);
   }, [hallId, router]);
 
-  /* =========================
-     FETCH HALL DETAILS
-  ========================= */
   useEffect(() => {
     if (!hallId || isAuthorized !== true) return;
 
     const fetchHall = async () => {
       try {
-        const res = await fetch(
-          `${API}/api/halls/${hallId}`
-        );
+        const res = await fetch(`${API}/api/halls/${hallId}`);
         if (!res.ok) throw new Error("Failed to fetch hall");
         const data = await res.json();
         setHall(data);
@@ -78,29 +95,27 @@ export default function BookingPage() {
     fetchHall();
   }, [hallId, isAuthorized]);
 
-  /* =========================
-     FETCH BOOKED DATES
-  ========================= */
   useEffect(() => {
     if (!hallId || isAuthorized !== true) return;
 
     const fetchBookedDates = async () => {
       try {
-        const res = await fetch(
-          `${API}/api/bookings/hall/${hallId}`
-        );
+        const res = await fetch(`${API}/api/bookings/hall/${hallId}`);
         const data = await res.json();
 
         const approved = [];
         const pending = [];
+        const offline = [];
 
-        data.forEach((b) => {
-          if (b.status === "approved") approved.push(b);
-          if (b.status === "pending") pending.push(b);
+        data.forEach((booking) => {
+          if (booking.status === "approved") approved.push(booking);
+          if (booking.status === "pending") pending.push(booking);
+          if (booking.status === "offline") offline.push(booking);
         });
 
         setApprovedRanges(approved);
         setPendingRanges(pending);
+        setOfflineRanges(offline);
       } catch (error) {
         console.error("Error fetching booked dates:", error);
       }
@@ -109,9 +124,6 @@ export default function BookingPage() {
     fetchBookedDates();
   }, [hallId, isAuthorized]);
 
-  /* ===================================
-     🔄 CALENDAR → INPUT SYNC
-  =================================== */
   useEffect(() => {
     if (checkInDate) {
       const inDate = checkInDate.toISOString().split("T")[0];
@@ -124,42 +136,45 @@ export default function BookingPage() {
     }
   }, [checkInDate, checkOutDate]);
 
-  /* =========================
-     HELPERS
-  ========================= */
+  const isDateWithinRanges = (date, ranges) => {
+    const selected = toDayStart(date);
 
-  const isDateApproved = (date) => {
-    return approvedRanges.some((b) => {
-      const checkIn = new Date(b.checkIn);
-      const checkOut = new Date(b.checkOut);
-      const selected = new Date(date);
-      return selected >= checkIn && selected <= checkOut;
+    return ranges.some((range) => {
+      const checkIn = toDayStart(range.checkIn);
+      const checkOut = toDayEnd(range.checkOut);
+
+      return selected && checkIn && checkOut && selected >= checkIn && selected <= checkOut;
     });
   };
 
-  const isDatePending = (date) => {
-    return pendingRanges.some((b) => {
-      const checkIn = new Date(b.checkIn);
-      const checkOut = new Date(b.checkOut);
-      const selected = new Date(date);
-      return selected >= checkIn && selected <= checkOut;
+  const isDateApproved = (date) => isDateWithinRanges(date, approvedRanges);
+  const isDatePending = (date) => isDateWithinRanges(date, pendingRanges);
+  const isDateOffline = (date) => isDateWithinRanges(date, offlineRanges);
+
+  const rangeOverlapsAny = (startDate, endDate, ranges) => {
+    return ranges.some((range) => {
+      const rangeStart = toDayStart(range.checkIn);
+      const rangeEnd = toDayEnd(range.checkOut);
+
+      return (
+        rangeStart &&
+        rangeEnd &&
+        rangesOverlap(startDate, endDate, rangeStart, rangeEnd)
+      );
     });
   };
 
-  /* 🎨 calendar coloring */
   const getTileClassName = ({ date }) => {
-    const d = date.toISOString().split("T")[0];
+    const dateKey = date.toISOString().split("T")[0];
 
-    if (isDateApproved(d)) return styles.booked;
-    if (isDatePending(d)) return styles.pending;
+    if (isDateOffline(dateKey)) return styles.booked;
+    if (isDateApproved(dateKey)) return styles.booked;
+    if (isDatePending(dateKey)) return styles.pending;
     return styles.available;
   };
 
-  /* =========================
-     INPUT → CALENDAR SYNC
-  ========================= */
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  const handleChange = (event) => {
+    const { name, value } = event.target;
 
     setForm((prev) => ({
       ...prev,
@@ -167,34 +182,36 @@ export default function BookingPage() {
     }));
 
     if (name === "checkIn") {
-      setDateRange([
-        value ? new Date(value) : null,
-        checkOutDate,
-      ]);
+      setDateRange([value ? new Date(value) : null, checkOutDate]);
     }
 
     if (name === "checkOut") {
-      setDateRange([
-        checkInDate,
-        value ? new Date(value) : null,
-      ]);
+      setDateRange([checkInDate, value ? new Date(value) : null]);
     }
   };
 
-  /* =========================
-     SUBMIT BOOKING
-  ========================= */
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
-    if (isDateApproved(form.checkIn) || isDateApproved(form.checkOut)) {
-      alert("❌ These dates are already fully booked.");
+    const rangeStart = toDayStart(form.checkIn);
+    const rangeEnd = toDayEnd(form.checkOut);
+
+    if (!rangeStart || !rangeEnd || rangeStart > rangeEnd) {
+      alert("Please choose a valid date range.");
       return;
     }
 
-    if (isDatePending(form.checkIn) || isDatePending(form.checkOut)) {
+    if (
+      rangeOverlapsAny(rangeStart, rangeEnd, approvedRanges) ||
+      rangeOverlapsAny(rangeStart, rangeEnd, offlineRanges)
+    ) {
+      alert("These dates are already fully booked.");
+      return;
+    }
+
+    if (rangeOverlapsAny(rangeStart, rangeEnd, pendingRanges)) {
       const proceed = confirm(
-        "⚠️ These dates have pending requests. Continue?"
+        "These dates already have pending requests. Continue?"
       );
       if (!proceed) return;
     }
@@ -234,7 +251,7 @@ export default function BookingPage() {
       }
 
       router.push(`/booking/${hallId}/summary`);
-    } catch (error) {
+    } catch {
       alert("Server error. Try again later.");
     } finally {
       setLoading(false);
@@ -251,23 +268,22 @@ export default function BookingPage() {
 
   return (
     <div className={styles.container}>
-      {/* HEADER */}
       <div className={styles.header}>
         <h1>{hall.hallName}</h1>
       </div>
 
-      {/* ⭐ AIRBNB RANGE CALENDAR */}
       <div className={styles.calendarBox}>
         <div className={styles.calendarHeader}>
           <span className={styles.calendarBadge} aria-hidden="true">
             <span className={styles.calendarRingLeft}></span>
             <span className={styles.calendarRingRight}></span>
-            <span className={styles.calendarStar}>★</span>
+            <span className={styles.calendarStar}>*</span>
           </span>
           <div>
             <h3>Availability Calendar</h3>
             <p className={styles.calendarSubtext}>
-              Select your event dates from the live venue calendar.
+              Select your event dates from the live venue calendar. Red dates are
+              unavailable, and gold dates have pending requests.
             </p>
           </div>
         </div>
@@ -278,28 +294,20 @@ export default function BookingPage() {
           value={dateRange}
           tileClassName={getTileClassName}
           tileDisabled={({ date }) => {
-            const d = date.toISOString().split("T")[0];
-            return isDateApproved(d);
+            const dateKey = date.toISOString().split("T")[0];
+            return isDateApproved(dateKey) || isDateOffline(dateKey);
           }}
         />
 
-        {/* ⭐ nights counter */}
-        {checkInDate && checkOutDate && (
+        {checkInDate && checkOutDate ? (
           <p className={styles.nightsText}>
-            {Math.ceil(
-              (checkOutDate - checkInDate) /
-                (1000 * 60 * 60 * 24)
-            )}{" "}
-            nights selected
+            {Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24))} nights
+            selected
           </p>
-        )}
+        ) : null}
       </div>
 
-      {/* BOOKING FORM */}
-      <form
-        className={`${styles.card} ${styles.form}`}
-        onSubmit={handleSubmit}
-      >
+      <form className={`${styles.card} ${styles.form}`} onSubmit={handleSubmit}>
         <h2>Select Your Dates</h2>
 
         <label>

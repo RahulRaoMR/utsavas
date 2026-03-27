@@ -189,6 +189,88 @@
   margin-bottom: 20px;
 }
 
+.calendarControls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.calendarField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #183b63;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.calendarSelect,
+.calendarInput {
+  width: 100%;
+  min-height: 44px;
+  border-radius: 12px;
+  border: 1px solid rgba(63, 111, 182, 0.24);
+  background: #fffdf8;
+  color: #183b63;
+  padding: 10px 12px;
+  font-size: 14px;
+}
+
+.calendarSelect:focus,
+.calendarInput:focus {
+  outline: none;
+  border-color: #3f6fb6;
+  box-shadow: 0 0 0 4px rgba(63, 111, 182, 0.12);
+}
+
+.blockButton,
+.clearButton {
+  min-height: 44px;
+  border: none;
+  border-radius: 12px;
+  padding: 0 16px;
+  font-weight: 700;
+  cursor: pointer;
+  align-self: end;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.blockButton {
+  background: #d56f5f;
+  color: #fff;
+}
+
+.clearButton {
+  background: #eef3fb;
+  color: #183b63;
+}
+
+.blockButton:hover,
+.clearButton:hover {
+  transform: translateY(-1px);
+}
+
+.blockButton:disabled,
+.clearButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+}
+
+.calendarHelper {
+  margin: 0 0 8px;
+  color: #6c6c6c;
+  font-size: 13px;
+}
+
+.selectionSummary {
+  margin: 0 0 18px;
+  color: #d56f5f;
+  font-size: 14px;
+  font-weight: 700;
+}
+
 .monthBar {
   display: flex;
   justify-content: center;
@@ -217,12 +299,33 @@
 .day {
   height: 80px;
   background: #f8f1e5;
+  border: none;
   border-radius: 12px;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 4px;
   font-weight: 600;
   color: #333;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+}
+
+.day:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(29, 74, 138, 0.12);
+}
+
+.dayStatus {
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.dayDraft {
+  background: rgba(213, 111, 95, 0.14);
+  color: #8b3123;
 }
 
 .pending {
@@ -235,10 +338,38 @@
   color: #155724;
 }
 
+.offline {
+  background: #d4edda;
+  color: #155724;
+}
+
 .legend {
   margin-top: 20px;
   display: flex;
+  flex-wrap: wrap;
   gap: 20px;
+}
+
+.legend span {
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.legendPending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.legendApproved {
+  background: #d4edda;
+  color: #155724;
+}
+
+.legendOffline {
+  background: #d4edda;
+  color: #155724;
 }
 
 .modalOverlay {
@@ -275,8 +406,14 @@
   color: #183b63;
 }
 
-.closeBtn {
+.modalActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
   margin-top: 20px;
+}
+
+.closeBtn {
   background: #3f6fb6;
   color: #fff;
   border: none;
@@ -288,6 +425,25 @@
 
 .closeBtn:hover {
   background: #274f8f;
+}
+
+.deleteOfflineBtn {
+  background: #d56f5f;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.deleteOfflineBtn:hover {
+  background: #b75143;
+}
+
+.deleteOfflineBtn:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
 }
 
 .revenueSection {
@@ -344,5 +500,15 @@
   .backButton,
   .logoutBtn {
     align-self: flex-end;
+  }
+
+  .calendarSection,
+  .revenueSection {
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+
+  .calendarControls {
+    grid-template-columns: 1fr;
   }
 }
