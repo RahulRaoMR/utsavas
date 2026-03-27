@@ -99,13 +99,11 @@ export default function VendorBookingsPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data?.email?.error || data?.message || "Failed to update status");
+        alert(data?.message || "Failed to update status");
         return;
       }
 
-      if (data?.email?.error) {
-        alert(`${data.message}\n\n${data.email.error}`);
-      } else if (data?.message) {
+      if (data?.message) {
         alert(data.message);
       }
 
