@@ -25,6 +25,30 @@ function PaymentPageContent() {
   const [scriptReady, setScriptReady] = useState(false);
   const [razorpayKeyId, setRazorpayKeyId] = useState("");
 
+  const getAuthToken = () =>
+    typeof window !== "undefined" ? localStorage.getItem("token") || "" : "";
+
+  const getRedirectPath = () => {
+    if (typeof window === "undefined") {
+      return "/my-bookings";
+    }
+
+    return `${window.location.pathname}${window.location.search}`;
+  };
+
+  const redirectToLogin = () => {
+    router.replace(`/login?redirect=${encodeURIComponent(getRedirectPath())}`);
+  };
+
+  const getAuthHeaders = () => {
+    const token = getAuthToken();
+
+    return {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
+  };
+
   useEffect(() => {
     let mounted = true;
     const existingScript = document.querySelector(
@@ -82,20 +106,43 @@ function PaymentPageContent() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!getAuthToken()) {
+      const redirectPath =
+        typeof window !== "undefined"
+          ? `${window.location.pathname}${window.location.search}`
+          : "/my-bookings";
+
+      router.replace(`/login?redirect=${encodeURIComponent(redirectPath)}`);
+    }
+  }, [router]);
+
   const updateBookingPayment = async (payload) => {
     if (!bookingId) {
+      return false;
+    }
+
+    const token = getAuthToken();
+
+    if (!token) {
+      redirectToLogin();
       return false;
     }
 
     try {
       const res = await fetch(`${API}/api/bookings/${bookingId}/payment`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: getAuthHeaders(),
         body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
+
+        if (res.status === 401) {
+          redirectToLogin();
+        }
+
         console.warn(
           "Booking payment update endpoint unavailable",
           data.message || res.status
@@ -111,6 +158,11 @@ function PaymentPageContent() {
   };
 
   const handlePayAtVenue = async () => {
+    if (!getAuthToken()) {
+      redirectToLogin();
+      return;
+    }
+
     await updateBookingPayment({
       paymentMethod: "pay_at_venue",
       paymentStatus: "pending",
@@ -127,6 +179,11 @@ function PaymentPageContent() {
       return;
     }
 
+    if (!getAuthToken()) {
+      redirectToLogin();
+      return;
+    }
+
     if (!scriptReady || !window.Razorpay) {
       alert("Payment gateway is still loading. Please try again in a moment.");
       return;
@@ -139,7 +196,7 @@ function PaymentPageContent() {
 
     const orderRes = await fetch(`${API}/api/payment/create-order`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: getAuthHeaders(),
       body: JSON.stringify({
         amount: quotedAmount,
         bookingId,
@@ -147,6 +204,11 @@ function PaymentPageContent() {
     });
 
     const order = await orderRes.json().catch(() => ({}));
+
+    if (orderRes.status === 401) {
+      redirectToLogin();
+      throw new Error("Please log in again to continue payment.");
+    }
 
     if (!orderRes.ok || !order?.id) {
       throw new Error(order.message || "Failed to create payment order");
@@ -179,7 +241,7 @@ function PaymentPageContent() {
         try {
           const verifyRes = await fetch(`${API}/api/payment/verify`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: getAuthHeaders(),
             body: JSON.stringify({
               bookingId,
               amount: quotedAmount,
@@ -188,6 +250,11 @@ function PaymentPageContent() {
           });
 
           const verifyData = await verifyRes.json().catch(() => ({}));
+
+          if (verifyRes.status === 401) {
+            redirectToLogin();
+            throw new Error("Please log in again to verify your payment.");
+          }
 
           if (!verifyRes.ok) {
             const fallbackUpdated = await updateBookingPayment({
