@@ -48,10 +48,10 @@ export default function VendorPlansInfo({
           value.
         </p>
         <p>
-          Search priority on the user side follows the paid plan: Premium /
-          Exclusive Listing halls appear first in matching city or PIN code
-          results, followed by Featured Listing halls and then Basic Listing
-          halls.
+          Search priority on the user side follows the paid plan: Digital
+          Presence Plan halls appear first in matching city or PIN code
+          results, followed by Premium / Exclusive Listing, Featured Listing,
+          and then Basic Listing halls.
         </p>
       </div>
     </section>

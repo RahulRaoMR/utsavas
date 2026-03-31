@@ -312,9 +312,10 @@ function RegisterPageContent() {
                         textAlign: "center",
                         fontSize: "22px",
                         borderRadius: "12px",
-                        border: "2px solid #6b1d2b",
+                        border: "2px solid #e3ebf7",
                         outline: "none",
-                        background: "#860b19",
+                        background: "#ffffff",
+                        color: "#30402f",
                         fontWeight: "600",
                       }}
                     />

@@ -1,10 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import styles from "./SearchBar.module.css";
-import { karnatakaDistricts } from "./karnatakaDistricts";
-import { karnatakaTaluksAndTowns } from "./karnatakaTaluksAndTowns";
+import { karnatakaSearchCities } from "./karnatakaSearchCities";
 import { DEFAULT_VENUE_ROUTE, VENUE_TYPE_OPTIONS } from "../../lib/venueCategories";
 
 export default function SearchBar() {
@@ -16,13 +15,33 @@ export default function SearchBar() {
     type: "",
   });
 
+  const availableLocations = useMemo(() => {
+    const selectedCity = karnatakaSearchCities.find(
+      (option) => option.value === filters.city
+    );
+
+    return selectedCity?.locations || [];
+  }, [filters.city]);
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    setFilters((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
+    const { name, value } = e.target;
+
+    setFilters((prev) => {
+      if (name === "city") {
+        return {
+          ...prev,
+          city: value,
+          location: "",
+        };
+      }
+
+      return {
+        ...prev,
+        [name]: value,
+      };
+    });
   };
 
   const handleSearch = () => {
@@ -59,9 +78,9 @@ export default function SearchBar() {
             onChange={handleChange}
           >
             <option value="">City</option>
-            {karnatakaDistricts.map((district) => (
-              <option key={district} value={district}>
-                {district}
+            {karnatakaSearchCities.map((cityOption) => (
+              <option key={cityOption.value} value={cityOption.value}>
+                {cityOption.label}
               </option>
             ))}
           </select>
@@ -74,9 +93,12 @@ export default function SearchBar() {
             className={styles.input}
             value={filters.location}
             onChange={handleChange}
+            disabled={!filters.city}
           >
-            <option value="">Select Location</option>
-            {karnatakaTaluksAndTowns.map((place) => (
+            <option value="">
+              {filters.city ? "Select Nearby Location" : "Select City First"}
+            </option>
+            {availableLocations.map((place) => (
               <option key={place} value={place}>
                 {place}
               </option>

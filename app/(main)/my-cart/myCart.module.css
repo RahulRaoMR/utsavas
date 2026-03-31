@@ -1,0 +1,624 @@
+.page {
+  max-width: 1120px;
+  margin: 0 auto 48px;
+  padding: max(calc(var(--top-nav-offset, 0px) + 20px), 170px) 16px 0;
+  display: grid;
+  gap: 18px;
+}
+
+.hero,
+.panel,
+.compareDock,
+.comparePanel {
+  background: #fff9f2;
+  border: 1px solid #eadfcf;
+  border-radius: 20px;
+}
+
+.hero,
+.panel,
+.compareDock,
+.comparePanel {
+  padding: 20px;
+}
+
+.hero h1,
+.compareDock h2,
+.comparePanel h2 {
+  margin: 0 0 12px;
+  color: #183b63;
+}
+
+.hero p,
+.infoText,
+.emptyState p,
+.compareEmptyState p,
+.compareCardLocation,
+.compareNotice,
+.compareLoading,
+.compareError {
+  margin: 0;
+  color: #5e5551;
+  line-height: 1.7;
+}
+
+.compareEyebrow {
+  margin: 0 0 10px;
+  color: #9c6b42;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.compareDock {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  background:
+    radial-gradient(circle at top left, rgba(63, 111, 182, 0.08), transparent 40%),
+    linear-gradient(135deg, #fffdf8 0%, #fff3e6 100%);
+}
+
+.compareDockActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.compareCount {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid #e7d5c8;
+  color: #6b1d2b;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.compareButton,
+.compareGhostButton,
+.compareToggleButton,
+.compareToggleActive,
+.compareCardRemove {
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.compareButton,
+.compareGhostButton {
+  min-width: 144px;
+  padding: 12px 18px;
+}
+
+.compareButton {
+  border: 1px solid #3f6fb6;
+  background: linear-gradient(135deg, #4e77bf 0%, #315e9e 100%);
+  color: #ffffff;
+  box-shadow: 0 14px 26px rgba(49, 94, 158, 0.18);
+}
+
+.compareGhostButton {
+  border: 1px solid #e5d0ca;
+  background: #ffffff;
+  color: #6b1d2b;
+}
+
+.compareButton:hover,
+.compareGhostButton:hover,
+.compareToggleButton:hover,
+.compareToggleActive:hover,
+.compareCardRemove:hover {
+  transform: translateY(-1px);
+}
+
+.compareNotice,
+.compareError {
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+
+.compareNotice {
+  background: #fff7eb;
+  border: 1px solid #ecd5b2;
+  color: #855f21;
+}
+
+.comparePanel {
+  display: grid;
+  gap: 18px;
+  background:
+    radial-gradient(circle at top right, rgba(107, 29, 43, 0.05), transparent 35%),
+    linear-gradient(180deg, #fff9f2 0%, #fffdf9 100%);
+}
+
+.comparePanelHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.compareToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  align-self: center;
+  padding: 12px 14px;
+  border-radius: 999px;
+  border: 1px solid #ecd8cf;
+  background: #ffffff;
+  color: #5e5551;
+  font-weight: 700;
+}
+
+.compareToggle input {
+  accent-color: #6b1d2b;
+}
+
+.compareEmptyState {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+  background: #ffffff;
+  border: 1px dashed #d8c6b5;
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.compareEmptyState h3 {
+  margin: 0;
+  color: #6b1d2b;
+}
+
+.compareCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.compareCard {
+  overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid #ecdfd7;
+  background: #ffffff;
+  box-shadow: 0 18px 30px rgba(24, 59, 99, 0.08);
+}
+
+.compareCardImageWrap {
+  min-height: 180px;
+  background: #f4ecdf;
+}
+
+.compareCardImage,
+.compareCardFallback {
+  width: 100%;
+  height: 100%;
+  min-height: 180px;
+}
+
+.compareCardImage {
+  display: block;
+  object-fit: cover;
+}
+
+.compareCardFallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #7f6d62;
+  font-weight: 700;
+}
+
+.compareCardBody {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+}
+
+.compareBadgeRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.compareBadge,
+.compareBadgeMuted {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+}
+
+.compareBadgeBest {
+  background: #fff0f2;
+  color: #9d2746;
+}
+
+.compareBadgeBudget {
+  background: #edf6ff;
+  color: #2d5d9b;
+}
+
+.compareBadgeCapacity {
+  background: #f4f2ff;
+  color: #5e4ea7;
+}
+
+.compareBadgeFeature {
+  background: #edf9f0;
+  color: #24734b;
+}
+
+.compareBadgeMuted {
+  background: #f7f2eb;
+  color: #8a6a5d;
+}
+
+.compareCardBody h3 {
+  margin: 0;
+  color: #183b63;
+}
+
+.compareCardPrice {
+  margin: 0;
+  color: #3f6fb6;
+  font-weight: 700;
+}
+
+.compareCardActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.compareCardLink,
+.compareCardRemove {
+  min-width: 124px;
+  padding: 10px 14px;
+  text-align: center;
+}
+
+.compareCardLink {
+  text-decoration: none;
+  border-radius: 12px;
+  border: 1px solid #cadef8;
+  background: #ffffff;
+  color: #183b63;
+  font-weight: 700;
+}
+
+.compareCardRemove {
+  border: 1px solid #efc3c3;
+  background: #fff4f4;
+  color: #b12626;
+}
+
+.compareLoading {
+  font-weight: 600;
+}
+
+.compareTableEmpty {
+  margin: 0;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #f8f4ff;
+  border: 1px solid #ddd2f3;
+  color: #5d4e92;
+  line-height: 1.7;
+}
+
+.compareError {
+  background: #fff2f2;
+  border: 1px solid #e9c1c1;
+  color: #9e3c3c;
+}
+
+.comparisonTableWrap {
+  overflow-x: auto;
+  border-radius: 18px;
+  border: 1px solid #ebdfd8;
+  background: #ffffff;
+}
+
+.comparisonTable {
+  width: 100%;
+  min-width: 700px;
+  border-collapse: collapse;
+}
+
+.comparisonTable thead th {
+  padding: 16px;
+  background: #17365d;
+  color: #ffffff;
+  text-align: left;
+  font-size: 14px;
+}
+
+.comparisonTable thead th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  min-width: 190px;
+}
+
+.comparisonTable tbody th,
+.comparisonTable tbody td {
+  padding: 14px 16px;
+  border-top: 1px solid #f0e2db;
+  text-align: left;
+  background: #ffffff;
+}
+
+.comparisonTable tbody th {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  min-width: 190px;
+  color: #6b1d2b;
+  font-size: 14px;
+}
+
+.comparisonSectionRow th {
+  position: static;
+  background: #fbf3e8;
+  color: #9c6b42;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.comparisonDifferenceRow th,
+.comparisonDifferenceRow td {
+  background: #fffaf5;
+}
+
+.panel {
+  display: grid;
+  gap: 16px;
+}
+
+.emptyState {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+  background: #ffffff;
+  border: 1px dashed #d8c6b5;
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.emptyState h2 {
+  margin: 0;
+  color: #6b1d2b;
+}
+
+.emptyAction {
+  text-decoration: none;
+  padding: 12px 18px;
+  border-radius: 12px;
+  background: #3f6fb6;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.cartCard {
+  display: grid;
+  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+  gap: 18px;
+  background: #ffffff;
+  border: 1px solid #efdfd8;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.imageWrap {
+  min-height: 220px;
+  background: #f4ecdf;
+}
+
+.imageWrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.imageFallback {
+  width: 100%;
+  height: 100%;
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #7f6d62;
+  font-weight: 600;
+}
+
+.cardBody {
+  padding: 20px;
+  display: grid;
+  gap: 14px;
+}
+
+.cardTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.cardTopActions {
+  display: grid;
+  justify-items: end;
+  gap: 10px;
+}
+
+.category {
+  margin: 0 0 8px;
+  color: #8a6a5d;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.cardTop h2 {
+  margin: 0;
+  color: #183b63;
+}
+
+.price {
+  margin: 0;
+  color: #3f6fb6;
+  font-weight: 700;
+  text-align: right;
+}
+
+.compareToggleButton,
+.compareToggleActive {
+  min-width: 150px;
+  padding: 10px 14px;
+}
+
+.compareToggleButton {
+  border: 1px solid #c7dcf8;
+  background: #f8fbff;
+  color: #183b63;
+}
+
+.compareToggleActive {
+  border: 1px solid #e1c6c6;
+  background: #6b1d2b;
+  color: #ffffff;
+  box-shadow: 0 14px 24px rgba(107, 29, 43, 0.18);
+}
+
+.address {
+  margin: 0;
+  color: #5e5551;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+}
+
+.meta span {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #fbf5ea;
+  border: 1px solid #efdfd8;
+  color: #30402f;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.secondaryAction,
+.primaryAction,
+.removeAction {
+  min-width: 144px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+}
+
+.secondaryAction {
+  background: #ffffff;
+  color: #183b63;
+  border: 1px solid #c7dcf8;
+}
+
+.primaryAction {
+  background: #3f6fb6;
+  color: #ffffff;
+  border: 1px solid #3f6fb6;
+}
+
+.removeAction {
+  background: #fff4f4;
+  color: #b12626;
+  border: 1px solid #efc3c3;
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding-top: max(calc(var(--top-nav-offset, 0px) + 16px), 110px);
+  }
+
+  .compareDock,
+  .comparePanelHeader,
+  .cardTop {
+    flex-direction: column;
+  }
+
+  .compareDockActions,
+  .cardTopActions {
+    width: 100%;
+    justify-content: flex-start;
+    justify-items: start;
+  }
+
+  .compareToggle {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .comparisonTable {
+    min-width: 640px;
+  }
+
+  .cartCard {
+    grid-template-columns: 1fr;
+  }
+
+  .price {
+    text-align: left;
+  }
+
+  .actions,
+  .compareCardActions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .secondaryAction,
+  .primaryAction,
+  .removeAction,
+  .compareCardLink,
+  .compareCardRemove,
+  .compareButton,
+  .compareGhostButton,
+  .compareToggleButton,
+  .compareToggleActive {
+    width: 100%;
+  }
+}

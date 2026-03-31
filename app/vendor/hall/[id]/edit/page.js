@@ -4,12 +4,14 @@ import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import styles from "../editHall.module.css";
+import { getApiBaseUrl } from "../../../../../lib/api";
 import { toAbsoluteImageUrl } from "../../../../../lib/imageUrl";
 import {
   buildAddressQuery,
   buildAddressQueries,
   geocodeAddress,
   hasMinimumVenueAddress,
+  hasRequiredVenueAddress,
   INDIA_MAP_CENTER,
   isValidLocation,
   normalizeLocation,
@@ -20,14 +22,36 @@ import {
 } from "../../../../../lib/venueCategories";
 import { LISTING_PLANS } from "../../../../../lib/listingPlans";
 
-const API =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "https://utsavas-backend-1.onrender.com";
-
 const VenueLocationMap = dynamic(
   () => import("../../../../components/VenueLocationMap"),
   { ssr: false }
 );
+
+const getVendorSession = () => {
+  if (typeof window === "undefined") {
+    return {
+      token: "",
+      vendor: null,
+      vendorId: "",
+    };
+  }
+
+  const rawVendor = localStorage.getItem("vendor");
+  const vendor = rawVendor ? JSON.parse(rawVendor) : null;
+
+  return {
+    token: localStorage.getItem("vendorToken") || "",
+    vendor,
+    vendorId: vendor?._id || vendor?.id || "",
+  };
+};
+
+const getVendorHeaders = (token) =>
+  token
+    ? {
+        Authorization: `Bearer ${token}`,
+      }
+    : {};
 
 const DEFAULT_FORM = {
   hallName: "",
@@ -104,11 +128,13 @@ export default function VendorEditHallPage() {
 
   const addressQuery = buildAddressQuery(address);
   const hasMinimumAddress = hasMinimumVenueAddress(address);
+  const hasRequiredAddress = hasRequiredVenueAddress(address);
 
   useEffect(() => {
     async function loadHall() {
       try {
-        const res = await fetch(`${API}/api/halls/${id}`, {
+        const apiBaseUrl = getApiBaseUrl();
+        const res = await fetch(`${apiBaseUrl}/api/halls/${id}`, {
           cache: "no-store",
         });
         const hall = await res.json();
@@ -252,11 +278,10 @@ export default function VendorEditHallPage() {
     e.preventDefault();
 
     try {
-      const vendorData = localStorage.getItem("vendor");
-      const vendor = vendorData ? JSON.parse(vendorData) : null;
-      const vendorId = vendor?._id || vendor?.id;
+      const session = getVendorSession();
+      const vendorId = session.vendorId;
 
-      if (!vendorId) {
+      if (!vendorId || !session.token) {
         alert("Vendor session expired. Please login again.");
         router.replace("/vendor/vendor-login");
         return;
@@ -264,18 +289,19 @@ export default function VendorEditHallPage() {
 
       setSaving(true);
 
-      if (!hasMinimumAddress) {
-        throw new Error("Enter city, state, and at least one address detail like area, pincode, landmark, or hall name.");
+      if (!hasRequiredAddress) {
+        throw new Error("Enter Building or Hall Name, Area, City, State, and Pincode before saving.");
       }
 
       if (!isValidLocation(location) || confirmedAddressQuery !== addressQuery) {
         throw new Error("Set the exact venue location on the map before saving.");
       }
 
-      const res = await fetch(`${API}/api/halls/${id}?vendorId=${vendorId}`, {
+      const res = await fetch(`${getApiBaseUrl()}/api/halls/${id}?vendorId=${vendorId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          ...getVendorHeaders(session.token),
         },
         body: JSON.stringify({
           ...form,
@@ -294,6 +320,14 @@ export default function VendorEditHallPage() {
       });
 
       const data = await res.json().catch(() => ({}));
+
+      if (res.status === 401 || res.status === 403) {
+        alert(data.message || "Vendor session expired. Please login again.");
+        localStorage.removeItem("vendor");
+        localStorage.removeItem("vendorToken");
+        router.replace("/vendor/vendor-login");
+        return;
+      }
 
       if (!res.ok) {
         throw new Error(data.message || "Failed to update hall");
@@ -362,8 +396,8 @@ export default function VendorEditHallPage() {
           </select>
 
           <p className={styles.helperText}>
-            User-side city and PIN code results show Premium plans first, then
-            Featured, then Basic listings.
+            User-side city and PIN code results show Digital Presence plans
+            first, then Premium, Featured, and finally Basic listings.
           </p>
 
           <input
@@ -422,12 +456,12 @@ export default function VendorEditHallPage() {
             rows={5}
           />
 
-          <input name="flat" placeholder="Building / Hall Name" value={address.flat} onChange={handleAddressChange} />
+          <input name="flat" placeholder="Building / Hall Name" value={address.flat} onChange={handleAddressChange} required />
           <input name="floor" placeholder="Floor" value={address.floor} onChange={handleAddressChange} />
-          <input name="area" placeholder="Area / Locality" value={address.area} onChange={handleAddressChange} />
-          <input name="city" placeholder="City" value={address.city} onChange={handleAddressChange} />
-          <input name="state" placeholder="State" value={address.state} onChange={handleAddressChange} />
-          <input name="pincode" placeholder="Pincode" value={address.pincode} onChange={handleAddressChange} />
+          <input name="area" placeholder="Area / Locality" value={address.area} onChange={handleAddressChange} required />
+          <input name="city" placeholder="City" value={address.city} onChange={handleAddressChange} required />
+          <input name="state" placeholder="State" value={address.state} onChange={handleAddressChange} required />
+          <input name="pincode" placeholder="Pincode" value={address.pincode} onChange={handleAddressChange} required />
           <input name="landmark" placeholder="Landmark" value={address.landmark} onChange={handleAddressChange} />
 
           <div className={styles.mapBlock}>

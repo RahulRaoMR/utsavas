@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getApiBaseUrl } from "../../lib/api";
 import {
@@ -10,14 +10,53 @@ import {
 } from "../../lib/hallAnalytics";
 import { toAbsoluteImageUrl } from "../../lib/imageUrl";
 import { buildVenueMapUrls } from "../../lib/hallLocation";
+import { addHallToCart, isHallInCart } from "../../lib/cart";
+import chatStyles from "./VenueChat.module.css";
+
+const getChatSessionKey = (hallId) => `utsavas_hall_chat_${hallId}`;
+
+const parseStoredUser = () => {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  try {
+    return JSON.parse(localStorage.getItem("user") || "null");
+  } catch {
+    return null;
+  }
+};
+
+const getStoredUserToken = () => {
+  if (typeof window === "undefined") {
+    return "";
+  }
+
+  return localStorage.getItem("token") || "";
+};
 
 export default function VenueDetailPage() {
   const { id } = useParams();
   const router = useRouter();
+  const chatBottomRef = useRef(null);
 
   const [hall, setHall] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState(0);
+  const [chatConversation, setChatConversation] = useState(null);
+  const [chatAccessToken, setChatAccessToken] = useState("");
+  const [chatLoading, setChatLoading] = useState(false);
+  const [chatSubmitting, setChatSubmitting] = useState(false);
+  const [chatError, setChatError] = useState("");
+  const [hallInCart, setHallInCart] = useState(false);
+  const [cartFeedback, setCartFeedback] = useState("");
+  const [leadForm, setLeadForm] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    message: "",
+  });
+  const [chatReplyDraft, setChatReplyDraft] = useState("");
 
   useEffect(() => {
     if (!id) return;
@@ -44,6 +83,117 @@ export default function VenueDetailPage() {
 
     fetchHall();
   }, [id]);
+
+  const loadPublicConversation = useCallback(
+    async (accessToken, options = {}) => {
+      if (!accessToken || !id) {
+        setChatConversation(null);
+        return;
+      }
+
+      if (!options.silent) {
+        setChatLoading(true);
+      }
+
+      try {
+        const response = await fetch(
+          `${getApiBaseUrl()}/api/chat/public/${accessToken}`,
+          {
+            cache: "no-store",
+          }
+        );
+
+        const payload = await response.json();
+
+        if (response.status === 404) {
+          localStorage.removeItem(getChatSessionKey(id));
+          setChatAccessToken("");
+          setChatConversation(null);
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error(payload?.message || "Failed to load chat");
+        }
+
+        setChatConversation(payload?.conversation || null);
+        setChatError("");
+      } catch (error) {
+        console.error("Failed to load public venue chat", error);
+
+        if (!options.silent) {
+          setChatError("Unable to load the venue chat right now.");
+        }
+      } finally {
+        if (!options.silent) {
+          setChatLoading(false);
+        }
+      }
+    },
+    [id]
+  );
+
+  useEffect(() => {
+    if (!id || typeof window === "undefined") {
+      return;
+    }
+
+    const storedAccessToken = localStorage.getItem(getChatSessionKey(id)) || "";
+    setChatAccessToken(storedAccessToken);
+
+    const storedUser = parseStoredUser();
+    const preferredName =
+      storedUser?.name ||
+      [storedUser?.firstName, storedUser?.lastName].filter(Boolean).join(" ");
+
+    setLeadForm((current) => ({
+      ...current,
+      name: current.name || preferredName || "",
+      phone: current.phone || storedUser?.phone || "",
+      email: current.email || storedUser?.email || "",
+    }));
+  }, [id]);
+
+  useEffect(() => {
+    if (!chatAccessToken) {
+      setChatConversation(null);
+      setChatLoading(false);
+      return;
+    }
+
+    loadPublicConversation(chatAccessToken);
+  }, [chatAccessToken, loadPublicConversation]);
+
+  useEffect(() => {
+    if (!chatAccessToken) {
+      return;
+    }
+
+    const intervalId = window.setInterval(() => {
+      loadPublicConversation(chatAccessToken, { silent: true });
+    }, 8000);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [chatAccessToken, loadPublicConversation]);
+
+  useEffect(() => {
+    chatBottomRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+    });
+  }, [chatConversation?.messages?.length]);
+
+  useEffect(() => {
+    if (!hall?._id) {
+      setHallInCart(false);
+      setCartFeedback("");
+      return;
+    }
+
+    setHallInCart(isHallInCart(hall._id));
+  }, [hall?._id]);
 
   const formatFeatureLabel = (key) => {
     const labels = {
@@ -210,6 +360,138 @@ export default function VenueDetailPage() {
     router.push(`/booking/${hall._id}`);
   };
 
+  const handleCartAction = () => {
+    if (!hall?._id) {
+      return;
+    }
+
+    if (hallInCart) {
+      router.push("/my-cart");
+      return;
+    }
+
+    const result = addHallToCart(hall);
+
+    setHallInCart(true);
+    setCartFeedback(
+      result.added
+        ? `${hall.hallName || "This venue"} was added to your cart.`
+        : `${hall.hallName || "This venue"} is already in your cart.`
+    );
+  };
+
+  const venueOwnerLabel = hall?.vendor?.businessName || "Venue Owner";
+  const venueReplyBadge = hall?.vendor?.isOnline
+    ? `${venueOwnerLabel} is online now`
+    : hall?.vendor?.autoReplyEnabled
+    ? `${venueOwnerLabel} is offline. UTSAVAS Assistant replies instantly`
+    : `${venueOwnerLabel} will reply shortly`;
+
+  const handleLeadFieldChange = (field, value) => {
+    setLeadForm((current) => ({
+      ...current,
+      [field]: value,
+    }));
+  };
+
+  const handleStartChat = async () => {
+    if (!hall?._id) {
+      return;
+    }
+
+    if (!leadForm.name || !leadForm.phone || !leadForm.message.trim()) {
+      setChatError("Please enter your name, phone number, and message.");
+      return;
+    }
+
+    setChatSubmitting(true);
+    setChatError("");
+
+    try {
+      const headers = {
+        "Content-Type": "application/json",
+      };
+      const userToken = getStoredUserToken();
+
+      if (userToken) {
+        headers.Authorization = `Bearer ${userToken}`;
+      }
+
+      const response = await fetch(`${getApiBaseUrl()}/api/chat/start`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          hallId: hall._id,
+          name: leadForm.name,
+          phone: leadForm.phone,
+          email: leadForm.email,
+          message: leadForm.message,
+        }),
+      });
+
+      const payload = await response.json();
+
+      if (!response.ok) {
+        throw new Error(payload?.message || "Failed to start chat");
+      }
+
+      if (payload?.accessToken) {
+        localStorage.setItem(getChatSessionKey(hall._id), payload.accessToken);
+        setChatAccessToken(payload.accessToken);
+      }
+
+      setChatConversation(payload?.conversation || null);
+      setLeadForm((current) => ({
+        ...current,
+        message: "",
+      }));
+      setChatReplyDraft("");
+    } catch (error) {
+      console.error("Start chat error", error);
+      setChatError(error.message || "Unable to start the venue chat right now.");
+    } finally {
+      setChatSubmitting(false);
+    }
+  };
+
+  const handleSendChatReply = async () => {
+    if (!chatAccessToken || !chatReplyDraft.trim()) {
+      return;
+    }
+
+    setChatSubmitting(true);
+    setChatError("");
+
+    try {
+      const response = await fetch(
+        `${getApiBaseUrl()}/api/chat/public/${chatAccessToken}/messages`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            text: chatReplyDraft,
+          }),
+        }
+      );
+
+      const payload = await response.json();
+
+      if (!response.ok) {
+        throw new Error(payload?.message || "Failed to send message");
+      }
+
+      setChatConversation(payload?.conversation || null);
+      setChatReplyDraft("");
+    } catch (error) {
+      console.error("Venue chat reply error", error);
+      setChatError(error.message || "Unable to send the message right now.");
+    } finally {
+      setChatSubmitting(false);
+    }
+  };
+
   return (
     <div className="hall-detail-page hall-detail-spacing">
       <div className="hall-top">
@@ -360,10 +642,216 @@ export default function VenueDetailPage() {
           {"\u2190"} Back
         </button>
 
+        <button
+          className={`cart-btn ${hallInCart ? "added" : ""}`}
+          onClick={handleCartAction}
+        >
+          {hallInCart ? "Go to Cart" : "Add to Cart"}
+        </button>
+
         <button className="book-btn" onClick={handleBookNow}>
           Book Now
         </button>
       </div>
+
+      {cartFeedback ? <p className="cart-feedback">{cartFeedback}</p> : null}
+
+      <section className={chatStyles.chatSection}>
+        <div className={chatStyles.chatHeader}>
+          <div>
+            <p className={chatStyles.chatEyebrow}>Venue Chat</p>
+            <h3 className={chatStyles.chatTitle}>Chat with venue owner</h3>
+            <p className={chatStyles.chatCopy}>
+              Start a lead instantly from this hall page. Your message is saved
+              for the vendor CRM, and admin can also assist when needed.
+            </p>
+          </div>
+
+          <div
+            className={`${chatStyles.chatStatusBadge} ${
+              hall?.vendor?.isOnline
+                ? chatStyles.chatStatusOnline
+                : chatStyles.chatStatusOffline
+            }`}
+          >
+            {venueReplyBadge}
+          </div>
+        </div>
+
+        {!chatConversation ? (
+          <div className={chatStyles.chatStartGrid}>
+            <div className={chatStyles.chatLeadCard}>
+              <h4>Start your conversation</h4>
+              <p>
+                Share your details once and the vendor team can continue the
+                conversation from their CRM inbox.
+              </p>
+
+              <div className={chatStyles.chatFieldGrid}>
+                <label className={chatStyles.chatField}>
+                  Name
+                  <input
+                    type="text"
+                    value={leadForm.name}
+                    onChange={(event) =>
+                      handleLeadFieldChange("name", event.target.value)
+                    }
+                    placeholder="Your full name"
+                  />
+                </label>
+
+                <label className={chatStyles.chatField}>
+                  Phone
+                  <input
+                    type="tel"
+                    value={leadForm.phone}
+                    onChange={(event) =>
+                      handleLeadFieldChange("phone", event.target.value)
+                    }
+                    placeholder="Your phone number"
+                  />
+                </label>
+              </div>
+
+              <label className={chatStyles.chatField}>
+                Email
+                <input
+                  type="email"
+                  value={leadForm.email}
+                  onChange={(event) =>
+                    handleLeadFieldChange("email", event.target.value)
+                  }
+                  placeholder="Optional email address"
+                />
+              </label>
+
+              <label className={chatStyles.chatField}>
+                Message
+                <textarea
+                  value={leadForm.message}
+                  onChange={(event) =>
+                    handleLeadFieldChange("message", event.target.value)
+                  }
+                  placeholder="Tell the venue your date, guest count, and event type"
+                  rows={5}
+                />
+              </label>
+
+              {chatError ? (
+                <p className={chatStyles.chatError}>{chatError}</p>
+              ) : null}
+
+              <button
+                type="button"
+                className={chatStyles.chatPrimaryButton}
+                onClick={handleStartChat}
+                disabled={chatSubmitting}
+              >
+                {chatSubmitting ? "Starting..." : "Start Chat"}
+              </button>
+            </div>
+
+            <div className={chatStyles.chatInfoCard}>
+              <h4>What happens next</h4>
+              <ul className={chatStyles.chatInfoList}>
+                <li>Your enquiry becomes a CRM lead for this venue.</li>
+                <li>Vendor can reply from their dashboard inbox.</li>
+                <li>Admin can step in and assist if needed.</li>
+                <li>Offline owners still get an instant assistant reply.</li>
+              </ul>
+            </div>
+          </div>
+        ) : (
+          <div className={chatStyles.chatWorkspace}>
+            <div className={chatStyles.chatMetaBar}>
+              <div>
+                <strong>{chatConversation.vendor?.businessName || venueOwnerLabel}</strong>
+                <span>
+                  Lead status:{" "}
+                  {String(chatConversation.status || "new").toUpperCase()}
+                </span>
+              </div>
+              <div className={chatStyles.chatMetaRight}>
+                <span>{chatConversation.customer?.name}</span>
+                <span>{chatConversation.customer?.phone}</span>
+              </div>
+            </div>
+
+            <div className={chatStyles.chatMessages}>
+              {chatLoading ? (
+                <p className={chatStyles.chatEmpty}>Loading chat...</p>
+              ) : null}
+
+              {!chatLoading &&
+              Array.isArray(chatConversation.messages) &&
+              chatConversation.messages.length > 0
+                ? chatConversation.messages.map((message) => (
+                    <div
+                      key={message.id}
+                      className={`${chatStyles.chatBubble} ${
+                        message.senderType === "user"
+                          ? chatStyles.chatBubbleUser
+                          : message.senderType === "bot"
+                          ? chatStyles.chatBubbleBot
+                          : chatStyles.chatBubbleTeam
+                      }`}
+                    >
+                      <div className={chatStyles.chatBubbleMeta}>
+                        <strong>{message.senderName || message.senderType}</strong>
+                        <span>
+                          {new Date(message.createdAt).toLocaleString("en-IN", {
+                            day: "numeric",
+                            month: "short",
+                            hour: "numeric",
+                            minute: "2-digit",
+                          })}
+                        </span>
+                      </div>
+                      <p>{message.text}</p>
+                    </div>
+                  ))
+                : null}
+
+              {!chatLoading &&
+              (!chatConversation.messages || chatConversation.messages.length === 0) ? (
+                <p className={chatStyles.chatEmpty}>
+                  No messages yet. Start by sharing your requirement.
+                </p>
+              ) : null}
+
+              <div ref={chatBottomRef} />
+            </div>
+
+            <div className={chatStyles.chatComposer}>
+              <textarea
+                value={chatReplyDraft}
+                onChange={(event) => setChatReplyDraft(event.target.value)}
+                placeholder="Reply here with your next question"
+                rows={3}
+              />
+
+              <div className={chatStyles.chatComposerActions}>
+                {chatError ? (
+                  <p className={chatStyles.chatError}>{chatError}</p>
+                ) : (
+                  <p className={chatStyles.chatHint}>
+                    This chat stays saved for this hall on your device.
+                  </p>
+                )}
+
+                <button
+                  type="button"
+                  className={chatStyles.chatPrimaryButton}
+                  onClick={handleSendChatReply}
+                  disabled={chatSubmitting || !chatReplyDraft.trim()}
+                >
+                  {chatSubmitting ? "Sending..." : "Send Message"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </section>
 
       {offeringCards.length > 0 && (
         <section className="hall-section info-showcase">

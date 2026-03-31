@@ -5,11 +5,13 @@ import dynamicImport from "next/dynamic";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./addHall.module.css";
+import { getApiBaseUrl } from "../../../lib/api";
 import {
   buildAddressQuery,
   buildAddressQueries,
   geocodeAddress,
   hasMinimumVenueAddress,
+  hasRequiredVenueAddress,
   INDIA_MAP_CENTER,
   isValidLocation,
 } from "../../../lib/hallLocation";
@@ -19,14 +21,36 @@ import {
 } from "../../../lib/venueCategories";
 import { LISTING_PLANS } from "../../../lib/listingPlans";
 
-const API =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "https://utsavas-backend-1.onrender.com";
-
 const VenueLocationMap = dynamicImport(
   () => import("../../components/VenueLocationMap"),
   { ssr: false }
 );
+
+const getVendorSession = () => {
+  if (typeof window === "undefined") {
+    return {
+      token: "",
+      vendor: null,
+      vendorId: "",
+    };
+  }
+
+  const rawVendor = localStorage.getItem("vendor");
+  const vendor = rawVendor ? JSON.parse(rawVendor) : null;
+
+  return {
+    token: localStorage.getItem("vendorToken") || "",
+    vendor,
+    vendorId: vendor?._id || vendor?.id || "",
+  };
+};
+
+const getVendorHeaders = (token) =>
+  token
+    ? {
+        Authorization: `Bearer ${token}`,
+      }
+    : {};
 
 export default function AddHallPage() {
   const router = useRouter();
@@ -162,6 +186,7 @@ export default function AddHallPage() {
 
   const addressQuery = buildAddressQuery(address);
   const hasMinimumAddress = hasMinimumVenueAddress(address);
+  const hasRequiredAddress = hasRequiredVenueAddress(address);
 
   const handleGeoLocationChange = (nextLocation) => {
     setGeoLocation(nextLocation);
@@ -224,14 +249,16 @@ export default function AddHallPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const vendor = JSON.parse(localStorage.getItem("vendor"));
-    if (!vendor?._id) {
-      alert("Vendor not logged in");
+    const session = getVendorSession();
+
+    if (!session.vendorId || !session.token) {
+      alert("Vendor session expired. Please login again.");
+      router.replace("/vendor/vendor-login");
       return;
     }
 
-    if (!hasMinimumAddress) {
-      alert("Enter city, state, and at least one address detail like area, pincode, landmark, or hall name.");
+    if (!hasRequiredAddress) {
+      alert("Enter Building or Hall Name, Area, City, State, and Pincode before submitting.");
       return;
     }
 
@@ -254,24 +281,38 @@ export default function AddHallPage() {
     formData.append("address", JSON.stringify(address));
     formData.append("location", JSON.stringify(geoLocation));
     formData.append("features", JSON.stringify(features));
-    formData.append("vendorId", vendor._id);
+    formData.append("vendorId", session.vendorId);
 
     images.forEach((img) => formData.append("images", img));
 
-    const res = await fetch(`${API}/api/halls/add`, {
-      method: "POST",
-      body: formData,
-    });
+    try {
+      const res = await fetch(`${getApiBaseUrl()}/api/halls/add`, {
+        method: "POST",
+        headers: getVendorHeaders(session.token),
+        body: formData,
+      });
 
-    const data = await res.json().catch(() => ({}));
+      const data = await res.json().catch(() => ({}));
 
-    if (!res.ok) {
-      alert(data.message || "Failed to add hall");
-      return;
+      if (res.status === 401 || res.status === 403) {
+        alert(data.message || "Vendor session expired. Please login again.");
+        localStorage.removeItem("vendor");
+        localStorage.removeItem("vendorToken");
+        router.replace("/vendor/vendor-login");
+        return;
+      }
+
+      if (!res.ok) {
+        alert(data.message || "Failed to add hall");
+        return;
+      }
+
+      alert("Hall added successfully! Waiting for admin approval.");
+      router.push("/vendor/dashboard");
+    } catch (error) {
+      console.error("Add hall error:", error);
+      alert("Failed to add hall. Please try again.");
     }
-
-    alert("Hall added successfully! Waiting for admin approval.");
-    router.push("/vendor/dashboard");
   };
 
   return (
@@ -310,8 +351,8 @@ export default function AddHallPage() {
           </select>
 
           <p className={styles.helperText}>
-            User-side city and PIN code results show Premium plans first, then
-            Featured, then Basic listings.
+            User-side city and PIN code results show Digital Presence plans
+            first, then Premium, Featured, and finally Basic listings.
           </p>
 
           <input
@@ -368,12 +409,12 @@ export default function AddHallPage() {
         <section className={styles.card}>
           <h2>Venue Address</h2>
 
-          <input name="flat" placeholder="Building / Hall Name" onChange={handleAddressChange} />
+          <input name="flat" placeholder="Building / Hall Name" onChange={handleAddressChange} required />
           <input name="floor" placeholder="Floor (optional)" onChange={handleAddressChange} />
-          <input name="area" placeholder="Area / Locality" onChange={handleAddressChange} />
-          <input name="city" placeholder="City" onChange={handleAddressChange} />
-          <input name="state" placeholder="State" onChange={handleAddressChange} />
-          <input name="pincode" placeholder="Pincode" onChange={handleAddressChange} />
+          <input name="area" placeholder="Area / Locality" onChange={handleAddressChange} required />
+          <input name="city" placeholder="City" onChange={handleAddressChange} required />
+          <input name="state" placeholder="State" onChange={handleAddressChange} required />
+          <input name="pincode" placeholder="Pincode" onChange={handleAddressChange} required />
           <input name="landmark" placeholder="Nearby Landmark" onChange={handleAddressChange} />
         </section>
 

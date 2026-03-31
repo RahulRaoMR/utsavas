@@ -585,6 +585,10 @@ export default function TopNavBar() {
                       My Bookings
                     </Link>
 
+                    <Link href="/my-cart" onClick={() => setDropdownOpen(false)}>
+                      My Cart
+                    </Link>
+
                     <button onClick={handleLogout}>Logout</button>
                   </div>
                 )}
@@ -673,6 +677,10 @@ export default function TopNavBar() {
 
             <Link href="/my-bookings" onClick={() => setMenuOpen(false)}>
               My Bookings
+            </Link>
+
+            <Link href="/my-cart" onClick={() => setMenuOpen(false)}>
+              My Cart
             </Link>
 
             <button onClick={handleLogout} className="mobile-btn">

@@ -90,6 +90,11 @@
   color: #5b6475;
 }
 
+.input:disabled {
+  color: #8b93a3;
+  cursor: not-allowed;
+}
+
 .button {
   min-width: 220px;
   min-height: 74px;

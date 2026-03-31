@@ -135,6 +135,45 @@
   line-height: 1.6;
 }
 
+.calendarLegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 6px auto 18px;
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #30402f;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.legendSwatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(48, 64, 47, 0.12);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.36);
+}
+
+.legendAvailable {
+  background: rgba(95, 151, 214, 0.28);
+}
+
+.legendPending {
+  background: #e8cf9d;
+}
+
+.legendBooked {
+  background: #d56f5f;
+}
+
 .calendarBadge {
   position: relative;
   width: 52px;

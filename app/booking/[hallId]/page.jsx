@@ -288,6 +288,30 @@ export default function BookingPage() {
           </div>
         </div>
 
+        <div className={styles.calendarLegend} aria-label="Calendar status legend">
+          <span className={styles.legendItem}>
+            <span
+              className={`${styles.legendSwatch} ${styles.legendAvailable}`}
+              aria-hidden="true"
+            ></span>
+            Available
+          </span>
+          <span className={styles.legendItem}>
+            <span
+              className={`${styles.legendSwatch} ${styles.legendPending}`}
+              aria-hidden="true"
+            ></span>
+            Pending
+          </span>
+          <span className={styles.legendItem}>
+            <span
+              className={`${styles.legendSwatch} ${styles.legendBooked}`}
+              aria-hidden="true"
+            ></span>
+            Booked
+          </span>
+        </div>
+
         <Calendar
           selectRange={true}
           onChange={setDateRange}

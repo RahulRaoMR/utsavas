@@ -513,7 +513,7 @@
 
 .hall-actions {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 20px;
   margin-top: 30px;
   width: 100%;
@@ -545,6 +545,40 @@
 .hall-actions button:hover {
   background-color: #274f8f;
   transform: translateY(-2px);
+}
+
+.hall-actions .back-btn {
+  background: transparent;
+  color: #183b63;
+  border: 1px solid #5f97d6;
+}
+
+.hall-actions .back-btn:hover {
+  background: rgba(95, 151, 214, 0.1);
+  color: #183b63;
+}
+
+.hall-actions .cart-btn {
+  background: #ffffff;
+  color: #183b63;
+  border: 1px solid #c7dcf8;
+}
+
+.hall-actions .cart-btn:hover {
+  background: #eff6ff;
+  color: #274f8f;
+}
+
+.hall-actions .cart-btn.added {
+  background: #eff6ff;
+  border-color: #86b8f2;
+  color: #3f6fb6;
+}
+
+.cart-feedback {
+  margin: 12px 2px 0;
+  color: #5e5551;
+  font-size: 14px;
 }
 
 .info-showcase h3 {

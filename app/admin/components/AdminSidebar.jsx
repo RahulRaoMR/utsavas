@@ -55,6 +55,10 @@ export default function AdminSidebar() {
         },
       ],
     },
+    {
+      title: "CRM",
+      links: [{ name: "Venue Chats", href: "/admin/chats" }],
+    },
   ];
 
   return (

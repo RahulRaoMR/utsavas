@@ -670,6 +670,12 @@ export default function VendorDashboard() {
           <div className={styles.cardTitle}>Booking Requests</div>
           <div className={styles.muted}>Manage customer bookings</div>
         </div>
+
+        <div className={styles.card} onClick={() => router.push("/vendor/chats")}>
+          <div className={styles.cardIcon}>Chat</div>
+          <div className={styles.cardTitle}>Leads & Chats</div>
+          <div className={styles.muted}>Reply to users and manage CRM leads</div>
+        </div>
       </div>
 
       <div className={styles.calendarSection}>
