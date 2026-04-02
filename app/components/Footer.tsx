@@ -4,6 +4,10 @@ import styles from "./Footer.module.css";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import {
+  SUPPORT_EMAIL,
+  SUPPORT_PHONE_DISPLAY,
+} from "../../lib/siteContact";
 
 function InstagramIcon() {
   return (
@@ -151,14 +155,14 @@ export default function Footer() {
           <p>
             Email{" "}
             <Link href="/contact" className={styles.contactLink}>
-              utsavas26@gmail.com
+              {SUPPORT_EMAIL}
             </Link>
           </p>
 
           <p>
-            Call{" "}
+            Call UTSAVAS support{" "}
             <Link href="/contact" className={styles.contactLink}>
-              +91 80 4879 5189
+              {SUPPORT_PHONE_DISPLAY}
             </Link>
           </p>
 

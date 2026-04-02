@@ -1,50 +1,58 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import PwaRegistration from "./components/PwaRegistration";
+import {
+  buildOrganizationJsonLd,
+  buildWebsiteJsonLd,
+  DEFAULT_SEO_DESCRIPTION,
+  DEFAULT_SEO_IMAGE,
+  DEFAULT_SEO_KEYWORDS,
+  DEFAULT_SEO_TITLE,
+  GOOGLE_SITE_VERIFICATION,
+  SITE_URL,
+} from "../lib/seo";
 
-const SITE_URL = "https://utsavas.com";
-const SEO_IMAGE_PATH = "/seo/utsavas-search-share-v1.png";
-
-const organizationJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: "UTSAVAS",
-  url: SITE_URL,
-  logo: `${SITE_URL}/pwa/icon-512-v3.png`,
-  image: `${SITE_URL}${SEO_IMAGE_PATH}`,
-};
-
-const websiteJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  name: "UTSAVAS",
-  url: SITE_URL,
-  image: `${SITE_URL}${SEO_IMAGE_PATH}`,
-};
+const organizationJsonLd = buildOrganizationJsonLd();
+const websiteJsonLd = buildWebsiteJsonLd();
 
 export const metadata: Metadata = {
   applicationName: "UTSAVAS",
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "UTSAVAS",
+    default: DEFAULT_SEO_TITLE,
     template: "%s | UTSAVAS",
   },
-  description:
-    "Discover wedding halls, banquet halls, party venues, and trusted event spaces across Karnataka with UTSAVAS.",
-  alternates: {
-    canonical: "/",
-  },
+  description: DEFAULT_SEO_DESCRIPTION,
+  keywords: DEFAULT_SEO_KEYWORDS,
   manifest: "/manifest.webmanifest",
+  category: "venue booking",
+  referrer: "origin-when-cross-origin",
+  verification: GOOGLE_SITE_VERIFICATION
+    ? {
+        google: GOOGLE_SITE_VERIFICATION,
+      }
+    : undefined,
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
   openGraph: {
     type: "website",
     url: SITE_URL,
     siteName: "UTSAVAS",
-    title: "UTSAVAS",
-    description:
-      "Discover wedding halls, banquet halls, party venues, and trusted event spaces across Karnataka with UTSAVAS.",
+    locale: "en_IN",
+    title: DEFAULT_SEO_TITLE,
+    description: DEFAULT_SEO_DESCRIPTION,
     images: [
       {
-        url: SEO_IMAGE_PATH,
+        url: DEFAULT_SEO_IMAGE,
         width: 1200,
         height: 630,
         alt: "UTSAVAS venue booking",
@@ -53,10 +61,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "UTSAVAS",
-    description:
-      "Discover wedding halls, banquet halls, party venues, and trusted event spaces across Karnataka with UTSAVAS.",
-    images: [SEO_IMAGE_PATH],
+    title: DEFAULT_SEO_TITLE,
+    description: DEFAULT_SEO_DESCRIPTION,
+    images: [DEFAULT_SEO_IMAGE],
   },
   icons: {
     icon: [

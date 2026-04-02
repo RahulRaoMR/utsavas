@@ -2,6 +2,11 @@
 
 import "./contact.css";
 import Footer from "../../components/Footer";
+import {
+  SUPPORT_EMAIL,
+  SUPPORT_PHONE_DISPLAY,
+  SUPPORT_PHONE_E164,
+} from "../../../lib/siteContact";
 
 export default function ContactPage() {
   return (
@@ -21,11 +26,12 @@ export default function ContactPage() {
 
           <div className="contact-item">
             <span>Mail</span>
-            <a href="mailto:utsavas26@gmail.com">utsavas26@gmail.com</a>
+            <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>
           </div>
 
           <div className="contact-item">
-            <a href="tel:+918048795189">+91 80 4879 5189</a>
+            <span>Support Number</span>
+            <a href={`tel:${SUPPORT_PHONE_E164}`}>Call {SUPPORT_PHONE_DISPLAY}</a>
           </div>
 
           <div className="contact-item">

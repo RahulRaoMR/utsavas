@@ -2,6 +2,10 @@
 
 import "./security.css";
 import Footer from "../../components/Footer";
+import {
+  SUPPORT_EMAIL,
+  SUPPORT_PHONE_DISPLAY,
+} from "../../../lib/siteContact";
 
 export default function SecurityPage() {
   return (
@@ -46,10 +50,10 @@ export default function SecurityPage() {
           <div className="security-contact">
             <h3>Report a security issue</h3>
             <p>
-              <strong>Email:</strong> utsavas26@gmail.com
+              <strong>Email:</strong> {SUPPORT_EMAIL}
             </p>
             <p>
-              <strong>Phone:</strong> +91 80 4879 5189
+              <strong>Support number:</strong> {SUPPORT_PHONE_DISPLAY}
             </p>
             <p>
               <strong>Address:</strong> 285/A, 14th Main Rd, Siddanna Layout,
