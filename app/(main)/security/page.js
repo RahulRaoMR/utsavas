@@ -49,7 +49,7 @@ export default function SecurityPage() {
               <strong>Email:</strong> utsavas26@gmail.com
             </p>
             <p>
-              <strong>Phone:</strong> +91 1234567890
+              <strong>Phone:</strong> +91 80 4879 5189
             </p>
             <p>
               <strong>Address:</strong> 285/A, 14th Main Rd, Siddanna Layout,

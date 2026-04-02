@@ -158,7 +158,7 @@ export default function Footer() {
           <p>
             Call{" "}
             <Link href="/contact" className={styles.contactLink}>
-              +91 1234567890
+              +91 80 4879 5189
             </Link>
           </p>
 
