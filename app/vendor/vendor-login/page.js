@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import styles from "./vendorLogin.module.css";
 import VendorPlansInfo from "../../components/VendorPlansInfo";
 
@@ -86,6 +86,12 @@ export default function VendorLoginPage() {
           >
             {loading ? "Logging in..." : "Login"}
           </button>
+
+          <div className={styles.helperRow}>
+            <Link href="/vendor/forgot-password" className={styles.helperLink}>
+              Forgot Password?
+            </Link>
+          </div>
 
           <p
             className={styles.backText}

@@ -9,6 +9,7 @@ import { clearUserSession, sanitizeRedirectPath } from "../../../lib/authRedirec
 const API =
   process.env.NEXT_PUBLIC_API_URL ||
   "https://utsavas-backend-1.onrender.com";
+const EMPTY_OTP = ["", "", "", "", "", ""];
 
 function RegisterPageContent() {
   const router = useRouter();
@@ -16,10 +17,13 @@ function RegisterPageContent() {
 
   const [verified, setVerified] = useState(false);
   const [phone, setPhone] = useState("+91");
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const [loading, setLoading] = useState(false);
+  const [otp, setOtp] = useState(EMPTY_OTP);
+  const [sendingOtp, setSendingOtp] = useState(false);
+  const [verifyingOtp, setVerifyingOtp] = useState(false);
+  const [registering, setRegistering] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
   const [timer, setTimer] = useState(0);
+  const [status, setStatus] = useState(null);
 
   const [form, setForm] = useState({
     firstName: "",
@@ -33,10 +37,13 @@ function RegisterPageContent() {
   });
 
   const inputsRef = useRef([]);
+  const firstNameRef = useRef(null);
   const redirectPath = sanitizeRedirectPath(
     searchParams.get("redirect"),
     "/dashboard"
   );
+  const isPhoneValid = /^91\d{10}$/.test(phone.replace(/\D/g, ""));
+  const finalOtp = otp.join("");
 
   useEffect(() => {
     let interval;
@@ -49,6 +56,18 @@ function RegisterPageContent() {
 
     return () => clearInterval(interval);
   }, [timer]);
+
+  useEffect(() => {
+    if (otpSent && !verified) {
+      inputsRef.current[0]?.focus();
+    }
+  }, [otpSent, verified]);
+
+  useEffect(() => {
+    if (verified) {
+      firstNameRef.current?.focus();
+    }
+  }, [verified]);
 
   useEffect(() => {
     let cancelled = false;
@@ -103,12 +122,21 @@ function RegisterPageContent() {
   }, [redirectPath, router]);
 
   const sendOTP = async () => {
-    if (loading || timer > 0) return;
+    if (sendingOtp || timer > 0) return;
+
+    if (!isPhoneValid) {
+      setStatus({
+        type: "error",
+        message: "Enter a valid Indian mobile number to receive your OTP.",
+      });
+      return;
+    }
 
     try {
-      setLoading(true);
+      setSendingOtp(true);
+      setStatus(null);
 
-      const cleanPhone = phone.replace("+", "");
+      const cleanPhone = phone.replace(/\D/g, "");
 
       const res = await fetch(`${API}/api/otp/send-otp`, {
         method: "POST",
@@ -121,17 +149,31 @@ function RegisterPageContent() {
       const data = await res.json();
 
       if (res.ok && data.success) {
-        alert("OTP sent successfully");
+        const providerAccepted = data.smsDelivery === "provider_accepted";
+        setOtp(EMPTY_OTP);
         setOtpSent(true);
         setTimer(30);
+        setVerified(false);
+        setStatus({
+          type: providerAccepted ? "success" : "error",
+          message: providerAccepted
+            ? "OTP sent successfully. Enter the 6-digit code to continue."
+            : data.message || "SMS delivery is pending. Please try again.",
+        });
       } else {
-        alert(data.message || "Failed to send OTP");
+        setStatus({
+          type: "error",
+          message: data.message || "Failed to send OTP",
+        });
       }
     } catch (err) {
       console.error("OTP error:", err);
-      alert("Server not responding. Please try again.");
+      setStatus({
+        type: "error",
+        message: "Server not responding. Please try again.",
+      });
     } finally {
-      setLoading(false);
+      setSendingOtp(false);
     }
   };
 
@@ -141,6 +183,9 @@ function RegisterPageContent() {
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
+    if (status?.type === "error") {
+      setStatus(null);
+    }
 
     if (value && index < 5) {
       inputsRef.current[index + 1]?.focus();
@@ -154,9 +199,20 @@ function RegisterPageContent() {
   };
 
   const verifyOTP = async () => {
+    if (verifyingOtp) return;
+
+    if (finalOtp.length !== 6) {
+      setStatus({
+        type: "error",
+        message: "Enter the full 6-digit OTP before verifying.",
+      });
+      return;
+    }
+
     try {
-      const cleanPhone = phone.replace("+", "");
-      const finalOtp = otp.join("");
+      setVerifyingOtp(true);
+      setStatus(null);
+      const cleanPhone = phone.replace(/\D/g, "");
 
       const res = await fetch(`${API}/api/otp/verify-otp`, {
         method: "POST",
@@ -172,18 +228,34 @@ function RegisterPageContent() {
       const data = await res.json();
 
       if (res.ok && data.success) {
-        alert("Phone verified");
         setVerified(true);
+        setStatus({
+          type: "success",
+          message:
+            "Phone verified. Complete your profile to finish creating your account.",
+        });
       } else {
-        alert(data.message || "Invalid OTP");
+        setStatus({
+          type: "error",
+          message: data.message || "Invalid OTP",
+        });
       }
     } catch (err) {
       console.error("Verify error:", err);
-      alert("Verification failed");
+      setStatus({
+        type: "error",
+        message: "Verification failed",
+      });
+    } finally {
+      setVerifyingOtp(false);
     }
   };
 
   const handleChange = (e) => {
+    if (status?.type === "error") {
+      setStatus(null);
+    }
+
     setForm({
       ...form,
       [e.target.name]: e.target.value,
@@ -191,13 +263,20 @@ function RegisterPageContent() {
   };
 
   const registerUser = async () => {
+    if (registering) return;
+
     try {
       if (form.password !== form.confirmPassword) {
-        alert("Passwords do not match");
+        setStatus({
+          type: "error",
+          message: "Passwords do not match",
+        });
         return;
       }
 
-      const cleanPhone = phone.replace("+", "");
+      setRegistering(true);
+      setStatus(null);
+      const cleanPhone = phone.replace(/\D/g, "");
 
       const res = await fetch(`${API}/api/auth/register`, {
         method: "POST",
@@ -241,14 +320,25 @@ function RegisterPageContent() {
           })
         );
 
-        alert("Registration successful");
+        setStatus({
+          type: "success",
+          message: "Registration successful. Redirecting...",
+        });
         router.replace(redirectPath);
       } else {
-        alert(data.message || "Registration failed");
+        setStatus({
+          type: "error",
+          message: data.message || "Registration failed",
+        });
       }
     } catch (err) {
       console.error("Register error:", err);
-      alert("Something went wrong");
+      setStatus({
+        type: "error",
+        message: "Something went wrong",
+      });
+    } finally {
+      setRegistering(false);
     }
   };
 
@@ -257,16 +347,36 @@ function RegisterPageContent() {
       <div className={styles.loginCard}>
         <h1 className={styles.logo}>UTSAVAS</h1>
         <p className={styles.tagline}>Create your account</p>
+        {status ? (
+          <p
+            className={`${styles.statusBanner} ${
+              status.type === "error" ? styles.statusError : styles.statusSuccess
+            }`}
+            role="status"
+            aria-live="polite"
+          >
+            {status.message}
+          </p>
+        ) : null}
 
         {!verified ? (
           <>
             <input
-              type="text"
+              type="tel"
               placeholder="Phone Number (+91XXXXXXXXXX)"
               className={styles.inputField}
               value={phone}
+              autoComplete="tel"
               onChange={(e) => {
                 if (!e.target.value.startsWith("+91")) return;
+                if (status) {
+                  setStatus(null);
+                }
+                if (otpSent) {
+                  setOtp(EMPTY_OTP);
+                  setOtpSent(false);
+                  setTimer(0);
+                }
                 setPhone(e.target.value);
               }}
             />
@@ -274,9 +384,9 @@ function RegisterPageContent() {
             <button
               className={styles.loginBtn}
               onClick={sendOTP}
-              disabled={loading || timer > 0}
+              disabled={sendingOtp || timer > 0}
             >
-              {loading
+              {sendingOtp
                 ? "Sending..."
                 : timer > 0
                 ? `Resend in ${timer}s`
@@ -301,6 +411,8 @@ function RegisterPageContent() {
                       ref={(el) => (inputsRef.current[index] = el)}
                       type="text"
                       maxLength="1"
+                      inputMode="numeric"
+                      autoComplete="one-time-code"
                       value={digit}
                       onChange={(e) =>
                         handleOtpChange(e.target.value, index)
@@ -325,9 +437,10 @@ function RegisterPageContent() {
                 <button
                   className={styles.loginBtn}
                   onClick={verifyOTP}
+                  disabled={verifyingOtp || finalOtp.length !== 6}
                   style={{ marginTop: "14px" }}
                 >
-                  Verify OTP
+                  {verifyingOtp ? "Verifying..." : "Verify OTP"}
                 </button>
               </>
             )}
@@ -335,9 +448,12 @@ function RegisterPageContent() {
         ) : (
           <>
             <input
+              ref={firstNameRef}
               name="firstName"
               placeholder="First Name"
               className={styles.inputField}
+              value={form.firstName}
+              autoComplete="given-name"
               onChange={handleChange}
             />
 
@@ -345,6 +461,8 @@ function RegisterPageContent() {
               name="lastName"
               placeholder="Last Name"
               className={styles.inputField}
+              value={form.lastName}
+              autoComplete="family-name"
               onChange={handleChange}
             />
 
@@ -352,6 +470,8 @@ function RegisterPageContent() {
               name="email"
               placeholder="Email"
               className={styles.inputField}
+              value={form.email}
+              autoComplete="email"
               onChange={handleChange}
             />
 
@@ -373,14 +493,16 @@ function RegisterPageContent() {
               name="country"
               placeholder="Country"
               className={styles.inputField}
+              value={form.country}
+              autoComplete="country-name"
               onChange={handleChange}
             />
 
             <select
               name="gender"
               className={styles.inputField}
+              value={form.gender}
               onChange={handleChange}
-              defaultValue=""
             >
               <option value="" disabled>
                 Select Gender
@@ -395,6 +517,8 @@ function RegisterPageContent() {
               type="password"
               placeholder="Password"
               className={styles.inputField}
+              value={form.password}
+              autoComplete="new-password"
               onChange={handleChange}
             />
 
@@ -403,11 +527,17 @@ function RegisterPageContent() {
               type="password"
               placeholder="Confirm Password"
               className={styles.inputField}
+              value={form.confirmPassword}
+              autoComplete="new-password"
               onChange={handleChange}
             />
 
-            <button className={styles.loginBtn} onClick={registerUser}>
-              Register Now
+            <button
+              className={styles.loginBtn}
+              onClick={registerUser}
+              disabled={registering}
+            >
+              {registering ? "Creating Account..." : "Register Now"}
             </button>
           </>
         )}
