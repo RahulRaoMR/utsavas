@@ -5,6 +5,13 @@ import { useParams, useRouter } from "next/navigation";
 import styles from "./summary.module.css";
 import { toAbsoluteImageUrl } from "../../../../lib/imageUrl";
 import { getVenueCategoryLabel } from "../../../../lib/venueCategories";
+import {
+  DEFAULT_CHECK_IN_TIME,
+  DEFAULT_CHECK_OUT_TIME,
+  formatBookingDateTime,
+  formatBookingWindow,
+  normalizeBookingTime,
+} from "../../../../lib/bookingSchedule";
 
 const API =
   process.env.NEXT_PUBLIC_API_URL ||
@@ -133,25 +140,6 @@ function formatCurrency(amount) {
   return `Rs ${Number(amount || 0).toLocaleString("en-IN")}`;
 }
 
-function formatDisplayDate(value) {
-  if (!value) {
-    return "Not selected";
-  }
-
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-
-  return date.toLocaleDateString("en-IN", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
-
 function buildAddress(address = {}) {
   return [
     address.flat,
@@ -196,7 +184,22 @@ export default function BookingSummaryPage() {
     }
 
     try {
-      setDraft(JSON.parse(stored));
+      const parsedDraft = JSON.parse(stored);
+      const normalizedDraft = {
+        ...parsedDraft,
+        booking: {
+          ...(parsedDraft?.booking || {}),
+          checkInTime:
+            normalizeBookingTime(parsedDraft?.booking?.checkInTime) ||
+            DEFAULT_CHECK_IN_TIME,
+          checkOutTime:
+            normalizeBookingTime(parsedDraft?.booking?.checkOutTime) ||
+            DEFAULT_CHECK_OUT_TIME,
+        },
+      };
+
+      setDraft(normalizedDraft);
+      sessionStorage.setItem(getDraftKey(hallId), JSON.stringify(normalizedDraft));
     } catch (error) {
       console.error("Invalid booking draft", error);
       router.replace(`/booking/${hallId}`);
@@ -303,7 +306,9 @@ export default function BookingSummaryPage() {
         body: JSON.stringify({
           hallId,
           checkIn: draft.booking.checkIn,
+          checkInTime: draft.booking.checkInTime,
           checkOut: draft.booking.checkOut,
+          checkOutTime: draft.booking.checkOutTime,
           eventType: draft.booking.eventType,
           guests: Number(draft.booking.guests) || 0,
           customerName: draft.booking.customerName,
@@ -362,9 +367,7 @@ export default function BookingSummaryPage() {
     : "/dashboard/banquet.jpg";
   const categoryLabel =
     getVenueCategoryLabel(draft.hall.category) || draft.hall.category || "Venue";
-  const bookingWindow = `${formatDisplayDate(draft.booking.checkIn)} - ${formatDisplayDate(
-    draft.booking.checkOut
-  )}`;
+  const bookingWindow = formatBookingWindow(draft.booking, "Not selected");
   const activeCouponLabel = appliedCoupon ? COUPONS[appliedCoupon]?.label : "";
 
   return (
@@ -372,10 +375,10 @@ export default function BookingSummaryPage() {
       <section className={styles.hero}>
         <div>
           <p className={styles.heroEyebrow}>Booking Summary</p>
-          <h1>Review your stay before payment</h1>
+          <h1>Review your event schedule before payment</h1>
           <p className={styles.heroText}>
-            Confirm venue details, apply a coupon, and check your final amount
-            before you move to payment.
+            Confirm venue details, exact timings, apply a coupon, and check
+            your final amount before you move to payment.
           </p>
         </div>
       </section>
@@ -412,8 +415,26 @@ export default function BookingSummaryPage() {
             <h3>Booking details</h3>
             <div className={styles.detailGrid}>
               <div>
-                <span className={styles.label}>Event dates</span>
-                <strong>{bookingWindow}</strong>
+                <span className={styles.label}>Check-in</span>
+                <strong>
+                  {formatBookingDateTime(
+                    draft.booking.checkIn,
+                    draft.booking.checkInTime,
+                    "-",
+                    DEFAULT_CHECK_IN_TIME
+                  )}
+                </strong>
+              </div>
+              <div>
+                <span className={styles.label}>Check-out</span>
+                <strong>
+                  {formatBookingDateTime(
+                    draft.booking.checkOut,
+                    draft.booking.checkOutTime,
+                    "-",
+                    DEFAULT_CHECK_OUT_TIME
+                  )}
+                </strong>
               </div>
               <div>
                 <span className={styles.label}>Event type</span>
@@ -534,7 +555,7 @@ export default function BookingSummaryPage() {
             </div>
 
             <div className={styles.bookingSnapshot}>
-              <span>Selected dates</span>
+              <span>Selected schedule</span>
               <strong>{bookingWindow}</strong>
             </div>
             <div className={styles.bookingSnapshot}>

@@ -21,6 +21,7 @@
   --brand-surface: #fbf5ea;
   --top-nav-offset: 148px;
   --top-nav-main-height: 82px;
+  --font-brand-wordmark: "League Spartan", "Arial Narrow", Arial, sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {

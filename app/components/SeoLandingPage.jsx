@@ -1,5 +1,6 @@
 import Link from "next/link";
 import connectDB from "../../lib/mongodb";
+import { getApiBaseUrl } from "../../lib/api";
 import Hall from "../../models/Hall";
 import {
   buildAbsoluteUrl,
@@ -18,6 +19,8 @@ import {
 } from "../../lib/venueCategories";
 import { sortHallsByListingPriority } from "../../lib/listingPlans";
 import styles from "./SeoLandingPage.module.css";
+
+const MONGODB_URI = process.env.MONGODB_URI;
 
 function formatAddress(hall) {
   return [hall?.address?.area, hall?.address?.city, hall?.address?.state]
@@ -73,14 +76,27 @@ function matchesCategory(hall, categoryValue) {
 }
 
 async function loadLandingHalls(config) {
-  await connectDB();
+  if (!MONGODB_URI) {
+    return loadLandingHallsFromApi(config);
+  }
 
-  const halls = await Hall.find({ status: "approved" })
-    .select(
-      "_id hallName category capacity address pricePerEvent pricePerDay pricePerPlate about listingPlan listingPriority createdAt updatedAt images"
-    )
-    .lean();
+  try {
+    await connectDB();
 
+    const halls = await Hall.find({ status: "approved" })
+      .select(
+        "_id hallName category capacity address pricePerEvent pricePerDay pricePerPlate about listingPlan listingPriority createdAt updatedAt images"
+      )
+      .lean();
+
+    return selectLandingHalls(config, halls);
+  } catch (error) {
+    console.error("FAILED TO LOAD SEO LANDING HALLS FROM MONGODB", error);
+    return loadLandingHallsFromApi(config);
+  }
+}
+
+function selectLandingHalls(config, halls) {
   const sortedHalls = sortHallsByListingPriority(halls);
   const matchedHalls = sortedHalls.filter(
     (hall) =>
@@ -95,6 +111,24 @@ async function loadLandingHalls(config) {
   return sortedHalls
     .filter((hall) => matchesCategory(hall, config.categoryValue))
     .slice(0, 6);
+}
+
+async function loadLandingHallsFromApi(config) {
+  try {
+    const response = await fetch(`${getApiBaseUrl()}/api/halls/public`, {
+      next: { revalidate: 300 },
+    });
+
+    if (!response.ok) {
+      return [];
+    }
+
+    const halls = await response.json();
+    return selectLandingHalls(config, Array.isArray(halls) ? halls : []);
+  } catch (error) {
+    console.error("FAILED TO LOAD SEO LANDING HALLS FROM API", error);
+    return [];
+  }
 }
 
 function buildLandingJsonLd(config, halls) {

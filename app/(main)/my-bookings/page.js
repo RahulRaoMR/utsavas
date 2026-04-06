@@ -5,25 +5,16 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "../profile/profile.module.css";
 import { clearUserSession } from "../../../lib/authRedirect";
+import {
+  formatBookingTime,
+  formatBookingWindow,
+} from "../../../lib/bookingSchedule";
 
 const API =
   process.env.NEXT_PUBLIC_API_URL ||
   "https://utsavas-backend-1.onrender.com";
 
 const LOGIN_REDIRECT = "/login?redirect=%2Fmy-bookings";
-
-const formatDate = (value) => {
-  if (!value) return "-";
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "-";
-
-  return date.toLocaleDateString("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
-};
 
 const formatCurrency = (value) =>
   `Rs ${Number(value || 0).toLocaleString("en-IN")}`;
@@ -134,10 +125,12 @@ export default function MyBookingsPage() {
                 </small>
               </div>
               <div>
-                <span>Dates</span>
-                <p>
-                  {formatDate(booking.checkIn)} to {formatDate(booking.checkOut)}
-                </p>
+                <span>Schedule</span>
+                <p>{formatBookingWindow(booking)}</p>
+                <small className={styles.bookingHint}>
+                  {formatBookingTime(booking.checkInTime)} {"->"}{" "}
+                  {formatBookingTime(booking.checkOutTime)}
+                </small>
               </div>
             </Link>
           ))}

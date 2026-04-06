@@ -10,6 +10,12 @@ import {
   getAdminAuthHeaders,
   getAdminToken,
 } from "../../../lib/panelAuth";
+import {
+  DEFAULT_CHECK_IN_TIME,
+  DEFAULT_CHECK_OUT_TIME,
+  formatBookingDateTime,
+  formatBookingWindow,
+} from "../../../lib/bookingSchedule";
 
 const API =
   process.env.NEXT_PUBLIC_API_URL ||
@@ -150,12 +156,25 @@ export default function AdminBookingsPage() {
               <p><b>Hall:</b> {selectedBooking.hallName}</p>
 
               <p>
-                <b>From:</b>{" "}
-                {new Date(selectedBooking.checkIn).toLocaleDateString()}
+                <b>Check-in:</b>{" "}
+                {formatBookingDateTime(
+                  selectedBooking.checkIn,
+                  selectedBooking.checkInTime,
+                  "-",
+                  DEFAULT_CHECK_IN_TIME
+                )}
               </p>
               <p>
-                <b>To:</b>{" "}
-                {new Date(selectedBooking.checkOut).toLocaleDateString()}
+                <b>Check-out:</b>{" "}
+                {formatBookingDateTime(
+                  selectedBooking.checkOut,
+                  selectedBooking.checkOutTime,
+                  "-",
+                  DEFAULT_CHECK_OUT_TIME
+                )}
+              </p>
+              <p>
+                <b>Schedule:</b> {formatBookingWindow(selectedBooking)}
               </p>
 
               <p><b>Amount:</b> Rs {selectedBooking.amount}</p>

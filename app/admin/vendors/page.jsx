@@ -13,6 +13,25 @@ const API =
   process.env.NEXT_PUBLIC_API_URL ||
   "https://utsavas-backend-1.onrender.com";
 
+const formatProofLabel = (value) =>
+  String(value || "")
+    .split("-")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+
+const toDocumentUrl = (value) => {
+  if (!value) {
+    return "";
+  }
+
+  if (/^https?:\/\//i.test(value)) {
+    return value;
+  }
+
+  return `${API}${value}`;
+};
+
 function AdminVendorsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -222,8 +241,20 @@ function AdminVendorsContent() {
         </p>
       )}
 
-      {searchedVendors.map((vendor) => (
-        <div key={vendor._id} className={styles.card}>
+      {searchedVendors.map((vendor) => {
+        const verificationDocuments = vendor.verificationDocuments || {};
+        const hasVerificationDocuments =
+          verificationDocuments.gstNumber ||
+          verificationDocuments.gstCertificateUrl ||
+          verificationDocuments.panNumber ||
+          verificationDocuments.panCardUrl ||
+          verificationDocuments.identityProofType ||
+          verificationDocuments.identityProofUrl ||
+          verificationDocuments.addressProofType ||
+          verificationDocuments.addressProofUrl;
+
+        return (
+          <div key={vendor._id} className={styles.card}>
           <h3>{vendor.businessName}</h3>
 
           <p><b>Owner:</b> {vendor.ownerName}</p>
@@ -231,6 +262,82 @@ function AdminVendorsContent() {
           <p><b>Phone:</b> {vendor.phone}</p>
           <p><b>City:</b> {vendor.city}</p>
           <p><b>Service:</b> {vendor.serviceType}</p>
+
+          {hasVerificationDocuments ? (
+            <div className={styles.vendorDocumentSection}>
+              <h4 className={styles.vendorDocumentTitle}>
+                Compliance documents
+              </h4>
+
+              <div className={styles.vendorDocumentGrid}>
+                <div className={styles.vendorDocumentCard}>
+                  <strong>GST Registration</strong>
+                  <span>{verificationDocuments.gstNumber || "Not provided"}</span>
+                  {verificationDocuments.gstCertificateUrl ? (
+                    <a
+                      href={toDocumentUrl(verificationDocuments.gstCertificateUrl)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={styles.vendorDocumentLink}
+                    >
+                      View GST certificate
+                    </a>
+                  ) : null}
+                </div>
+
+                <div className={styles.vendorDocumentCard}>
+                  <strong>PAN Card</strong>
+                  <span>{verificationDocuments.panNumber || "Not provided"}</span>
+                  {verificationDocuments.panCardUrl ? (
+                    <a
+                      href={toDocumentUrl(verificationDocuments.panCardUrl)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={styles.vendorDocumentLink}
+                    >
+                      View PAN card
+                    </a>
+                  ) : null}
+                </div>
+
+                <div className={styles.vendorDocumentCard}>
+                  <strong>Identity Proof</strong>
+                  <span>
+                    {formatProofLabel(verificationDocuments.identityProofType) ||
+                      "Not provided"}
+                  </span>
+                  {verificationDocuments.identityProofUrl ? (
+                    <a
+                      href={toDocumentUrl(verificationDocuments.identityProofUrl)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={styles.vendorDocumentLink}
+                    >
+                      View identity proof
+                    </a>
+                  ) : null}
+                </div>
+
+                <div className={styles.vendorDocumentCard}>
+                  <strong>Address Proof</strong>
+                  <span>
+                    {formatProofLabel(verificationDocuments.addressProofType) ||
+                      "Not provided"}
+                  </span>
+                  {verificationDocuments.addressProofUrl ? (
+                    <a
+                      href={toDocumentUrl(verificationDocuments.addressProofUrl)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={styles.vendorDocumentLink}
+                    >
+                      View address proof
+                    </a>
+                  ) : null}
+                </div>
+              </div>
+            </div>
+          ) : null}
 
           <p>
             <b>Status:</b>{" "}
@@ -271,8 +378,9 @@ function AdminVendorsContent() {
               Delete Vendor
             </button>
           </div>
-        </div>
-      ))}
+          </div>
+        );
+      })}
 
       {deleteVendorId && (
         <div className={styles.modalOverlay}>

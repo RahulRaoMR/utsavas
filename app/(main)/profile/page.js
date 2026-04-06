@@ -4,21 +4,14 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import styles from "./profile.module.css";
+import {
+  formatBookingTime,
+  formatBookingWindow,
+} from "../../../lib/bookingSchedule";
 
 const API =
   process.env.NEXT_PUBLIC_API_URL ||
   "https://utsavas-backend-1.onrender.com";
-
-const formatDate = (value) => {
-  if (!value) return "-";
-  const d = new Date(value);
-  if (Number.isNaN(d.getTime())) return "-";
-  return d.toLocaleDateString("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
-};
 
 const formatCurrency = (value) =>
   `Rs ${Number(value || 0).toLocaleString("en-IN")}`;
@@ -244,10 +237,12 @@ export default function ProfilePage() {
                 </small>
               </div>
               <div>
-                <span>Dates</span>
-                <p>
-                  {formatDate(b.checkIn)} to {formatDate(b.checkOut)}
-                </p>
+                <span>Schedule</span>
+                <p>{formatBookingWindow(b)}</p>
+                <small className={styles.bookingHint}>
+                  {formatBookingTime(b.checkInTime)} {"->"}{" "}
+                  {formatBookingTime(b.checkOutTime)}
+                </small>
               </div>
             </Link>
           ))}

@@ -40,8 +40,22 @@
   font-size: 22px;
 }
 
+.formNote {
+  margin: -8px 0 18px;
+  text-align: center;
+  color: #7c6a52;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
 .form {
   display: block;
+}
+
+.fieldGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
 }
 
 .form label {
@@ -71,6 +85,31 @@
   border-color: #5f97d6;
   box-shadow: 0 0 0 4px rgba(95, 151, 214, 0.16);
   background: #fffdf8;
+}
+
+.schedulePreview {
+  margin: 8px 0 18px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(95, 151, 214, 0.1);
+  border: 1px solid rgba(63, 111, 182, 0.16);
+  color: #30402f;
+}
+
+.schedulePreview span {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #7c6a52;
+}
+
+.schedulePreview strong {
+  display: block;
+  font-size: 15px;
+  line-height: 1.6;
 }
 
 .button {
@@ -351,5 +390,10 @@
 
   .calendarHeader {
     align-items: flex-start;
+  }
+
+  .fieldGrid {
+    grid-template-columns: 1fr;
+    gap: 0;
   }
 }

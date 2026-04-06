@@ -3,6 +3,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "../vendorDashboard.module.css";
+import {
+  DEFAULT_CHECK_IN_TIME,
+  DEFAULT_CHECK_OUT_TIME,
+  formatBookingDate,
+  formatBookingDateTime,
+  formatBookingWindow,
+} from "../../../lib/bookingSchedule";
 
 const API =
   process.env.NEXT_PUBLIC_API_URL ||
@@ -624,6 +631,28 @@ export default function VendorDashboard() {
     vendor?.ownerName || vendor?.name || vendor?.businessName || "-";
   const displayEmail = vendor?.email || "-";
   const displayCity = vendor?.city || vendor?.address?.city || "-";
+  const quickActions = [
+    {
+      title: "Add New Hall",
+      description: "Create a new venue listing",
+      href: "/vendor/add-hall",
+    },
+    {
+      title: "My Halls",
+      description: "View and manage your halls",
+      href: "/vendor/my-halls",
+    },
+    {
+      title: "Booking Requests",
+      description: "Manage customer bookings",
+      href: "/vendor/bookings",
+    },
+    {
+      title: "Leads & Chats",
+      description: "Reply to users and manage CRM leads",
+      href: "/vendor/chats",
+    },
+  ];
 
   if (loading) {
     return <p className={styles.loading}>Loading dashboard...</p>;
@@ -653,29 +682,18 @@ export default function VendorDashboard() {
       </div>
 
       <div className={styles.actions}>
-        <div className={styles.card} onClick={() => router.push("/vendor/add-hall")}>
-          <div className={styles.cardIcon}>+</div>
-          <div className={styles.cardTitle}>Add New Hall</div>
-          <div className={styles.muted}>Create a new venue listing</div>
-        </div>
-
-        <div className={styles.card} onClick={() => router.push("/vendor/my-halls")}>
-          <div className={styles.cardIcon}>Hall</div>
-          <div className={styles.cardTitle}>My Halls</div>
-          <div className={styles.muted}>View and manage your halls</div>
-        </div>
-
-        <div className={styles.card} onClick={() => router.push("/vendor/bookings")}>
-          <div className={styles.cardIcon}>Cal</div>
-          <div className={styles.cardTitle}>Booking Requests</div>
-          <div className={styles.muted}>Manage customer bookings</div>
-        </div>
-
-        <div className={styles.card} onClick={() => router.push("/vendor/chats")}>
-          <div className={styles.cardIcon}>Chat</div>
-          <div className={styles.cardTitle}>Leads & Chats</div>
-          <div className={styles.muted}>Reply to users and manage CRM leads</div>
-        </div>
+        {quickActions.map((action) => (
+          <div
+            key={action.title}
+            className={styles.actionCard}
+            onClick={() => router.push(action.href)}
+          >
+            <div className={styles.actionContent}>
+              <div className={styles.actionTitle}>{action.title}</div>
+              <div className={styles.actionCopy}>{action.description}</div>
+            </div>
+          </div>
+        ))}
       </div>
 
       <div className={styles.calendarSection}>
@@ -1131,8 +1149,12 @@ export default function VendorDashboard() {
               <span>Hall:</span> {selectedBooking.hall?.hallName || "N/A"}
             </p>
             <p>
-              <span>Dates:</span> {formatDisplayDate(selectedBooking.checkIn)} to{" "}
-              {formatDisplayDate(selectedBooking.checkOut)}
+              <span>Schedule:</span>{" "}
+              {selectedBooking.status === "offline"
+                ? `${formatBookingDate(selectedBooking.checkIn)} to ${formatBookingDate(
+                    selectedBooking.checkOut
+                  )} (blocked all day)`
+                : formatBookingWindow(selectedBooking)}
             </p>
             <p>
               <span>Status:</span>{" "}
@@ -1149,6 +1171,24 @@ export default function VendorDashboard() {
               </p>
             ) : (
               <>
+                <p>
+                  <span>Check-in:</span>{" "}
+                  {formatBookingDateTime(
+                    selectedBooking.checkIn,
+                    selectedBooking.checkInTime,
+                    "-",
+                    DEFAULT_CHECK_IN_TIME
+                  )}
+                </p>
+                <p>
+                  <span>Check-out:</span>{" "}
+                  {formatBookingDateTime(
+                    selectedBooking.checkOut,
+                    selectedBooking.checkOutTime,
+                    "-",
+                    DEFAULT_CHECK_OUT_TIME
+                  )}
+                </p>
                 <p>
                   <span>Customer:</span> {selectedBooking.customerName || "-"}
                 </p>

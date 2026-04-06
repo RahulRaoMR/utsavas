@@ -8,15 +8,17 @@ import {
   getVendorAuthHeaders,
   getVendorSession,
 } from "../../../lib/panelAuth";
+import {
+  DEFAULT_CHECK_IN_TIME,
+  DEFAULT_CHECK_OUT_TIME,
+  formatBookingDate,
+  formatBookingDateTime,
+  formatBookingWindow,
+} from "../../../lib/bookingSchedule";
 
 const API =
   process.env.NEXT_PUBLIC_API_URL ||
   "https://utsavas-backend-1.onrender.com";
-
-const formatDate = (value) => {
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? "-" : date.toDateString();
-};
 
 export default function VendorBookingsPage() {
   const router = useRouter();
@@ -137,9 +139,37 @@ export default function VendorBookingsPage() {
               </h3>
 
               <p>
-                <span>Dates:</span> {formatDate(booking.checkIn)} {"->"}{" "}
-                {formatDate(booking.checkOut)}
+                <span>Schedule:</span>{" "}
+                {booking.status === "offline"
+                  ? `${formatBookingDate(booking.checkIn)} to ${formatBookingDate(
+                      booking.checkOut
+                    )} (blocked all day)`
+                  : formatBookingWindow(booking)}
               </p>
+
+              {booking.status === "offline" ? null : (
+                <>
+                  <p>
+                    <span>Check-in:</span>{" "}
+                    {formatBookingDateTime(
+                      booking.checkIn,
+                      booking.checkInTime,
+                      "-",
+                      DEFAULT_CHECK_IN_TIME
+                    )}
+                  </p>
+
+                  <p>
+                    <span>Check-out:</span>{" "}
+                    {formatBookingDateTime(
+                      booking.checkOut,
+                      booking.checkOutTime,
+                      "-",
+                      DEFAULT_CHECK_OUT_TIME
+                    )}
+                  </p>
+                </>
+              )}
 
               <p>
                 <span>Event:</span> {booking.eventType || "-"}

@@ -38,6 +38,22 @@ const LOCAL_LOCATION_LIBRARY = [
   })),
 ];
 
+const IDENTITY_PROOF_OPTIONS = [
+  { value: "aadhaar-card", label: "Aadhaar Card" },
+  { value: "passport", label: "Passport" },
+  { value: "driving-license", label: "Driving License" },
+];
+
+const ADDRESS_PROOF_OPTIONS = [
+  { value: "electricity-bill", label: "Electricity Bill" },
+  { value: "rental-agreement", label: "Rental Agreement" },
+  { value: "shop-license", label: "Shop License" },
+];
+
+const GSTIN_PATTERN =
+  /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][A-Z0-9]Z[A-Z0-9]$/;
+const PAN_PATTERN = /^[A-Z]{5}[0-9]{4}[A-Z]$/;
+
 function mergeLocationSuggestions(...groups) {
   const seen = new Set();
 
@@ -95,6 +111,16 @@ export default function VendorRegisterPage() {
     city: "",
     serviceType: "",
     password: "",
+    gstNumber: "",
+    panNumber: "",
+    identityProofType: "",
+    addressProofType: "",
+  });
+  const [documentFiles, setDocumentFiles] = useState({
+    gstCertificate: null,
+    panCardDocument: null,
+    identityProofDocument: null,
+    addressProofDocument: null,
   });
 
   const [loading, setLoading] = useState(false);
@@ -103,7 +129,20 @@ export default function VendorRegisterPage() {
   const [cityError, setCityError] = useState("");
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    const normalizedValue =
+      name === "gstNumber" || name === "panNumber"
+        ? value.toUpperCase()
+        : value;
+
+    setForm({ ...form, [name]: normalizedValue });
+  };
+
+  const handleFileChange = (name, file) => {
+    setDocumentFiles((currentFiles) => ({
+      ...currentFiles,
+      [name]: file || null,
+    }));
   };
 
   useEffect(() => {
@@ -187,15 +226,50 @@ export default function VendorRegisterPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!form.serviceType) {
+      alert("Please select the vendor service type");
+      return;
+    }
+
+    if (!GSTIN_PATTERN.test(form.gstNumber.trim())) {
+      alert("Please enter a valid GSTIN");
+      return;
+    }
+
+    if (!PAN_PATTERN.test(form.panNumber.trim())) {
+      alert("Please enter a valid PAN number");
+      return;
+    }
+
+    if (
+      !documentFiles.gstCertificate ||
+      !documentFiles.panCardDocument ||
+      !documentFiles.identityProofDocument ||
+      !documentFiles.addressProofDocument
+    ) {
+      alert("Please upload all mandatory legal documents");
+      return;
+    }
+
     setLoading(true);
 
     try {
+      const payload = new FormData();
+
+      Object.entries(form).forEach(([key, value]) => {
+        payload.append(key, value);
+      });
+
+      Object.entries(documentFiles).forEach(([key, file]) => {
+        if (file) {
+          payload.append(key, file);
+        }
+      });
+
       const res = await fetch(`${API}/api/vendor/register`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
+        body: payload,
       });
 
       const data = await res.json().catch(() => ({}));
@@ -238,7 +312,7 @@ export default function VendorRegisterPage() {
             Partner with UTSAVAS and grow your business
           </p>
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} encType="multipart/form-data">
             <input
               name="businessName"
               placeholder="Business Name"
@@ -348,6 +422,159 @@ export default function VendorRegisterPage() {
               ))}
               <option value="service">Service Provider</option>
             </select>
+
+            {form.serviceType ? (
+              <section className={styles.documentSection}>
+                <div className={styles.documentHeader}>
+                  <h2 className={styles.documentTitle}>Legal documents for approval</h2>
+                  <p className={styles.documentCopy}>
+                    Upload the required business and identity documents so the
+                    UTSAVAS team can verify and approve the vendor account.
+                  </p>
+                </div>
+
+                <input
+                  name="gstNumber"
+                  placeholder="GST Number (GSTIN)"
+                  className={styles.input}
+                  value={form.gstNumber}
+                  onChange={handleChange}
+                  required
+                />
+
+                <label className={styles.fileField}>
+                  <span className={styles.fileLabel}>
+                    GST Certificate (PDF/Image)
+                  </span>
+                  <input
+                    type="file"
+                    accept=".pdf,image/*"
+                    className={styles.fileInput}
+                    onChange={(e) =>
+                      handleFileChange(
+                        "gstCertificate",
+                        e.target.files?.[0] || null
+                      )
+                    }
+                    required
+                  />
+                  <small className={styles.fileName}>
+                    {documentFiles.gstCertificate?.name ||
+                      "Upload GST certificate"}
+                  </small>
+                </label>
+
+                <input
+                  name="panNumber"
+                  placeholder="PAN Number"
+                  className={styles.input}
+                  value={form.panNumber}
+                  onChange={handleChange}
+                  required
+                />
+
+                <label className={styles.fileField}>
+                  <span className={styles.fileLabel}>
+                    PAN Card (PDF/Image)
+                  </span>
+                  <input
+                    type="file"
+                    accept=".pdf,image/*"
+                    className={styles.fileInput}
+                    onChange={(e) =>
+                      handleFileChange(
+                        "panCardDocument",
+                        e.target.files?.[0] || null
+                      )
+                    }
+                    required
+                  />
+                  <small className={styles.fileName}>
+                    {documentFiles.panCardDocument?.name ||
+                      "Upload PAN card copy"}
+                  </small>
+                </label>
+
+                <select
+                  name="identityProofType"
+                  className={styles.input}
+                  value={form.identityProofType}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select Identity Proof</option>
+                  {IDENTITY_PROOF_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+
+                <label className={styles.fileField}>
+                  <span className={styles.fileLabel}>
+                    Identity Proof File (PDF/Image)
+                  </span>
+                  <input
+                    type="file"
+                    accept=".pdf,image/*"
+                    className={styles.fileInput}
+                    onChange={(e) =>
+                      handleFileChange(
+                        "identityProofDocument",
+                        e.target.files?.[0] || null
+                      )
+                    }
+                    required
+                  />
+                  <small className={styles.fileName}>
+                    {documentFiles.identityProofDocument?.name ||
+                      "Upload identity proof"}
+                  </small>
+                </label>
+
+                <select
+                  name="addressProofType"
+                  className={styles.input}
+                  value={form.addressProofType}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select Address Proof</option>
+                  {ADDRESS_PROOF_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+
+                <label className={styles.fileField}>
+                  <span className={styles.fileLabel}>
+                    Address Proof File (PDF/Image)
+                  </span>
+                  <input
+                    type="file"
+                    accept=".pdf,image/*"
+                    className={styles.fileInput}
+                    onChange={(e) =>
+                      handleFileChange(
+                        "addressProofDocument",
+                        e.target.files?.[0] || null
+                      )
+                    }
+                    required
+                  />
+                  <small className={styles.fileName}>
+                    {documentFiles.addressProofDocument?.name ||
+                      "Upload address proof"}
+                  </small>
+                </label>
+              </section>
+            ) : (
+              <div className={styles.documentPrompt}>
+                Select the service type to continue with the mandatory GST,
+                PAN, identity proof, and address proof upload.
+              </div>
+            )}
 
             <button className={styles.submitBtn} disabled={loading}>
               {loading ? "Submitting..." : "Submit for Approval"}

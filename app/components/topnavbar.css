@@ -64,10 +64,11 @@
 }
 
 .brand-copy strong {
+  font-family: var(--font-brand-wordmark);
   font-size: 34px;
-  font-weight: 900;
-  letter-spacing: -0.04em;
-  text-transform: lowercase;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
   background: linear-gradient(180deg, #86b8f2 0%, #3f6fb6 52%, #183b63 100%);
   -webkit-background-clip: text;
   background-clip: text;

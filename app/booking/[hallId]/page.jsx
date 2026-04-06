@@ -5,6 +5,12 @@ import { useEffect, useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import styles from "./booking.module.css";
+import {
+  DEFAULT_CHECK_IN_TIME,
+  DEFAULT_CHECK_OUT_TIME,
+  formatBookingWindow,
+  normalizeBookingTime,
+} from "../../../lib/bookingSchedule";
 
 const API =
   process.env.NEXT_PUBLIC_API_URL ||
@@ -36,6 +42,19 @@ const toDayEnd = (value) => {
 const rangesOverlap = (startA, endA, startB, endB) =>
   startA <= endB && endA >= startB;
 
+const buildDateTime = (dateValue, timeValue) => {
+  const normalizedTime = normalizeBookingTime(timeValue);
+
+  if (!dateValue || !normalizedTime) {
+    return null;
+  }
+
+  const [year, month, day] = String(dateValue).split("-").map(Number);
+  const [hours, minutes] = normalizedTime.split(":").map(Number);
+
+  return new Date(year, month - 1, day, hours, minutes, 0, 0);
+};
+
 export default function BookingPage() {
   const { hallId } = useParams();
   const router = useRouter();
@@ -51,7 +70,9 @@ export default function BookingPage() {
 
   const [form, setForm] = useState({
     checkIn: "",
+    checkInTime: DEFAULT_CHECK_IN_TIME,
     checkOut: "",
+    checkOutTime: DEFAULT_CHECK_OUT_TIME,
     eventType: "",
     guests: "",
     name: "",
@@ -195,9 +216,21 @@ export default function BookingPage() {
 
     const rangeStart = toDayStart(form.checkIn);
     const rangeEnd = toDayEnd(form.checkOut);
+    const checkInDateTime = buildDateTime(form.checkIn, form.checkInTime);
+    const checkOutDateTime = buildDateTime(form.checkOut, form.checkOutTime);
 
     if (!rangeStart || !rangeEnd || rangeStart > rangeEnd) {
       alert("Please choose a valid date range.");
+      return;
+    }
+
+    if (!checkInDateTime || !checkOutDateTime) {
+      alert("Please choose exact check-in and check-out times.");
+      return;
+    }
+
+    if (checkOutDateTime <= checkInDateTime) {
+      alert("Check-out time must be later than check-in time.");
       return;
     }
 
@@ -235,7 +268,9 @@ export default function BookingPage() {
           },
           booking: {
             checkIn: form.checkIn,
+            checkInTime: form.checkInTime,
             checkOut: form.checkOut,
+            checkOutTime: form.checkOutTime,
             eventType: form.eventType,
             guests: Number(form.guests) || 0,
             customerName: form.name,
@@ -333,30 +368,70 @@ export default function BookingPage() {
 
       <form className={`${styles.card} ${styles.form}`} onSubmit={handleSubmit}>
         <h2>Select Your Dates</h2>
+        <p className={styles.formNote}>
+          Add the exact entry and exit time so both you and the venue partner
+          follow the same event schedule.
+        </p>
 
-        <label>
-          Check-in Date
-          <input
-            type="date"
-            name="checkIn"
-            value={form.checkIn}
-            required
-            min={new Date().toISOString().split("T")[0]}
-            onChange={handleChange}
-          />
-        </label>
+        <div className={styles.fieldGrid}>
+          <label>
+            Check-in Date
+            <input
+              type="date"
+              name="checkIn"
+              value={form.checkIn}
+              required
+              min={new Date().toISOString().split("T")[0]}
+              onChange={handleChange}
+            />
+          </label>
 
-        <label>
-          Check-out Date
-          <input
-            type="date"
-            name="checkOut"
-            value={form.checkOut}
-            required
-            min={form.checkIn}
-            onChange={handleChange}
-          />
-        </label>
+          <label>
+            Check-in Time
+            <input
+              type="time"
+              name="checkInTime"
+              value={form.checkInTime}
+              required
+              step="900"
+              onChange={handleChange}
+            />
+          </label>
+        </div>
+
+        <div className={styles.fieldGrid}>
+          <label>
+            Check-out Date
+            <input
+              type="date"
+              name="checkOut"
+              value={form.checkOut}
+              required
+              min={form.checkIn}
+              onChange={handleChange}
+            />
+          </label>
+
+          <label>
+            Check-out Time
+            <input
+              type="time"
+              name="checkOutTime"
+              value={form.checkOutTime}
+              required
+              step="900"
+              min={form.checkIn === form.checkOut ? form.checkInTime : undefined}
+              onChange={handleChange}
+            />
+          </label>
+        </div>
+
+        {form.checkIn && form.checkOut ? (
+          <div className={styles.schedulePreview}>
+            <span>Exact schedule</span>
+            <strong>{formatBookingWindow(form)}</strong>
+          </div>
+        ) : null}
 
         <label>
           Event Type

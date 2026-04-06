@@ -17,10 +17,13 @@
 }
 
 .title {
+  font-family: var(--font-brand-wordmark);
   font-size: 36px;
   color: #183b63;
   margin-bottom: 6px;
   font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
 .subtitle {

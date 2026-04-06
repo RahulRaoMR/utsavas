@@ -627,6 +627,60 @@
   margin-top: 12px;
 }
 
+.vendorDocumentSection {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 18px;
+  background: #fbf8f1;
+  border: 1px solid rgba(95, 151, 214, 0.14);
+}
+
+.vendorDocumentTitle {
+  margin: 0 0 14px;
+  color: #183b63;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.vendorDocumentGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.vendorDocumentCard {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid rgba(95, 151, 214, 0.12);
+}
+
+.vendorDocumentCard strong {
+  color: #183b63;
+  font-size: 14px;
+}
+
+.vendorDocumentCard span {
+  color: #5e5551;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.vendorDocumentLink {
+  display: inline-flex;
+  width: fit-content;
+  color: #3f6fb6;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.vendorDocumentLink:hover {
+  color: #183b63;
+}
+
 /* =========================
    ADMIN SIDEBAR
 ========================= */
@@ -647,8 +701,10 @@
 }
 
 .sidebarHeader {
+  font-family: var(--font-brand-wordmark);
   font-size: 21px;
   font-weight: 800;
+  letter-spacing: 0.03em;
   color: #f4f9ff;
 }
 
@@ -987,6 +1043,10 @@
   .adminAnalyticsCardHeader,
   .adminAnalyticsHallRow {
     flex-direction: column;
+  }
+
+  .vendorDocumentGrid {
+    grid-template-columns: 1fr;
   }
 
   .adminAnalyticsHeaderActions {

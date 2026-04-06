@@ -21,8 +21,10 @@
 
 .logo {
   font-size: 20px;
-  font-weight: bold;
-  letter-spacing: 1px;
+  font-family: var(--font-brand-wordmark);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .logoutBtn {
@@ -77,6 +79,46 @@
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 24px;
   padding: 40px;
+}
+
+.actionCard {
+  background: #fbf5ea;
+  border-radius: 20px;
+  min-height: 128px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  border-left: 6px solid #5f97d6;
+  box-shadow: 0 8px 22px rgba(29, 74, 138, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.actionCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 28px rgba(29, 74, 138, 0.14);
+}
+
+.actionContent {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  justify-content: center;
+}
+
+.actionTitle {
+  margin: 0;
+  color: #183b63;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.actionCopy {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.55;
 }
 
 .card {
@@ -829,6 +871,15 @@
 
   .calendarControls {
     grid-template-columns: 1fr;
+  }
+
+  .actions {
+    padding: 24px 20px 8px;
+  }
+
+  .actionCard {
+    min-height: 0;
+    padding: 20px;
   }
 
   .analyticsHeader,

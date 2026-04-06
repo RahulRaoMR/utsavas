@@ -77,11 +77,12 @@
 }
 
 .content h1 {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-brand-wordmark);
   font-size: clamp(3.75rem, 8vw, 6.5rem);
-  font-weight: 700;
+  font-weight: 800;
   margin-bottom: 14px;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
   color: #fff8e2;
   text-shadow:
     0 10px 30px rgba(4, 20, 53, 0.34),

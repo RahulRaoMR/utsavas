@@ -5,6 +5,12 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { toAbsoluteImageUrl } from "../../../../lib/imageUrl";
+import {
+  DEFAULT_CHECK_IN_TIME,
+  DEFAULT_CHECK_OUT_TIME,
+  formatBookingDateTime,
+  formatBookingWindow,
+} from "../../../../lib/bookingSchedule";
 import styles from "./booking-detail.module.css";
 
 const API =
@@ -15,19 +21,6 @@ const LOGIN_REDIRECT_PREFIX = "/login?redirect=";
 
 const formatCurrency = (value) =>
   `Rs ${Number(value || 0).toLocaleString("en-IN")}`;
-
-const formatDate = (value) => {
-  if (!value) return "-";
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "-";
-
-  return date.toLocaleDateString("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
-};
 
 const formatDateTime = (value) => {
   if (!value) return "-";
@@ -165,9 +158,7 @@ export default function MyBookingDetailPage() {
     return {
       amountPaid,
       amountPending,
-      bookingWindow: `${formatDate(booking.checkIn)} to ${formatDate(
-        booking.checkOut
-      )}`,
+      bookingWindow: formatBookingWindow(booking),
       venueImage: booking.hallImages?.[0]
         ? toAbsoluteImageUrl(booking.hallImages[0])
         : "/dashboard/banquet.jpg",
@@ -270,16 +261,38 @@ export default function MyBookingDetailPage() {
                 <strong>{booking.pricingBasis || "Venue pricing"}</strong>
               </div>
               <div>
-                <span>Event dates</span>
-                <strong>{summary.bookingWindow}</strong>
+                <span>Check-in</span>
+                <strong>
+                  {formatBookingDateTime(
+                    booking.checkIn,
+                    booking.checkInTime,
+                    "-",
+                    DEFAULT_CHECK_IN_TIME
+                  )}
+                </strong>
               </div>
               <div>
-                <span>Guests</span>
-                <strong>{booking.guests || "To be confirmed"}</strong>
+                <span>Check-out</span>
+                <strong>
+                  {formatBookingDateTime(
+                    booking.checkOut,
+                    booking.checkOutTime,
+                    "-",
+                    DEFAULT_CHECK_OUT_TIME
+                  )}
+                </strong>
+              </div>
+              <div>
+                <span>Event schedule</span>
+                <strong>{summary.bookingWindow}</strong>
               </div>
               <div>
                 <span>Booked on</span>
                 <strong>{formatDateTime(booking.createdAt)}</strong>
+              </div>
+              <div>
+                <span>Guests</span>
+                <strong>{booking.guests || "To be confirmed"}</strong>
               </div>
               <div>
                 <span>Coupon</span>

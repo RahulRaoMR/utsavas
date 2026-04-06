@@ -48,9 +48,11 @@
 
 .titleBrand {
   display: block;
+  font-family: var(--font-brand-wordmark);
   font-size: 108px;
   line-height: 0.95;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
   color: #fff8e2;
   text-shadow:
     0 10px 30px rgba(4, 20, 53, 0.34),

@@ -31,9 +31,11 @@
 
 .logo {
   margin: 0;
+  font-family: var(--font-brand-wordmark);
   font-size: 34px;
   font-weight: 800;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
   color: #183b63;
 }
 
