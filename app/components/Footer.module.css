@@ -63,26 +63,22 @@
 
 .links li {
   margin-bottom: 12px;
-  font-size: 14px;
-  cursor: pointer;
-  opacity: 0.9;
-  transition: all 0.3s ease;
 }
 
 .learnMore li {
   margin-bottom: 12px;
+}
+
+.footerNavLink {
+  display: inline-block;
   font-size: 14px;
+  color: inherit;
   opacity: 0.9;
-  cursor: pointer;
+  text-decoration: none;
   transition: all 0.3s ease;
 }
 
-.links li:hover {
-  color: #efd7a6;
-  transform: translateX(4px);
-}
-
-.learnMore li:hover {
+.footerNavLink:hover {
   color: #efd7a6;
   transform: translateX(4px);
 }

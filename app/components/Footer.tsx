@@ -3,7 +3,6 @@
 import styles from "./Footer.module.css";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
   SUPPORT_EMAIL,
   SUPPORT_PHONE_DISPLAY,
@@ -88,12 +87,6 @@ function FacebookIcon() {
 }
 
 export default function Footer() {
-  const router = useRouter();
-
-  const handleRedirect = (path: string) => {
-    router.push(path);
-  };
-
   return (
     <footer className={styles.footer}>
       <div className={styles.container}>
@@ -116,34 +109,72 @@ export default function Footer() {
         <div className={styles.links}>
           <h5>Quick Links</h5>
           <ul>
-            <li onClick={() => handleRedirect("/why-utsavas")}>
-              Why UTSAVAS
+            <li>
+              <Link href="/why-utsavas" className={styles.footerNavLink}>
+                Why UTSAVAS
+              </Link>
             </li>
-            <li onClick={() => handleRedirect("/venue-stories")}>
-              Venue Stories
+            <li>
+              <Link href="/venue-stories" className={styles.footerNavLink}>
+                Venue Stories
+              </Link>
             </li>
-            <li onClick={() => handleRedirect("/amenities")}>Amenities</li>
-            <li onClick={() => handleRedirect("/services")}>Events</li>
-            <li onClick={() => handleRedirect("/faqs")}>FAQs</li>
-            <li onClick={() => handleRedirect("/contact")}>Contact Us</li>
+            <li>
+              <Link href="/amenities" className={styles.footerNavLink}>
+                Amenities
+              </Link>
+            </li>
+            <li>
+              <Link href="/events" className={styles.footerNavLink}>
+                Events
+              </Link>
+            </li>
+            <li>
+              <Link href="/faqs" className={styles.footerNavLink}>
+                FAQs
+              </Link>
+            </li>
+            <li>
+              <Link href="/contact" className={styles.footerNavLink}>
+                Contact Us
+              </Link>
+            </li>
           </ul>
         </div>
 
         <div className={styles.learnMore}>
           <h5>Learn More</h5>
           <ul>
-            <li onClick={() => handleRedirect("/privacy")}>Privacy</li>
-            <li onClick={() => handleRedirect("/security")}>Security</li>
-            <li onClick={() => handleRedirect("/terms-of-service")}>
-              Terms of Service
+            <li>
+              <Link href="/privacy" className={styles.footerNavLink}>
+                Privacy
+              </Link>
             </li>
-            <li onClick={() => handleRedirect("/help-support")}>
-              Help &amp; Support
+            <li>
+              <Link href="/security" className={styles.footerNavLink}>
+                Security
+              </Link>
             </li>
-            <li onClick={() => handleRedirect("/report-fraud")}>
-              Report a Fraud
+            <li>
+              <Link href="/terms" className={styles.footerNavLink}>
+                Terms of Service
+              </Link>
             </li>
-            <li onClick={() => handleRedirect("/about-us")}>About Us</li>
+            <li>
+              <Link href="/help" className={styles.footerNavLink}>
+                Help &amp; Support
+              </Link>
+            </li>
+            <li>
+              <Link href="/report-fraud" className={styles.footerNavLink}>
+                Report a Fraud
+              </Link>
+            </li>
+            <li>
+              <Link href="/about" className={styles.footerNavLink}>
+                About Us
+              </Link>
+            </li>
           </ul>
         </div>
 

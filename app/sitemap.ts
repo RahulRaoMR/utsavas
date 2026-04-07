@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import connectDB from "../lib/mongodb";
 import Hall from "../models/Hall";
 import { SITE_URL } from "../lib/seo";
+import { REQUIRED_FOOTER_PATHS } from "../lib/staticPageSeo";
 import { getVenueRoute, VENUE_TYPE_OPTIONS } from "../lib/venueCategories";
 import { SEO_LANDING_PAGES } from "../lib/seoLandingPages";
 
@@ -16,13 +17,20 @@ const STATIC_ROUTES = [
   { path: "/wedding-halls", priority: 0.95, changeFrequency: "daily" as const },
   { path: "/banquet-halls", priority: 0.92, changeFrequency: "daily" as const },
   { path: "/party-venues", priority: 0.9, changeFrequency: "daily" as const },
-  { path: "/about-us", priority: 0.7, changeFrequency: "monthly" as const },
-  { path: "/services", priority: 0.72, changeFrequency: "monthly" as const },
-  { path: "/why-utsavas", priority: 0.75, changeFrequency: "monthly" as const },
-  { path: "/venue-stories", priority: 0.68, changeFrequency: "weekly" as const },
-  { path: "/faqs", priority: 0.65, changeFrequency: "monthly" as const },
-  { path: "/contact", priority: 0.62, changeFrequency: "monthly" as const },
   { path: "/halls", priority: 0.7, changeFrequency: "weekly" as const },
+  ...REQUIRED_FOOTER_PATHS.map((path) => ({
+    path,
+    priority:
+      path === "/contact" || path === "/faqs"
+        ? 0.7
+        : path === "/privacy" || path === "/security" || path === "/terms"
+        ? 0.62
+        : 0.68,
+    changeFrequency:
+      path === "/venue-stories" || path === "/events"
+        ? ("weekly" as const)
+        : ("monthly" as const),
+  })),
 ];
 
 function buildAbsoluteUrl(path: string) {
