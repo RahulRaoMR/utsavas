@@ -3,6 +3,7 @@
 import { Suspense, useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import styles from "../admin.module.css";
+import { useAppDialog } from "../../components/GlobalAlertHost";
 import {
   clearAdminSession,
   getAdminAuthHeaders,
@@ -34,6 +35,7 @@ const toDocumentUrl = (value) => {
 
 function AdminVendorsContent() {
   const router = useRouter();
+  const { confirm } = useAppDialog();
   const searchParams = useSearchParams();
   const [vendors, setVendors] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -104,9 +106,11 @@ function AdminVendorsContent() {
   }, [fetchVendors]);
 
   const updateStatus = async (id, status) => {
-    const confirmAction = confirm(
-      `Are you sure you want to ${status.toUpperCase()} this vendor?`
-    );
+    const confirmAction = await confirm({
+      title: "Update Vendor Status",
+      message: `Are you sure you want to ${status.toUpperCase()} this vendor?`,
+      confirmLabel: "Continue",
+    });
     if (!confirmAction) return;
 
     try {

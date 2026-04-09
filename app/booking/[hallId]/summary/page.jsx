@@ -6,6 +6,12 @@ import styles from "./summary.module.css";
 import { toAbsoluteImageUrl } from "../../../../lib/imageUrl";
 import { getVenueCategoryLabel } from "../../../../lib/venueCategories";
 import {
+  BOOKING_GST_HSN_CODE,
+  BOOKING_GST_RATE,
+  calculateBookingInvoiceBreakdown,
+  formatBookingGstLabel,
+} from "../../../../lib/bookingInvoice";
+import {
   DEFAULT_CHECK_IN_TIME,
   DEFAULT_CHECK_OUT_TIME,
   formatBookingDateTime,
@@ -17,7 +23,6 @@ const API =
   process.env.NEXT_PUBLIC_API_URL ||
   "https://utsavas-backend-1.onrender.com";
 const BOOKING_DRAFT_STORAGE_KEY = "utsavas-booking-draft";
-const GST_RATE = 0.02;
 
 const COUPONS = {
   UTSAVAS10: {
@@ -211,41 +216,46 @@ export default function BookingSummaryPage() {
       return {
         nights: 1,
         venuePrice: 0,
+        taxableAmount: 0,
         gstAmount: 0,
-        subtotal: 0,
         discount: 0,
-        total: 0,
+        totalAmount: 0,
         pricingBasis: "Custom venue quote",
         pricingDescription: "",
         unitPrice: 0,
         unitLabel: "custom",
         unitCount: 0,
+        gstRate: BOOKING_GST_RATE,
+        gstHsnCode: BOOKING_GST_HSN_CODE,
       };
     }
 
     const pricingRule = resolveVenuePricing(draft.hall, draft.booking);
     const nights = pricingRule.selectedDays;
     const venuePrice = pricingRule.venuePrice;
-
-    const gstAmount = venuePrice > 0 ? Math.round(venuePrice * GST_RATE) : 0;
-    const subtotal = venuePrice + gstAmount;
     const discount = appliedCoupon
-      ? COUPONS[appliedCoupon]?.apply(subtotal) || 0
+      ? Math.min(COUPONS[appliedCoupon]?.apply(venuePrice) || 0, venuePrice)
       : 0;
-    const total = Math.max(subtotal - discount, 0);
+    const invoice = calculateBookingInvoiceBreakdown({
+      venueAmount: venuePrice,
+      discountAmount: discount,
+      gstRate: BOOKING_GST_RATE,
+    });
 
     return {
       nights,
       venuePrice,
-      gstAmount,
-      subtotal,
-      discount,
-      total,
+      taxableAmount: invoice.taxableAmount,
+      gstAmount: invoice.gstAmount,
+      discount: invoice.discountAmount,
+      totalAmount: invoice.totalAmount,
       pricingBasis: pricingRule.pricingBasis,
       pricingDescription: pricingRule.pricingDescription,
       unitPrice: pricingRule.unitPrice,
       unitLabel: pricingRule.unitLabel,
       unitCount: pricingRule.unitCount,
+      gstRate: invoice.gstRate,
+      gstHsnCode: invoice.gstHsnCode,
     };
   }, [appliedCoupon, draft]);
 
@@ -266,7 +276,7 @@ export default function BookingSummaryPage() {
       return;
     }
 
-    const discount = coupon.apply(pricing.subtotal);
+    const discount = coupon.apply(pricing.venuePrice);
 
     if (discount <= 0) {
       setAppliedCoupon("");
@@ -314,13 +324,16 @@ export default function BookingSummaryPage() {
           customerName: draft.booking.customerName,
           phone: draft.booking.phone,
           customerEmail: parsedUser?.email || "",
-          amount: pricing.total,
+          amount: pricing.totalAmount,
           venueAmount: pricing.venuePrice,
+          taxableAmount: pricing.taxableAmount,
           supportFee: pricing.gstAmount,
-          subtotalAmount: pricing.subtotal,
+          subtotalAmount: pricing.taxableAmount,
           discountAmount: pricing.discount,
           couponCode: appliedCoupon,
           pricingBasis: pricing.pricingBasis,
+          gstRate: pricing.gstRate,
+          gstHsnCode: pricing.gstHsnCode,
         }),
       });
 
@@ -337,18 +350,26 @@ export default function BookingSummaryPage() {
       }
 
       const createdBooking = data?.booking || {};
-      const nextAmount = parsePrice(createdBooking.amount) || pricing.total;
+      const nextAmount = parsePrice(createdBooking.amount) || pricing.totalAmount;
       const nextBaseAmount =
-        parsePrice(createdBooking.subtotalAmount) || pricing.subtotal;
+        parsePrice(createdBooking.taxableAmount) ||
+        parsePrice(createdBooking.subtotalAmount) ||
+        pricing.taxableAmount;
+      const nextGstAmount =
+        parsePrice(createdBooking.supportFee) || pricing.gstAmount;
       const nextDiscount =
         parsePrice(createdBooking.discountAmount) || pricing.discount;
       const nextCouponCode = createdBooking.couponCode || appliedCoupon;
+      const nextGstRate = Number(createdBooking.gstRate) || pricing.gstRate;
+      const nextGstHsnCode = createdBooking.gstHsnCode || pricing.gstHsnCode;
 
       router.push(
         `/booking/${hallId}/payment?bookingId=${encodeURIComponent(
           bookingId
-        )}&amount=${nextAmount}&baseAmount=${nextBaseAmount}&discount=${nextDiscount}&coupon=${encodeURIComponent(
+        )}&amount=${nextAmount}&baseAmount=${nextBaseAmount}&gstAmount=${nextGstAmount}&discount=${nextDiscount}&coupon=${encodeURIComponent(
           nextCouponCode
+        )}&gstRate=${encodeURIComponent(nextGstRate)}&hsn=${encodeURIComponent(
+          nextGstHsnCode
         )}`
       );
     } catch (error) {
@@ -536,22 +557,27 @@ export default function BookingSummaryPage() {
               <strong>{formatCurrency(pricing.venuePrice)}</strong>
             </div>
             <div className={styles.summaryRow}>
-              <span>GST (2%)</span>
-              <strong>{formatCurrency(pricing.gstAmount)}</strong>
-            </div>
-            <div className={styles.summaryRow}>
-              <span>Subtotal</span>
-              <strong>{formatCurrency(pricing.subtotal)}</strong>
-            </div>
-            <div className={styles.summaryRow}>
               <span>Coupon discount</span>
               <strong className={styles.discountValue}>
                 - {formatCurrency(pricing.discount)}
               </strong>
             </div>
+            <div className={styles.summaryRow}>
+              <span>Taxable value</span>
+              <strong>{formatCurrency(pricing.taxableAmount)}</strong>
+            </div>
+            <div className={styles.summaryRow}>
+              <span>
+                {formatBookingGstLabel({
+                  gstRate: pricing.gstRate,
+                  hsnCode: pricing.gstHsnCode,
+                })}
+              </span>
+              <strong>{formatCurrency(pricing.gstAmount)}</strong>
+            </div>
             <div className={`${styles.summaryRow} ${styles.totalRow}`}>
-              <span>Total amount</span>
-              <strong>{formatCurrency(pricing.total)}</strong>
+              <span>Total bill</span>
+              <strong>{formatCurrency(pricing.totalAmount)}</strong>
             </div>
 
             <div className={styles.bookingSnapshot}>
@@ -581,6 +607,17 @@ export default function BookingSummaryPage() {
                 Applied offer: <strong>{appliedCoupon}</strong> - {activeCouponLabel}
               </p>
             ) : null}
+
+            <p className={styles.inlineNote}>
+              Invoice rule: Venue amount - coupon discount = taxable value.
+              {` `}
+              {formatBookingGstLabel({
+                gstRate: pricing.gstRate,
+                hsnCode: pricing.gstHsnCode,
+              })}
+              {` `}
+              is added on the taxable value to calculate the total bill.
+            </p>
 
             <button
               type="button"

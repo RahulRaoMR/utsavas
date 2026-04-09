@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "../vendorDashboard.module.css";
+import { useAppDialog } from "../../components/GlobalAlertHost";
 import {
   DEFAULT_CHECK_IN_TIME,
   DEFAULT_CHECK_OUT_TIME,
@@ -172,6 +173,7 @@ const buildSvgAreaPath = (points, chartHeight, padding) => {
 
 export default function VendorDashboard() {
   const router = useRouter();
+  const { confirm } = useAppDialog();
 
   const [vendor, setVendor] = useState(null);
   const [halls, setHalls] = useState([]);
@@ -447,11 +449,17 @@ export default function VendorDashboard() {
       );
     });
 
-    if (
-      hasPendingConflict &&
-      !confirm("These dates already have pending booking requests. Mark them as offline booked anyway?")
-    ) {
-      return;
+    if (hasPendingConflict) {
+      const confirmed = await confirm({
+        title: "Pending Booking Requests",
+        message:
+          "These dates already have pending booking requests. Mark them as offline booked anyway?",
+        confirmLabel: "Continue",
+      });
+
+      if (!confirmed) {
+        return;
+      }
     }
 
     try {
@@ -517,7 +525,13 @@ export default function VendorDashboard() {
       return;
     }
 
-    if (!confirm("Remove this offline booking block?")) {
+    const confirmed = await confirm({
+      title: "Remove Offline Block",
+      message: "Remove this offline booking block?",
+      confirmLabel: "Remove",
+    });
+
+    if (!confirmed) {
       return;
     }
 

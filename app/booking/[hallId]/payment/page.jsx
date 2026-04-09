@@ -3,6 +3,11 @@
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import styles from "./payment.module.css";
+import {
+  BOOKING_GST_HSN_CODE,
+  BOOKING_GST_RATE,
+  formatBookingGstLabel,
+} from "../../../../lib/bookingInvoice";
 
 const API =
   process.env.NEXT_PUBLIC_API_URL ||
@@ -17,13 +22,24 @@ function PaymentPageContent() {
   const searchParams = useSearchParams();
   const bookingId = searchParams.get("bookingId");
   const couponCode = searchParams.get("coupon") || "";
+  const taxableAmount = Number(searchParams.get("baseAmount")) || 0;
+  const gstAmount = Number(searchParams.get("gstAmount")) || 0;
   const discountAmount = Number(searchParams.get("discount")) || 0;
   const quotedAmount = Number(searchParams.get("amount")) || ONLINE_PAYMENT_AMOUNT;
+  const gstRate = Number(searchParams.get("gstRate")) || BOOKING_GST_RATE;
+  const gstHsnCode = searchParams.get("hsn") || BOOKING_GST_HSN_CODE;
+  const venueAmount = taxableAmount + discountAmount;
 
   const [method, setMethod] = useState("payAtVenue");
   const [loading, setLoading] = useState(false);
   const [scriptReady, setScriptReady] = useState(false);
   const [razorpayKeyId, setRazorpayKeyId] = useState("");
+  const [dialog, setDialog] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+    redirectTo: "",
+  });
 
   const getAuthToken = () =>
     typeof window !== "undefined" ? localStorage.getItem("token") || "" : "";
@@ -38,6 +54,30 @@ function PaymentPageContent() {
 
   const redirectToLogin = () => {
     router.replace(`/login?redirect=${encodeURIComponent(getRedirectPath())}`);
+  };
+
+  const openDialog = ({ title = "UTSAVAS", message, redirectTo = "" }) => {
+    setDialog({
+      isOpen: true,
+      title,
+      message,
+      redirectTo,
+    });
+  };
+
+  const closeDialog = () => {
+    const redirectTo = dialog.redirectTo;
+
+    setDialog({
+      isOpen: false,
+      title: "",
+      message: "",
+      redirectTo: "",
+    });
+
+    if (redirectTo) {
+      router.push(redirectTo);
+    }
   };
 
   const getAuthHeaders = () => {
@@ -169,13 +209,21 @@ function PaymentPageContent() {
       amount: quotedAmount,
     });
 
-    alert("Booking confirmed. You can pay at the venue.");
-    router.push("/my-bookings");
+    setLoading(false);
+    openDialog({
+      title: "Booking Confirmed",
+      message: "Booking confirmed. You can pay at the venue.",
+      redirectTo: "/my-bookings",
+    });
   };
 
   const handleOnlinePayment = async () => {
     if (!bookingId) {
-      alert("Booking reference missing. Please go back and book again.");
+      setLoading(false);
+      openDialog({
+        title: "Booking Reference Missing",
+        message: "Booking reference missing. Please go back and book again.",
+      });
       return;
     }
 
@@ -185,12 +233,20 @@ function PaymentPageContent() {
     }
 
     if (!scriptReady || !window.Razorpay) {
-      alert("Payment gateway is still loading. Please try again in a moment.");
+      setLoading(false);
+      openDialog({
+        title: "Payment Gateway Loading",
+        message: "Payment gateway is still loading. Please try again in a moment.",
+      });
       return;
     }
 
     if (!razorpayKeyId) {
-      alert("Payment gateway is not configured correctly yet.");
+      setLoading(false);
+      openDialog({
+        title: "Payment Unavailable",
+        message: "Payment gateway is not configured correctly yet.",
+      });
       return;
     }
 
@@ -268,11 +324,17 @@ function PaymentPageContent() {
             }
           }
 
-          alert("Payment successful. Your booking is now recorded.");
-          router.push("/my-bookings");
+          openDialog({
+            title: "Payment Successful",
+            message: "Payment successful. Your booking is now recorded.",
+            redirectTo: "/my-bookings",
+          });
         } catch (error) {
           console.error("Payment verification error", error);
-          alert(error.message || "Payment verification failed.");
+          openDialog({
+            title: "Payment Verification Failed",
+            message: error.message || "Payment verification failed.",
+          });
         } finally {
           setLoading(false);
         }
@@ -307,7 +369,10 @@ function PaymentPageContent() {
       await handleOnlinePayment();
     } catch (error) {
       console.error("Payment error", error);
-      alert(error.message || "Payment failed. Please try again.");
+      openDialog({
+        title: "Payment Failed",
+        message: error.message || "Payment failed. Please try again.",
+      });
       setLoading(false);
     }
   };
@@ -344,15 +409,96 @@ function PaymentPageContent() {
         </div>
 
         <div className={styles.info}>
-          {method === "payNow"
-            ? `Online payment amount: Rs ${quotedAmount.toLocaleString("en-IN")}${
-                couponCode
-                  ? `. Coupon ${couponCode} saved Rs ${discountAmount.toLocaleString("en-IN")}.`
-                  : "."
-              }`
-            : `No payment needed today. Amount due at venue: Rs ${quotedAmount.toLocaleString(
-                "en-IN"
-              )}.`}
+          {method === "payNow" ? (
+            <>
+              <p>
+                Total bill payable online: Rs {quotedAmount.toLocaleString("en-IN")}
+              </p>
+              <div className={styles.infoBreakdown}>
+                <span>Venue amount</span>
+                <strong>Rs {venueAmount.toLocaleString("en-IN")}</strong>
+              </div>
+              <div className={styles.infoBreakdown}>
+                <span>Coupon discount</span>
+                <strong>- Rs {discountAmount.toLocaleString("en-IN")}</strong>
+              </div>
+              <div className={styles.infoBreakdown}>
+                <span>Taxable value</span>
+                <strong>Rs {taxableAmount.toLocaleString("en-IN")}</strong>
+              </div>
+              <div className={styles.infoBreakdown}>
+                <span>
+                  {formatBookingGstLabel({
+                    gstRate,
+                    hsnCode: gstHsnCode,
+                  })}
+                </span>
+                <strong>Rs {gstAmount.toLocaleString("en-IN")}</strong>
+              </div>
+              <div className={styles.infoBreakdown}>
+                <span>Total bill</span>
+                <strong>Rs {quotedAmount.toLocaleString("en-IN")}</strong>
+              </div>
+              {couponCode ? (
+                <p>
+                  Coupon <strong>{couponCode}</strong> saved Rs{" "}
+                  {discountAmount.toLocaleString("en-IN")} before GST.
+                </p>
+              ) : null}
+              <p>
+                Calculation: venue amount - coupon discount = taxable value, then
+                {` `}
+                {formatBookingGstLabel({
+                  gstRate,
+                  hsnCode: gstHsnCode,
+                })}
+                {` `}
+                is added to get the total bill.
+              </p>
+            </>
+          ) : (
+            <>
+              <p>
+                No payment needed today. Amount due at venue: Rs{" "}
+                {quotedAmount.toLocaleString("en-IN")}.
+              </p>
+              <div className={styles.infoBreakdown}>
+                <span>Venue amount</span>
+                <strong>Rs {venueAmount.toLocaleString("en-IN")}</strong>
+              </div>
+              <div className={styles.infoBreakdown}>
+                <span>Coupon discount</span>
+                <strong>- Rs {discountAmount.toLocaleString("en-IN")}</strong>
+              </div>
+              <div className={styles.infoBreakdown}>
+                <span>Taxable value</span>
+                <strong>Rs {taxableAmount.toLocaleString("en-IN")}</strong>
+              </div>
+              <div className={styles.infoBreakdown}>
+                <span>
+                  {formatBookingGstLabel({
+                    gstRate,
+                    hsnCode: gstHsnCode,
+                  })}
+                </span>
+                <strong>Rs {gstAmount.toLocaleString("en-IN")}</strong>
+              </div>
+              <div className={styles.infoBreakdown}>
+                <span>Total bill</span>
+                <strong>Rs {quotedAmount.toLocaleString("en-IN")}</strong>
+              </div>
+              <p>
+                Calculation: venue amount - coupon discount = taxable value, then
+                {` `}
+                {formatBookingGstLabel({
+                  gstRate,
+                  hsnCode: gstHsnCode,
+                })}
+                {` `}
+                is added to get the total bill.
+              </p>
+            </>
+          )}
         </div>
 
         <button
@@ -371,6 +517,27 @@ function PaymentPageContent() {
           Back
         </button>
       </div>
+
+      {dialog.isOpen ? (
+        <div className={styles.dialogOverlay} role="presentation">
+          <div
+            className={styles.dialog}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="payment-dialog-title"
+          >
+            <h3 id="payment-dialog-title">{dialog.title}</h3>
+            <p>{dialog.message}</p>
+            <button
+              type="button"
+              className={styles.dialogButton}
+              onClick={closeDialog}
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

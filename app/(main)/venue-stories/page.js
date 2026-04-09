@@ -31,7 +31,7 @@ const STORIES = [
   },
   {
     title: "Kalyana Mandapams",
-    description: "Traditional ceremony spaces",
+    description: "Temple-attached ceremony spaces",
     image: "/gallery/g5.jpg",
   },
   {

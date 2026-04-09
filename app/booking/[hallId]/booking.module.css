@@ -112,6 +112,13 @@
   line-height: 1.6;
 }
 
+.timeHelper {
+  margin: -2px 0 18px;
+  color: #7c6a52;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
 .button {
   margin-top: 26px;
   width: 100%;
@@ -182,6 +189,14 @@
   align-items: center;
   width: 100%;
   margin: 6px auto 18px;
+}
+
+.calendarNote {
+  margin: -4px 0 18px;
+  text-align: center;
+  color: #7c6a52;
+  font-size: 13px;
+  line-height: 1.6;
 }
 
 .legendItem {

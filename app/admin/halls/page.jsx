@@ -3,6 +3,7 @@
 import { Suspense, useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import styles from "../admin.module.css";
+import { useAppDialog } from "../../components/GlobalAlertHost";
 import {
   clearAdminSession,
   getAdminAuthHeaders,
@@ -20,6 +21,7 @@ const API =
 
 function AdminHallsContent() {
   const router = useRouter();
+  const { confirm } = useAppDialog();
   const searchParams = useSearchParams();
   const [halls, setHalls] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -81,7 +83,13 @@ function AdminHallsContent() {
   }, [fetchHalls]);
 
   const approveHall = async (id) => {
-    if (!confirm("Approve this hall?")) return;
+    const confirmed = await confirm({
+      title: "Approve Hall",
+      message: "Approve this hall?",
+      confirmLabel: "Approve",
+    });
+
+    if (!confirmed) return;
 
     const adminToken = getAdminToken();
 
@@ -106,7 +114,13 @@ function AdminHallsContent() {
   };
 
   const rejectHall = async (id) => {
-    if (!confirm("Reject this hall?")) return;
+    const confirmed = await confirm({
+      title: "Reject Hall",
+      message: "Reject this hall?",
+      confirmLabel: "Reject",
+    });
+
+    if (!confirmed) return;
 
     const adminToken = getAdminToken();
 
@@ -135,7 +149,13 @@ function AdminHallsContent() {
   };
 
   const deleteHall = async (id) => {
-    if (!confirm("Delete this hall everywhere? This action cannot be undone.")) {
+    const confirmed = await confirm({
+      title: "Delete Hall",
+      message: "Delete this hall everywhere? This action cannot be undone.",
+      confirmLabel: "Delete",
+    });
+
+    if (!confirmed) {
       return;
     }
 

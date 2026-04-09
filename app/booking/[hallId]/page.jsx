@@ -1,21 +1,90 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import styles from "./booking.module.css";
+import { useAppDialog } from "../../components/GlobalAlertHost";
 import {
+  buildBookingDateTime,
   DEFAULT_CHECK_IN_TIME,
   DEFAULT_CHECK_OUT_TIME,
+  formatBookingTime,
   formatBookingWindow,
-  normalizeBookingTime,
+  formatDateInputValue,
+  rangesOverlap,
 } from "../../../lib/bookingSchedule";
 
 const API =
   process.env.NEXT_PUBLIC_API_URL ||
   "https://utsavas-backend-1.onrender.com";
 const BOOKING_DRAFT_STORAGE_KEY = "utsavas-booking-draft";
+const FULL_DAY_START_TIME = "00:00";
+const FULL_DAY_END_TIME = "23:59";
+const EVENT_TYPE_GROUPS = [
+  {
+    label: "Personal Events",
+    options: [
+      "Wedding",
+      "Reception",
+      "Engagement",
+      "Birthday Party",
+      "Anniversary",
+      "Baby Shower",
+      "Naming Ceremony",
+      "Farewell Party",
+      "Get Together",
+    ],
+  },
+  {
+    label: "Corporate Events",
+    options: [
+      "Corporate Meeting",
+      "Conference",
+      "Seminar",
+      "Workshop",
+      "Product Launch",
+      "Business Meetup",
+      "Team Outing",
+      "Award Ceremony",
+    ],
+  },
+  {
+    label: "Cultural & Social Events",
+    options: [
+      "Festival Celebration",
+      "Cultural Program",
+      "Music Concert",
+      "Dance Show",
+      "Drama / Stage Show",
+      "Exhibition",
+      "Fashion Show",
+    ],
+  },
+  {
+    label: "Religious Events",
+    options: [
+      "Pooja / Homam",
+      "Satyanarayana Pooja",
+      "Seemantham",
+      "Upanayanam",
+      "Temple Festival",
+      "Spiritual Gathering",
+    ],
+  },
+  {
+    label: "Other Events",
+    options: [
+      "Dinner Party",
+      "Cocktail Party",
+      "Networking Event",
+      "Charity Event",
+      "Sports Event",
+      "School / College Event",
+    ],
+  },
+];
 
 const toDayStart = (value) => {
   const date = new Date(value);
@@ -39,25 +108,77 @@ const toDayEnd = (value) => {
   return date;
 };
 
-const rangesOverlap = (startA, endA, startB, endB) =>
-  startA <= endB && endA >= startB;
+const parseDateInputValue = (value) => {
+  const normalizedDate = formatDateInputValue(value);
 
-const buildDateTime = (dateValue, timeValue) => {
-  const normalizedTime = normalizeBookingTime(timeValue);
-
-  if (!dateValue || !normalizedTime) {
+  if (!normalizedDate) {
     return null;
   }
 
-  const [year, month, day] = String(dateValue).split("-").map(Number);
-  const [hours, minutes] = normalizedTime.split(":").map(Number);
-
-  return new Date(year, month - 1, day, hours, minutes, 0, 0);
+  const [year, month, day] = normalizedDate.split("-").map(Number);
+  return new Date(year, month - 1, day, 0, 0, 0, 0);
 };
+
+const TIME_OPTIONS = Array.from({ length: 96 }, (_, index) => {
+  const hours = Math.floor(index / 4);
+  const minutes = (index % 4) * 15;
+  const value = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+    2,
+    "0"
+  )}`;
+
+  return {
+    value,
+    label: formatBookingTime(value, value),
+  };
+});
+
+const buildExistingRangeDateTime = (booking) => {
+  const isOfflineBooking = booking?.status === "offline";
+  const start = buildBookingDateTime(
+    booking?.checkIn || booking?.startDate,
+    isOfflineBooking ? FULL_DAY_START_TIME : booking?.checkInTime,
+    {
+      fallbackTime: isOfflineBooking
+        ? FULL_DAY_START_TIME
+        : DEFAULT_CHECK_IN_TIME,
+    }
+  );
+  const end = buildBookingDateTime(
+    booking?.checkOut || booking?.endDate,
+    isOfflineBooking ? FULL_DAY_END_TIME : booking?.checkOutTime,
+    {
+      fallbackTime: isOfflineBooking ? FULL_DAY_END_TIME : DEFAULT_CHECK_OUT_TIME,
+      endOfDay: isOfflineBooking,
+    }
+  );
+
+  if (!start || !end) {
+    return null;
+  }
+
+  return { start, end };
+};
+
+const findOverlappingRange = (startDateTime, endDateTime, ranges) =>
+  ranges.find((range) => {
+    const existingRange = buildExistingRangeDateTime(range);
+
+    return (
+      existingRange &&
+      rangesOverlap(
+        startDateTime,
+        endDateTime,
+        existingRange.start,
+        existingRange.end
+      )
+    );
+  });
 
 export default function BookingPage() {
   const { hallId } = useParams();
   const router = useRouter();
+  const { confirm } = useAppDialog();
 
   const [hall, setHall] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -147,15 +268,54 @@ export default function BookingPage() {
 
   useEffect(() => {
     if (checkInDate) {
-      const inDate = checkInDate.toISOString().split("T")[0];
-      setForm((prev) => ({ ...prev, checkIn: inDate }));
+      const inDate = formatDateInputValue(checkInDate);
+      setForm((prev) =>
+        prev.checkIn === inDate ? prev : { ...prev, checkIn: inDate }
+      );
     }
 
     if (checkOutDate) {
-      const outDate = checkOutDate.toISOString().split("T")[0];
-      setForm((prev) => ({ ...prev, checkOut: outDate }));
+      const outDate = formatDateInputValue(checkOutDate);
+      setForm((prev) =>
+        prev.checkOut === outDate ? prev : { ...prev, checkOut: outDate }
+      );
     }
   }, [checkInDate, checkOutDate]);
+
+  const availableCheckOutOptions = useMemo(() => {
+    if (form.checkIn && form.checkOut && form.checkIn === form.checkOut) {
+      return TIME_OPTIONS.filter(({ value }) => value > form.checkInTime);
+    }
+
+    return TIME_OPTIONS;
+  }, [form.checkIn, form.checkOut, form.checkInTime]);
+
+  useEffect(() => {
+    if (!form.checkIn || !form.checkOut || form.checkIn !== form.checkOut) {
+      return;
+    }
+
+    if (availableCheckOutOptions.some((option) => option.value === form.checkOutTime)) {
+      return;
+    }
+
+    const nextCheckOutTime =
+      availableCheckOutOptions[0]?.value || DEFAULT_CHECK_OUT_TIME;
+
+    if (nextCheckOutTime === form.checkOutTime) {
+      return;
+    }
+
+    setForm((prev) => ({
+      ...prev,
+      checkOutTime: nextCheckOutTime,
+    }));
+  }, [
+    availableCheckOutOptions,
+    form.checkIn,
+    form.checkOut,
+    form.checkOutTime,
+  ]);
 
   const isDateWithinRanges = (date, ranges) => {
     const selected = toDayStart(date);
@@ -172,21 +332,8 @@ export default function BookingPage() {
   const isDatePending = (date) => isDateWithinRanges(date, pendingRanges);
   const isDateOffline = (date) => isDateWithinRanges(date, offlineRanges);
 
-  const rangeOverlapsAny = (startDate, endDate, ranges) => {
-    return ranges.some((range) => {
-      const rangeStart = toDayStart(range.checkIn);
-      const rangeEnd = toDayEnd(range.checkOut);
-
-      return (
-        rangeStart &&
-        rangeEnd &&
-        rangesOverlap(startDate, endDate, rangeStart, rangeEnd)
-      );
-    });
-  };
-
   const getTileClassName = ({ date }) => {
-    const dateKey = date.toISOString().split("T")[0];
+    const dateKey = formatDateInputValue(date);
 
     if (isDateOffline(dateKey)) return styles.booked;
     if (isDateApproved(dateKey)) return styles.booked;
@@ -196,28 +343,36 @@ export default function BookingPage() {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-
-    setForm((prev) => ({
-      ...prev,
+    const nextForm = {
+      ...form,
       [name]: value,
-    }));
+    };
 
-    if (name === "checkIn") {
-      setDateRange([value ? new Date(value) : null, checkOutDate]);
+    if (name === "checkIn" && nextForm.checkOut && nextForm.checkOut < value) {
+      nextForm.checkOut = value;
     }
 
-    if (name === "checkOut") {
-      setDateRange([checkInDate, value ? new Date(value) : null]);
+    setForm(nextForm);
+
+    if (name === "checkIn" || name === "checkOut") {
+      setDateRange([
+        nextForm.checkIn ? parseDateInputValue(nextForm.checkIn) : null,
+        nextForm.checkOut ? parseDateInputValue(nextForm.checkOut) : null,
+      ]);
     }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const rangeStart = toDayStart(form.checkIn);
-    const rangeEnd = toDayEnd(form.checkOut);
-    const checkInDateTime = buildDateTime(form.checkIn, form.checkInTime);
-    const checkOutDateTime = buildDateTime(form.checkOut, form.checkOutTime);
+    const rangeStart = parseDateInputValue(form.checkIn);
+    const rangeEnd = parseDateInputValue(form.checkOut);
+    const checkInDateTime = buildBookingDateTime(form.checkIn, form.checkInTime, {
+      fallbackTime: DEFAULT_CHECK_IN_TIME,
+    });
+    const checkOutDateTime = buildBookingDateTime(form.checkOut, form.checkOutTime, {
+      fallbackTime: DEFAULT_CHECK_OUT_TIME,
+    });
 
     if (!rangeStart || !rangeEnd || rangeStart > rangeEnd) {
       alert("Please choose a valid date range.");
@@ -234,18 +389,30 @@ export default function BookingPage() {
       return;
     }
 
-    if (
-      rangeOverlapsAny(rangeStart, rangeEnd, approvedRanges) ||
-      rangeOverlapsAny(rangeStart, rangeEnd, offlineRanges)
-    ) {
-      alert("These dates are already fully booked.");
+    const overlappingApprovedRange = findOverlappingRange(
+      checkInDateTime,
+      checkOutDateTime,
+      approvedRanges
+    );
+    const overlappingOfflineRange = findOverlappingRange(
+      checkInDateTime,
+      checkOutDateTime,
+      offlineRanges
+    );
+
+    if (overlappingApprovedRange || overlappingOfflineRange) {
+      alert(
+        "This date and time slot is already booked. Please choose a different schedule."
+      );
       return;
     }
 
-    if (rangeOverlapsAny(rangeStart, rangeEnd, pendingRanges)) {
-      const proceed = confirm(
-        "These dates already have pending requests. Continue?"
-      );
+    if (findOverlappingRange(checkInDateTime, checkOutDateTime, pendingRanges)) {
+      const proceed = await confirm({
+        title: "Pending Booking Request",
+        message: "This schedule already has a pending request. Continue anyway?",
+        confirmLabel: "Continue",
+      });
       if (!proceed) return;
     }
 
@@ -317,8 +484,9 @@ export default function BookingPage() {
           <div>
             <h3>Availability Calendar</h3>
             <p className={styles.calendarSubtext}>
-              Select your event dates from the live venue calendar. Red dates are
-              unavailable, and gold dates have pending requests.
+              Select your dates first, then choose the exact time slot. Colored
+              dates already have booking activity, but same-day morning and
+              evening events can still work if the times do not overlap.
             </p>
           </div>
         </div>
@@ -329,7 +497,7 @@ export default function BookingPage() {
               className={`${styles.legendSwatch} ${styles.legendAvailable}`}
               aria-hidden="true"
             ></span>
-            Available
+            Open day
           </span>
           <span className={styles.legendItem}>
             <span
@@ -343,19 +511,21 @@ export default function BookingPage() {
               className={`${styles.legendSwatch} ${styles.legendBooked}`}
               aria-hidden="true"
             ></span>
-            Booked
+            Confirmed booking
           </span>
         </div>
+
+        <p className={styles.calendarNote}>
+          Final blocking happens using both date and time, not only the calendar
+          day.
+        </p>
 
         <Calendar
           selectRange={true}
           onChange={setDateRange}
           value={dateRange}
+          minDate={new Date()}
           tileClassName={getTileClassName}
-          tileDisabled={({ date }) => {
-            const dateKey = date.toISOString().split("T")[0];
-            return isDateApproved(dateKey) || isDateOffline(dateKey);
-          }}
         />
 
         {checkInDate && checkOutDate ? (
@@ -381,21 +551,25 @@ export default function BookingPage() {
               name="checkIn"
               value={form.checkIn}
               required
-              min={new Date().toISOString().split("T")[0]}
+              min={formatDateInputValue(new Date())}
               onChange={handleChange}
             />
           </label>
 
           <label>
             Check-in Time
-            <input
-              type="time"
+            <select
               name="checkInTime"
               value={form.checkInTime}
               required
-              step="900"
               onChange={handleChange}
-            />
+            >
+              {TIME_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
           </label>
         </div>
 
@@ -414,17 +588,34 @@ export default function BookingPage() {
 
           <label>
             Check-out Time
-            <input
-              type="time"
+            <select
               name="checkOutTime"
-              value={form.checkOutTime}
+              value={
+                availableCheckOutOptions.some(
+                  (option) => option.value === form.checkOutTime
+                )
+                  ? form.checkOutTime
+                  : ""
+              }
               required
-              step="900"
-              min={form.checkIn === form.checkOut ? form.checkInTime : undefined}
               onChange={handleChange}
-            />
+            >
+              {availableCheckOutOptions.length === 0 ? (
+                <option value="">Choose the next day for check-out</option>
+              ) : null}
+              {availableCheckOutOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
           </label>
         </div>
+
+        <p className={styles.timeHelper}>
+          Time options use AM/PM format, and the booking will be blocked only if
+          another event overlaps the same date and time range.
+        </p>
 
         {form.checkIn && form.checkOut ? (
           <div className={styles.schedulePreview}>
@@ -442,11 +633,15 @@ export default function BookingPage() {
             onChange={handleChange}
           >
             <option value="">Select</option>
-            <option>Wedding</option>
-            <option>Reception</option>
-            <option>Engagement</option>
-            <option>Birthday</option>
-            <option>Corporate</option>
+            {EVENT_TYPE_GROUPS.map((group) => (
+              <optgroup key={group.label} label={group.label}>
+                {group.options.map((eventName) => (
+                  <option key={eventName} value={eventName}>
+                    {eventName}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
           </select>
         </label>
 

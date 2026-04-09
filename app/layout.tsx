@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import GlobalAlertHost from "./components/GlobalAlertHost";
 import PwaRegistration from "./components/PwaRegistration";
 import {
   buildOrganizationJsonLd,
@@ -117,8 +118,10 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <PwaRegistration />
-        {children}
+        <GlobalAlertHost>
+          <PwaRegistration />
+          {children}
+        </GlobalAlertHost>
       </body>
     </html>
   );

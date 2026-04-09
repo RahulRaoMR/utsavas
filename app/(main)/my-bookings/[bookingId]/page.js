@@ -6,6 +6,10 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { toAbsoluteImageUrl } from "../../../../lib/imageUrl";
 import {
+  formatBookingGstLabel,
+  resolveStoredBookingInvoiceBreakdown,
+} from "../../../../lib/bookingInvoice";
+import {
   DEFAULT_CHECK_IN_TIME,
   DEFAULT_CHECK_OUT_TIME,
   formatBookingDateTime,
@@ -34,6 +38,7 @@ const formatDateTime = (value) => {
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
+    hour12: true,
   });
 };
 
@@ -148,10 +153,12 @@ export default function MyBookingDetailPage() {
         bookingWindow: "-",
         venueImage: "/dashboard/banquet.jpg",
         address: "",
+        invoice: resolveStoredBookingInvoiceBreakdown({}),
       };
     }
 
-    const totalAmount = Number(booking.amount) || 0;
+    const invoice = resolveStoredBookingInvoiceBreakdown(booking);
+    const totalAmount = Number(invoice.totalAmount) || 0;
     const amountPaid = booking.paymentStatus === "paid" ? totalAmount : 0;
     const amountPending = booking.paymentStatus === "paid" ? 0 : totalAmount;
 
@@ -163,6 +170,7 @@ export default function MyBookingDetailPage() {
         ? toAbsoluteImageUrl(booking.hallImages[0])
         : "/dashboard/banquet.jpg",
       address: formatAddress(booking.hallAddress),
+      invoice,
     };
   }, [booking]);
 
@@ -351,26 +359,31 @@ export default function MyBookingDetailPage() {
             <h2>Amount Summary</h2>
 
             <div className={styles.summaryRow}>
-              <span>Total amount</span>
-              <strong>{formatCurrency(booking.amount)}</strong>
-            </div>
-            <div className={styles.summaryRow}>
               <span>Venue amount</span>
-              <strong>{formatCurrency(booking.venueAmount)}</strong>
+              <strong>{formatCurrency(summary.invoice.venueAmount)}</strong>
             </div>
             <div className={styles.summaryRow}>
-              <span>GST (2%)</span>
-              <strong>{formatCurrency(booking.supportFee)}</strong>
-            </div>
-            <div className={styles.summaryRow}>
-              <span>Subtotal</span>
-              <strong>{formatCurrency(booking.subtotalAmount)}</strong>
-            </div>
-            <div className={styles.summaryRow}>
-              <span>Discount</span>
+              <span>Coupon discount</span>
               <strong className={styles.discountValue}>
-                - {formatCurrency(booking.discountAmount)}
+                - {formatCurrency(summary.invoice.discountAmount)}
               </strong>
+            </div>
+            <div className={styles.summaryRow}>
+              <span>Taxable value</span>
+              <strong>{formatCurrency(summary.invoice.taxableAmount)}</strong>
+            </div>
+            <div className={styles.summaryRow}>
+              <span>
+                {formatBookingGstLabel({
+                  gstRate: summary.invoice.gstRate,
+                  hsnCode: summary.invoice.gstHsnCode,
+                })}
+              </span>
+              <strong>{formatCurrency(summary.invoice.gstAmount)}</strong>
+            </div>
+            <div className={styles.summaryRow}>
+              <span>Total bill</span>
+              <strong>{formatCurrency(summary.invoice.totalAmount)}</strong>
             </div>
             <div className={`${styles.summaryRow} ${styles.summaryHighlight}`}>
               <span>Amount paid</span>

@@ -1,0 +1,100 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(20, 28, 39, 0.48);
+  backdrop-filter: blur(6px);
+}
+
+.dialog {
+  width: min(100%, 460px);
+  padding: 28px 26px 24px;
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(251, 245, 234, 0.99), rgba(245, 236, 223, 0.98));
+  border: 1px solid rgba(95, 151, 214, 0.24);
+  box-shadow: 0 24px 60px rgba(17, 37, 63, 0.26);
+  color: #30402f;
+}
+
+.dialog h2 {
+  margin: 0 0 12px;
+  font-size: 26px;
+  line-height: 1.2;
+  color: #183b63;
+}
+
+.dialog p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.7;
+  color: #5f544a;
+  white-space: pre-wrap;
+}
+
+.button {
+  min-width: 110px;
+  margin-top: 24px;
+  margin-left: auto;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 13px 24px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #5f97d6, #3f6fb6);
+  color: #f4f9ff;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(29, 74, 138, 0.2);
+  filter: brightness(1.03);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.secondaryButton {
+  min-width: 110px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 13px 24px;
+  border: 1px solid rgba(95, 151, 214, 0.35);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: #183b63;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.secondaryButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(29, 74, 138, 0.12);
+  background: rgba(95, 151, 214, 0.08);
+}
+
+@media (max-width: 640px) {
+  .dialog {
+    padding: 24px 20px 20px;
+    border-radius: 22px;
+  }
+
+  .dialog h2 {
+    font-size: 22px;
+  }
+}

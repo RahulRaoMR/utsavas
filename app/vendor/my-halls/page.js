@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./myHalls.module.css";
+import { useAppDialog } from "../../components/GlobalAlertHost";
 import {
   clearVendorSession,
   getVendorAuthHeaders,
@@ -17,6 +18,7 @@ const API =
 
 export default function MyHallsPage() {
   const router = useRouter();
+  const { confirm } = useAppDialog();
   const [halls, setHalls] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deletingHallId, setDeletingHallId] = useState(null);
@@ -81,7 +83,11 @@ export default function MyHallsPage() {
         return;
       }
 
-      const confirmDelete = confirm("Are you sure you want to delete this hall?");
+      const confirmDelete = await confirm({
+        title: "Delete Hall",
+        message: "Are you sure you want to delete this hall?",
+        confirmLabel: "Delete",
+      });
       if (!confirmDelete) return;
 
       setDeletingHallId(hallId);
