@@ -120,6 +120,8 @@ export default function VendorEditHallPage() {
   const [location, setLocation] = useState(null);
   const [features, setFeatures] = useState(DEFAULT_FEATURES);
   const [images, setImages] = useState([]);
+  const [newImages, setNewImages] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
   const [mapCenter, setMapCenter] = useState(INDIA_MAP_CENTER);
   const [confirmedAddressQuery, setConfirmedAddressQuery] = useState("");
   const [mapLookupState, setMapLookupState] = useState("idle");
@@ -176,6 +178,20 @@ export default function VendorEditHallPage() {
     loadHall();
   }, [id]);
 
+  useEffect(() => {
+    if (newImages.length === 0) {
+      setImagePreviews([]);
+      return;
+    }
+
+    const previewUrls = newImages.map((file) => URL.createObjectURL(file));
+    setImagePreviews(previewUrls);
+
+    return () => {
+      previewUrls.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [newImages]);
+
   const handleFormChange = (e) => {
     setForm((prev) => ({
       ...prev,
@@ -204,6 +220,10 @@ export default function VendorEditHallPage() {
 
   const handleFeatureChange = (e) => {
     setFeatures((prev) => ({ ...prev, [e.target.name]: e.target.checked }));
+  };
+
+  const handleImageChange = (e) => {
+    setNewImages(Array.from(e.target.files || []));
   };
 
   const handleMapLocationChange = (nextLocation) => {
@@ -297,26 +317,32 @@ export default function VendorEditHallPage() {
         throw new Error("Set the exact venue location on the map before saving.");
       }
 
+      const formData = new FormData();
+      formData.append("hallName", form.hallName);
+      formData.append("category", form.category);
+      formData.append("listingPlan", form.listingPlan);
+      formData.append("capacity", Number(form.capacity) || 0);
+      formData.append("parkingCapacity", Number(form.parkingCapacity) || 0);
+      formData.append("rooms", Number(form.rooms) || 0);
+      formData.append("pricePerDay", Number(form.pricePerDay) || 0);
+      formData.append("pricePerEvent", Number(form.pricePerEvent) || 0);
+      formData.append("pricePerPlate", Number(form.pricePerPlate) || 0);
+      formData.append("about", form.about || "");
+      formData.append("address", JSON.stringify(address));
+      formData.append("location", JSON.stringify(location));
+      formData.append("features", JSON.stringify(features));
+      formData.append("vendorId", vendorId);
+
+      newImages.forEach((image) => {
+        formData.append("images", image);
+      });
+
       const res = await fetch(`${getApiBaseUrl()}/api/halls/${id}?vendorId=${vendorId}`, {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json",
           ...getVendorHeaders(session.token),
         },
-        body: JSON.stringify({
-          ...form,
-          vendorId,
-          listingPlan: form.listingPlan,
-          capacity: Number(form.capacity) || 0,
-          parkingCapacity: Number(form.parkingCapacity) || 0,
-          rooms: Number(form.rooms) || 0,
-          pricePerDay: Number(form.pricePerDay) || 0,
-          pricePerEvent: Number(form.pricePerEvent) || 0,
-          pricePerPlate: Number(form.pricePerPlate) || 0,
-          address,
-          location,
-          features,
-        }),
+        body: formData,
       });
 
       const data = await res.json().catch(() => ({}));
@@ -351,17 +377,68 @@ export default function VendorEditHallPage() {
     <div className={styles.page}>
       <h1 className={styles.title}>Edit {form.hallName || "Hall"}</h1>
 
-      {images.length > 0 && (
-        <div className={styles.card}>
-          <img
-            src={toAbsoluteImageUrl(images[0])}
-            alt={form.hallName}
-            style={{ width: "100%", height: "260px", objectFit: "cover", borderRadius: "14px", marginBottom: "18px" }}
-          />
-        </div>
-      )}
-
       <form onSubmit={handleSubmit}>
+        <div className={`${styles.card} ${styles.imageEditorCard}`}>
+          <div className={styles.imageEditorHeader}>
+            <div>
+              <h2 className={styles.sectionTitle}>Edit Hall Images</h2>
+              <p className={styles.uploadHint}>
+                Upload new hall image files here. After saving, the new image will show for users too.
+              </p>
+            </div>
+
+            <label htmlFor="hall-image-upload" className={styles.uploadButton}>
+              Upload New Image
+            </label>
+          </div>
+
+          <input
+            id="hall-image-upload"
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleImageChange}
+            className={styles.hiddenFileInput}
+          />
+
+          {imagePreviews.length > 0 || images.length > 0 ? (
+            <div className={styles.imageDisplayBlock}>
+              <img
+                src={imagePreviews[0] || toAbsoluteImageUrl(images[0])}
+                alt={form.hallName}
+                className={styles.coverPreview}
+              />
+
+              {imagePreviews.length > 0 ? (
+                <>
+                  <p className={styles.uploadHint}>
+                    {`${imagePreviews.length} new image${imagePreviews.length > 1 ? "s are" : " is"} selected. Save changes to replace the current hall image${imagePreviews.length > 1 ? "s" : ""}.`}
+                  </p>
+                  <div className={styles.imagePreviewGrid}>
+                    {imagePreviews.map((previewUrl, index) => (
+                      <img
+                        key={previewUrl}
+                        src={previewUrl}
+                        alt={`${form.hallName || "Hall"} preview ${index + 1}`}
+                        className={styles.previewImage}
+                      />
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <p className={styles.uploadHint}>
+                  Current saved hall image. Click <strong>Upload New Image</strong> to replace it.
+                </p>
+              )}
+            </div>
+          ) : (
+            <div className={styles.emptyImageState}>
+              <p>No hall image uploaded yet.</p>
+              <p>Select an image now and save the hall to add it.</p>
+            </div>
+          )}
+        </div>
+
         <div className={styles.card}>
           <input
             name="hallName"

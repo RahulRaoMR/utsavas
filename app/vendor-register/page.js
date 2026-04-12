@@ -224,6 +224,27 @@ export default function VendorRegisterPage() {
     setShowCitySuggestions(false);
   };
 
+  const handleFormKeyDown = (event) => {
+    if (event.key !== "Enter") {
+      return;
+    }
+
+    const target = event.target;
+    const tagName = String(target?.tagName || "").toLowerCase();
+    const inputType = String(target?.type || "").toLowerCase();
+
+    if (tagName === "textarea" || inputType === "file") {
+      return;
+    }
+
+    if (target?.name === "city" && showCitySuggestions) {
+      return;
+    }
+
+    event.preventDefault();
+    event.currentTarget.requestSubmit();
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -312,7 +333,12 @@ export default function VendorRegisterPage() {
             Partner with UTSAVAS and grow your business
           </p>
 
-          <form onSubmit={handleSubmit} encType="multipart/form-data">
+          <form
+            className={styles.form}
+            onSubmit={handleSubmit}
+            onKeyDown={handleFormKeyDown}
+            encType="multipart/form-data"
+          >
             <input
               name="businessName"
               placeholder="Business Name"
@@ -576,7 +602,7 @@ export default function VendorRegisterPage() {
               </div>
             )}
 
-            <button className={styles.submitBtn} disabled={loading}>
+            <button type="submit" className={styles.submitBtn} disabled={loading}>
               {loading ? "Submitting..." : "Submit for Approval"}
             </button>
           </form>

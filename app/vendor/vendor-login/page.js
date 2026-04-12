@@ -16,7 +16,9 @@ export default function VendorLoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async () => {
+  const handleLogin = async (event) => {
+    event?.preventDefault();
+
     if (!identifier || !password) {
       alert("Please enter email or phone and password");
       return;
@@ -64,28 +66,32 @@ export default function VendorLoginPage() {
             </Link>
           </h1>
 
-          <input
-            className={styles.input}
-            placeholder="Email or Phone Number"
-            value={identifier}
-            onChange={(e) => setIdentifier(e.target.value)}
-          />
+          <form className={styles.form} onSubmit={handleLogin}>
+            <input
+              className={styles.input}
+              placeholder="Email or Phone Number"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+              autoComplete="username"
+            />
 
-          <input
-            type="password"
-            className={styles.input}
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+            <input
+              type="password"
+              className={styles.input}
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
+            />
 
-          <button
-            className={styles.submitBtn}
-            onClick={handleLogin}
-            disabled={loading}
-          >
-            {loading ? "Logging in..." : "Login"}
-          </button>
+            <button
+              type="submit"
+              className={styles.submitBtn}
+              disabled={loading}
+            >
+              {loading ? "Logging in..." : "Login"}
+            </button>
+          </form>
 
           <div className={styles.helperRow}>
             <Link href="/vendor/forgot-password" className={styles.helperLink}>

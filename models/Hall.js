@@ -71,6 +71,47 @@ const HallSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
+    reviews: {
+      type: [
+        new mongoose.Schema(
+          {
+            user: {
+              type: mongoose.Schema.Types.ObjectId,
+              ref: "User",
+              default: null,
+            },
+            reviewerName: {
+              type: String,
+              trim: true,
+              default: "",
+            },
+            reviewerEmail: {
+              type: String,
+              trim: true,
+              lowercase: true,
+              default: "",
+            },
+            rating: {
+              type: Number,
+              min: 1,
+              max: 5,
+              default: 5,
+            },
+            comment: {
+              type: String,
+              trim: true,
+              default: "",
+            },
+            photos: {
+              type: [String],
+              default: [],
+            },
+          },
+          { _id: true, timestamps: true }
+        ),
+      ],
+      default: [],
+    },
     listingPlan: {
       type: String,
       enum: LISTING_PLAN_VALUES,

@@ -39,6 +39,7 @@ export default function VenueDetailPage() {
   const { id } = useParams();
   const router = useRouter();
   const chatBottomRef = useRef(null);
+  const reviewFormRef = useRef(null);
 
   const [hall, setHall] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -57,6 +58,18 @@ export default function VenueDetailPage() {
     message: "",
   });
   const [chatReplyDraft, setChatReplyDraft] = useState("");
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [reviewError, setReviewError] = useState("");
+  const [reviewSuccess, setReviewSuccess] = useState("");
+  const [reviewImages, setReviewImages] = useState([]);
+  const [reviewImagePreviews, setReviewImagePreviews] = useState([]);
+  const [reviewForm, setReviewForm] = useState({
+    reviewerName: "",
+    reviewerEmail: "",
+    rating: 5,
+    comment: "",
+  });
 
   useEffect(() => {
     if (!id) return;
@@ -152,7 +165,27 @@ export default function VenueDetailPage() {
       phone: current.phone || storedUser?.phone || "",
       email: current.email || storedUser?.email || "",
     }));
+
+    setReviewForm((current) => ({
+      ...current,
+      reviewerName: current.reviewerName || preferredName || "",
+      reviewerEmail: current.reviewerEmail || storedUser?.email || "",
+    }));
   }, [id]);
+
+  useEffect(() => {
+    if (reviewImages.length === 0) {
+      setReviewImagePreviews([]);
+      return;
+    }
+
+    const previewUrls = reviewImages.map((file) => URL.createObjectURL(file));
+    setReviewImagePreviews(previewUrls);
+
+    return () => {
+      previewUrls.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [reviewImages]);
 
   useEffect(() => {
     if (!chatAccessToken) {
@@ -387,11 +420,62 @@ export default function VenueDetailPage() {
     ? `${venueOwnerLabel} is offline. UTSAVAS Assistant replies instantly`
     : `${venueOwnerLabel} will reply shortly`;
 
+  const reviews = Array.isArray(hall?.reviews)
+    ? [...hall.reviews].sort(
+        (left, right) =>
+          new Date(right.createdAt || 0).getTime() -
+          new Date(left.createdAt || 0).getTime()
+      )
+    : [];
+  const reviewCount = reviews.length;
+  const averageRating =
+    reviewCount > 0
+      ? reviews.reduce((sum, review) => sum + (Number(review.rating) || 0), 0) /
+        reviewCount
+      : 0;
+  const formattedAverageRating = reviewCount > 0 ? averageRating.toFixed(1) : "0.0";
+  const highlightedReviewPhotos = reviews
+    .flatMap((review) => (Array.isArray(review.photos) ? review.photos : []))
+    .slice(0, 6);
+
+  const renderStarIcons = (value) =>
+    Array.from({ length: 5 }, (_, index) => (
+      <span
+        key={`${value}-${index}`}
+        className={index < Math.round(value) ? "review-star filled" : "review-star"}
+        aria-hidden="true"
+      >
+        ★
+      </span>
+    ));
+
   const handleLeadFieldChange = (field, value) => {
     setLeadForm((current) => ({
       ...current,
       [field]: value,
     }));
+  };
+
+  const handleReviewFieldChange = (field, value) => {
+    setReviewForm((current) => ({
+      ...current,
+      [field]: value,
+    }));
+  };
+
+  const handleReviewImageChange = (event) => {
+    setReviewImages(Array.from(event.target.files || []));
+  };
+
+  const openReviewForm = () => {
+    setShowReviewForm(true);
+
+    window.setTimeout(() => {
+      reviewFormRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 60);
   };
 
   const handleStartChat = async () => {
@@ -489,6 +573,78 @@ export default function VenueDetailPage() {
       setChatError(error.message || "Unable to send the message right now.");
     } finally {
       setChatSubmitting(false);
+    }
+  };
+
+  const handleSubmitReview = async (event) => {
+    event.preventDefault();
+
+    if (!hall?._id) {
+      return;
+    }
+
+    if (!reviewForm.reviewerName.trim()) {
+      setReviewError("Please enter your name.");
+      return;
+    }
+
+    if (!reviewForm.comment.trim()) {
+      setReviewError("Please share your review.");
+      return;
+    }
+
+    if (!Number.isFinite(Number(reviewForm.rating))) {
+      setReviewError("Please choose a rating.");
+      return;
+    }
+
+    setReviewSubmitting(true);
+    setReviewError("");
+    setReviewSuccess("");
+
+    try {
+      const payload = new FormData();
+      payload.append("reviewerName", reviewForm.reviewerName.trim());
+      payload.append("reviewerEmail", reviewForm.reviewerEmail.trim());
+      payload.append("rating", String(reviewForm.rating));
+      payload.append("comment", reviewForm.comment.trim());
+
+      reviewImages.forEach((image) => {
+        payload.append("reviewImages", image);
+      });
+
+      const response = await fetch(`${getApiBaseUrl()}/api/halls/${hall._id}/reviews`, {
+        method: "POST",
+        body: payload,
+      });
+
+      const payloadResponse = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(payloadResponse?.message || "Failed to add review");
+      }
+
+      setHall((currentHall) => ({
+        ...currentHall,
+        reviews: Array.isArray(payloadResponse?.hall?.reviews)
+          ? payloadResponse.hall.reviews
+          : [
+              payloadResponse?.review,
+              ...(Array.isArray(currentHall?.reviews) ? currentHall.reviews : []),
+            ].filter(Boolean),
+      }));
+      setReviewSuccess("Thanks for sharing your review.");
+      setReviewImages([]);
+      setReviewForm((current) => ({
+        ...current,
+        rating: 5,
+        comment: "",
+      }));
+    } catch (error) {
+      console.error("Submit review error", error);
+      setReviewError(error.message || "Unable to submit your review right now.");
+    } finally {
+      setReviewSubmitting(false);
     }
   };
 
@@ -865,6 +1021,234 @@ export default function VenueDetailPage() {
           </div>
         </section>
       )}
+
+      <section className="hall-section customer-reviews-section">
+        <div className="reviews-header">
+          <div className="reviews-summary-card">
+            <p className="reviews-eyebrow">Customer Reviews</p>
+            <h3>What customers are saying</h3>
+
+            <div className="reviews-summary-rating">
+              <strong>{formattedAverageRating}</strong>
+              <div className="reviews-summary-stars">
+                {renderStarIcons(averageRating || 0)}
+              </div>
+              <span>
+                {reviewCount === 0
+                  ? "No reviews yet"
+                  : `${reviewCount} customer review${reviewCount > 1 ? "s" : ""}`}
+              </span>
+            </div>
+
+            <p className="reviews-summary-copy">
+              Add real customer ratings, venue experience, and event photos so
+              people can review the hall the same way they browse trusted venue
+              reviews.
+            </p>
+
+            {highlightedReviewPhotos.length > 0 ? (
+              <div className="review-photo-strip">
+                {highlightedReviewPhotos.map((photo, index) => (
+                  <img
+                    key={`${photo}-${index}`}
+                    src={toAbsoluteImageUrl(photo)}
+                    alt={`${hall.hallName} review photo ${index + 1}`}
+                    className="review-photo-strip-image"
+                  />
+                ))}
+              </div>
+            ) : null}
+          </div>
+
+          <div className="reviews-cta-card">
+            <h4>Add your review</h4>
+            <p>
+              Rate this hall, write your experience, and upload photos from the
+              event so future customers can see real feedback.
+            </p>
+
+            <button
+              type="button"
+              className="review-add-button"
+              onClick={openReviewForm}
+            >
+              Add Customer Review
+            </button>
+          </div>
+        </div>
+
+        <div className="reviews-layout">
+          <div className="reviews-list-card">
+            {reviews.length > 0 ? (
+              <div className="reviews-list">
+                {reviews.map((review) => (
+                  <article
+                    key={review._id || `${review.reviewerName}-${review.createdAt}`}
+                    className="review-card"
+                  >
+                    <div className="review-card-top">
+                      <div>
+                        <h4>{review.reviewerName || "Customer"}</h4>
+                        <p className="review-date">
+                          {review.createdAt
+                            ? new Date(review.createdAt).toLocaleDateString("en-IN", {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                              })
+                            : "Recently"}
+                        </p>
+                      </div>
+
+                      <div className="review-rating-badge">
+                        <span>{Number(review.rating || 0).toFixed(1)}</span>
+                        <div className="review-card-stars">
+                          {renderStarIcons(Number(review.rating || 0))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <p className="review-comment">{review.comment}</p>
+
+                    {Array.isArray(review.photos) && review.photos.length > 0 ? (
+                      <div className="review-photos-grid">
+                        {review.photos.map((photo, index) => (
+                          <img
+                            key={`${photo}-${index}`}
+                            src={toAbsoluteImageUrl(photo)}
+                            alt={`${review.reviewerName || "Customer"} review photo ${index + 1}`}
+                            className="review-photo"
+                          />
+                        ))}
+                      </div>
+                    ) : null}
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <div className="reviews-empty-state">
+                <h4>No customer reviews yet</h4>
+                <p>Be the first customer to rate this hall and upload event photos.</p>
+              </div>
+            )}
+          </div>
+
+          {showReviewForm ? (
+            <div className="review-form-card" ref={reviewFormRef}>
+              <div className="review-form-header">
+                <div>
+                  <p className="reviews-eyebrow">Add Customer Review</p>
+                  <h4>Share your hall experience</h4>
+                </div>
+              </div>
+
+              <form onSubmit={handleSubmitReview} className="review-form">
+                <label className="review-field">
+                  Name
+                  <input
+                    type="text"
+                    value={reviewForm.reviewerName}
+                    onChange={(event) =>
+                      handleReviewFieldChange("reviewerName", event.target.value)
+                    }
+                    placeholder="Your full name"
+                  />
+                </label>
+
+                <label className="review-field">
+                  Email
+                  <input
+                    type="email"
+                    value={reviewForm.reviewerEmail}
+                    onChange={(event) =>
+                      handleReviewFieldChange("reviewerEmail", event.target.value)
+                    }
+                    placeholder="Optional email address"
+                  />
+                </label>
+
+                <div className="review-field">
+                  <span>Star rating</span>
+                  <div
+                    className="review-rating-selector"
+                    role="radiogroup"
+                    aria-label="Customer rating"
+                  >
+                    {Array.from({ length: 5 }, (_, index) => {
+                      const ratingValue = index + 1;
+                      const isActive = Number(reviewForm.rating) >= ratingValue;
+
+                      return (
+                        <button
+                          key={ratingValue}
+                          type="button"
+                          className={
+                            isActive
+                              ? "rating-star-button active"
+                              : "rating-star-button"
+                          }
+                          onClick={() =>
+                            handleReviewFieldChange("rating", ratingValue)
+                          }
+                          aria-label={`${ratingValue} star${ratingValue > 1 ? "s" : ""}`}
+                        >
+                          ★
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <label className="review-field">
+                  Review
+                  <textarea
+                    value={reviewForm.comment}
+                    onChange={(event) =>
+                      handleReviewFieldChange("comment", event.target.value)
+                    }
+                    placeholder="Tell customers about the hall, service, cleanliness, space, or overall experience"
+                    rows={5}
+                  />
+                </label>
+
+                <label className="review-field">
+                  Upload photos
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleReviewImageChange}
+                  />
+                </label>
+
+                {reviewImagePreviews.length > 0 ? (
+                  <div className="review-upload-preview-grid">
+                    {reviewImagePreviews.map((previewUrl, index) => (
+                      <img
+                        key={`${previewUrl}-${index}`}
+                        src={previewUrl}
+                        alt={`Review upload preview ${index + 1}`}
+                        className="review-upload-preview"
+                      />
+                    ))}
+                  </div>
+                ) : null}
+
+                {reviewError ? <p className="review-form-error">{reviewError}</p> : null}
+                {reviewSuccess ? <p className="review-form-success">{reviewSuccess}</p> : null}
+
+                <button
+                  type="submit"
+                  className="review-submit-button"
+                  disabled={reviewSubmitting}
+                >
+                  {reviewSubmitting ? "Submitting..." : "Submit Review"}
+                </button>
+              </form>
+            </div>
+          ) : null}
+        </div>
+      </section>
     </div>
   );
 }
