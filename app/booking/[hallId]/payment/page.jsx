@@ -4,9 +4,11 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import styles from "./payment.module.css";
 import {
+  BOOKING_CANCELLATION_POLICY,
   BOOKING_GST_HSN_CODE,
   BOOKING_GST_RATE,
-  formatBookingGstLabel,
+  TALME_INVOICE_COMPANY,
+  resolveBookingTaxBreakdown,
 } from "../../../../lib/bookingInvoice";
 
 const API =
@@ -28,7 +30,16 @@ function PaymentPageContent() {
   const quotedAmount = Number(searchParams.get("amount")) || ONLINE_PAYMENT_AMOUNT;
   const gstRate = Number(searchParams.get("gstRate")) || BOOKING_GST_RATE;
   const gstHsnCode = searchParams.get("hsn") || BOOKING_GST_HSN_CODE;
+  const placeOfSupply =
+    searchParams.get("placeOfSupply") || TALME_INVOICE_COMPANY.state;
   const venueAmount = taxableAmount + discountAmount;
+  const taxBreakdown = resolveBookingTaxBreakdown({
+    taxableAmount,
+    gstAmount,
+    gstRate,
+    hsnCode: gstHsnCode,
+    placeOfSupply,
+  });
 
   const [method, setMethod] = useState("payAtVenue");
   const [loading, setLoading] = useState(false);
@@ -426,15 +437,12 @@ function PaymentPageContent() {
                 <span>Taxable value</span>
                 <strong>Rs {taxableAmount.toLocaleString("en-IN")}</strong>
               </div>
-              <div className={styles.infoBreakdown}>
-                <span>
-                  {formatBookingGstLabel({
-                    gstRate,
-                    hsnCode: gstHsnCode,
-                  })}
-                </span>
-                <strong>Rs {gstAmount.toLocaleString("en-IN")}</strong>
-              </div>
+              {taxBreakdown.taxRows.map((taxRow) => (
+                <div className={styles.infoBreakdown} key={`online-${taxRow.label}`}>
+                  <span>{taxRow.label}</span>
+                  <strong>Rs {taxRow.amount.toLocaleString("en-IN")}</strong>
+                </div>
+              ))}
               <div className={styles.infoBreakdown}>
                 <span>Total bill</span>
                 <strong>Rs {quotedAmount.toLocaleString("en-IN")}</strong>
@@ -448,12 +456,14 @@ function PaymentPageContent() {
               <p>
                 Calculation: venue amount - coupon discount = taxable value, then
                 {` `}
-                {formatBookingGstLabel({
-                  gstRate,
-                  hsnCode: gstHsnCode,
-                })}
+                {taxBreakdown.taxModeLabel} (HSN/SAC {gstHsnCode})
                 {` `}
                 is added to get the total bill.
+              </p>
+              <p>
+                Tax invoice issued by {TALME_INVOICE_COMPANY.legalName}. GSTIN{" "}
+                {TALME_INVOICE_COMPANY.gstin}, PAN {TALME_INVOICE_COMPANY.pan},
+                place of supply {taxBreakdown.placeOfSupply}.
               </p>
             </>
           ) : (
@@ -474,15 +484,12 @@ function PaymentPageContent() {
                 <span>Taxable value</span>
                 <strong>Rs {taxableAmount.toLocaleString("en-IN")}</strong>
               </div>
-              <div className={styles.infoBreakdown}>
-                <span>
-                  {formatBookingGstLabel({
-                    gstRate,
-                    hsnCode: gstHsnCode,
-                  })}
-                </span>
-                <strong>Rs {gstAmount.toLocaleString("en-IN")}</strong>
-              </div>
+              {taxBreakdown.taxRows.map((taxRow) => (
+                <div className={styles.infoBreakdown} key={`venue-${taxRow.label}`}>
+                  <span>{taxRow.label}</span>
+                  <strong>Rs {taxRow.amount.toLocaleString("en-IN")}</strong>
+                </div>
+              ))}
               <div className={styles.infoBreakdown}>
                 <span>Total bill</span>
                 <strong>Rs {quotedAmount.toLocaleString("en-IN")}</strong>
@@ -490,15 +497,24 @@ function PaymentPageContent() {
               <p>
                 Calculation: venue amount - coupon discount = taxable value, then
                 {` `}
-                {formatBookingGstLabel({
-                  gstRate,
-                  hsnCode: gstHsnCode,
-                })}
+                {taxBreakdown.taxModeLabel} (HSN/SAC {gstHsnCode})
                 {` `}
                 is added to get the total bill.
               </p>
+              <p>
+                Tax invoice issued by {TALME_INVOICE_COMPANY.legalName}. GSTIN{" "}
+                {TALME_INVOICE_COMPANY.gstin}, PAN {TALME_INVOICE_COMPANY.pan},
+                place of supply {taxBreakdown.placeOfSupply}.
+              </p>
             </>
           )}
+        </div>
+
+        <div className={styles.noteBox}>
+          <strong>{BOOKING_CANCELLATION_POLICY.title}</strong>
+          {BOOKING_CANCELLATION_POLICY.lines.map((line) => (
+            <p key={line}>{line}</p>
+          ))}
         </div>
 
         <button

@@ -108,6 +108,29 @@
   color: #183b63;
 }
 
+.noteBox {
+  margin: 0 0 22px;
+  padding: 18px;
+  border-radius: 18px;
+  background: rgba(95, 151, 214, 0.1);
+  color: #30402f;
+}
+
+.noteBox strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #183b63;
+}
+
+.noteBox p {
+  margin: 0;
+  line-height: 1.7;
+}
+
+.noteBox p + p {
+  margin-top: 10px;
+}
+
 .bookBtn {
   width: 100%;
   padding: 15px;

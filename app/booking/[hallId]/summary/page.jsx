@@ -6,10 +6,12 @@ import styles from "./summary.module.css";
 import { toAbsoluteImageUrl } from "../../../../lib/imageUrl";
 import { getVenueCategoryLabel } from "../../../../lib/venueCategories";
 import {
+  BOOKING_CANCELLATION_POLICY,
   BOOKING_GST_HSN_CODE,
   BOOKING_GST_RATE,
+  TALME_INVOICE_COMPANY,
   calculateBookingInvoiceBreakdown,
-  formatBookingGstLabel,
+  resolveBookingTaxBreakdown,
 } from "../../../../lib/bookingInvoice";
 import {
   DEFAULT_CHECK_IN_TIME,
@@ -227,6 +229,9 @@ export default function BookingSummaryPage() {
         unitCount: 0,
         gstRate: BOOKING_GST_RATE,
         gstHsnCode: BOOKING_GST_HSN_CODE,
+        placeOfSupply: TALME_INVOICE_COMPANY.state,
+        taxModeLabel: "CGST 9% + SGST 9%",
+        taxRows: [],
       };
     }
 
@@ -240,6 +245,13 @@ export default function BookingSummaryPage() {
       venueAmount: venuePrice,
       discountAmount: discount,
       gstRate: BOOKING_GST_RATE,
+    });
+    const taxBreakdown = resolveBookingTaxBreakdown({
+      taxableAmount: invoice.taxableAmount,
+      gstAmount: invoice.gstAmount,
+      gstRate: invoice.gstRate,
+      hsnCode: invoice.gstHsnCode,
+      placeOfSupply: draft.hall?.address?.state || TALME_INVOICE_COMPANY.state,
     });
 
     return {
@@ -256,6 +268,9 @@ export default function BookingSummaryPage() {
       unitCount: pricingRule.unitCount,
       gstRate: invoice.gstRate,
       gstHsnCode: invoice.gstHsnCode,
+      placeOfSupply: taxBreakdown.placeOfSupply,
+      taxModeLabel: taxBreakdown.taxModeLabel,
+      taxRows: taxBreakdown.taxRows,
     };
   }, [appliedCoupon, draft]);
 
@@ -370,6 +385,8 @@ export default function BookingSummaryPage() {
           nextCouponCode
         )}&gstRate=${encodeURIComponent(nextGstRate)}&hsn=${encodeURIComponent(
           nextGstHsnCode
+        )}&placeOfSupply=${encodeURIComponent(
+          draft.hall?.address?.state || TALME_INVOICE_COMPANY.state
         )}`
       );
     } catch (error) {
@@ -566,15 +583,12 @@ export default function BookingSummaryPage() {
               <span>Taxable value</span>
               <strong>{formatCurrency(pricing.taxableAmount)}</strong>
             </div>
-            <div className={styles.summaryRow}>
-              <span>
-                {formatBookingGstLabel({
-                  gstRate: pricing.gstRate,
-                  hsnCode: pricing.gstHsnCode,
-                })}
-              </span>
-              <strong>{formatCurrency(pricing.gstAmount)}</strong>
-            </div>
+            {pricing.taxRows.map((taxRow) => (
+              <div className={styles.summaryRow} key={taxRow.label}>
+                <span>{taxRow.label}</span>
+                <strong>{formatCurrency(taxRow.amount)}</strong>
+              </div>
+            ))}
             <div className={`${styles.summaryRow} ${styles.totalRow}`}>
               <span>Total bill</span>
               <strong>{formatCurrency(pricing.totalAmount)}</strong>
@@ -602,6 +616,23 @@ export default function BookingSummaryPage() {
               </p>
             </div>
 
+            <div className={styles.noteBox}>
+              <strong>Tax invoice details</strong>
+              <p>{TALME_INVOICE_COMPANY.legalName}</p>
+              <p>GSTIN: {TALME_INVOICE_COMPANY.gstin}</p>
+              <p>PAN: {TALME_INVOICE_COMPANY.pan}</p>
+              <p>HSN/SAC: {pricing.gstHsnCode}</p>
+              <p>Place of supply: {pricing.placeOfSupply}</p>
+              <p>{TALME_INVOICE_COMPANY.address}</p>
+            </div>
+
+            <div className={styles.noteBox}>
+              <strong>{BOOKING_CANCELLATION_POLICY.title}</strong>
+              {BOOKING_CANCELLATION_POLICY.lines.map((line) => (
+                <p key={line}>{line}</p>
+              ))}
+            </div>
+
             {activeCouponLabel ? (
               <p className={styles.inlineNote}>
                 Applied offer: <strong>{appliedCoupon}</strong> - {activeCouponLabel}
@@ -611,10 +642,7 @@ export default function BookingSummaryPage() {
             <p className={styles.inlineNote}>
               Invoice rule: Venue amount - coupon discount = taxable value.
               {` `}
-              {formatBookingGstLabel({
-                gstRate: pricing.gstRate,
-                hsnCode: pricing.gstHsnCode,
-              })}
+              {pricing.taxModeLabel} (HSN/SAC {pricing.gstHsnCode})
               {` `}
               is added on the taxable value to calculate the total bill.
             </p>
