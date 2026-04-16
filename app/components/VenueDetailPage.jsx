@@ -2,15 +2,16 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useAppDialog } from "./GlobalAlertHost";
 import { getApiBaseUrl } from "../../lib/api";
 import {
   markHallAnalyticsEventTracked,
   shouldTrackHallAnalyticsEvent,
-  trackHallPhoneView,
 } from "../../lib/hallAnalytics";
 import { toAbsoluteImageUrl } from "../../lib/imageUrl";
 import { buildVenueMapUrls } from "../../lib/hallLocation";
 import { addHallToCart, isHallInCart } from "../../lib/cart";
+import { clearUserSession } from "../../lib/authRedirect";
 import chatStyles from "./VenueChat.module.css";
 
 const getChatSessionKey = (hallId) => `utsavas_hall_chat_${hallId}`;
@@ -35,9 +36,100 @@ const getStoredUserToken = () => {
   return localStorage.getItem("token") || "";
 };
 
+const getCurrentPagePath = () => {
+  if (typeof window === "undefined") {
+    return "/";
+  }
+
+  return `${window.location.pathname}${window.location.search}`;
+};
+
+const FALLBACK_RAZORPAY_KEY_ID =
+  process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "";
+const DEFAULT_PHONE_ACCESS_PRICING = Object.freeze({
+  unlockAmount: 500,
+  gstRate: 0.18,
+  gstAmount: 90,
+  totalAmount: 590,
+  currency: "INR",
+});
+
+const roundCurrency = (value) =>
+  Math.round((Number(value || 0) + Number.EPSILON) * 100) / 100;
+
+const getPhoneAccessPricing = (payload = {}) => {
+  const parsedUnlockAmount = Number(
+    payload?.unlockAmount ?? payload?.subscriptionAmount
+  );
+  const unlockAmount =
+    Number.isFinite(parsedUnlockAmount) && parsedUnlockAmount >= 0
+      ? parsedUnlockAmount
+      : DEFAULT_PHONE_ACCESS_PRICING.unlockAmount;
+  const parsedGstRate = Number(payload?.gstRate);
+  const gstRate =
+    Number.isFinite(parsedGstRate) && parsedGstRate > 0
+      ? parsedGstRate
+      : DEFAULT_PHONE_ACCESS_PRICING.gstRate;
+  const parsedGstAmount = Number(payload?.gstAmount);
+  const gstAmount =
+    Number.isFinite(parsedGstAmount) && parsedGstAmount >= 0
+      ? parsedGstAmount
+      : roundCurrency(unlockAmount * gstRate);
+  const parsedTotalAmount = Number(payload?.totalAmount);
+  const totalAmount =
+    Number.isFinite(parsedTotalAmount) && parsedTotalAmount >= 0
+      ? parsedTotalAmount
+      : roundCurrency(unlockAmount + gstAmount);
+
+  return {
+    unlockAmount,
+    gstRate,
+    gstAmount,
+    totalAmount,
+    currency:
+      typeof payload?.currency === "string" && payload.currency.trim()
+        ? payload.currency.trim()
+        : DEFAULT_PHONE_ACCESS_PRICING.currency,
+  };
+};
+
+const formatCurrency = (value) => {
+  const amount = Number(value || 0);
+  const isWholeNumber = Math.abs(amount % 1) < 0.001;
+
+  return `Rs ${amount.toLocaleString("en-IN", {
+    minimumFractionDigits: isWholeNumber ? 0 : 2,
+    maximumFractionDigits: 2,
+  })}`;
+};
+
+const formatPercentage = (value) =>
+  `${Math.round(Number(value || 0) * 100)}%`;
+
+const updateStoredUserPhoneAccess = (updates) => {
+  if (typeof window === "undefined" || !updates || typeof updates !== "object") {
+    return;
+  }
+
+  const storedUser = parseStoredUser();
+
+  if (!storedUser) {
+    return;
+  }
+
+  localStorage.setItem(
+    "user",
+    JSON.stringify({
+      ...storedUser,
+      ...updates,
+    })
+  );
+};
+
 export default function VenueDetailPage() {
   const { id } = useParams();
   const router = useRouter();
+  const { confirm } = useAppDialog();
   const chatBottomRef = useRef(null);
   const reviewFormRef = useRef(null);
 
@@ -51,6 +143,16 @@ export default function VenueDetailPage() {
   const [chatError, setChatError] = useState("");
   const [hallInCart, setHallInCart] = useState(false);
   const [cartFeedback, setCartFeedback] = useState("");
+  const [phoneAccessLoading, setPhoneAccessLoading] = useState(false);
+  const [phoneAccessMessage, setPhoneAccessMessage] = useState("");
+  const [phoneAccessRequiresPayment, setPhoneAccessRequiresPayment] =
+    useState(false);
+  const [phoneAccessPricing, setPhoneAccessPricing] = useState(
+    DEFAULT_PHONE_ACCESS_PRICING
+  );
+  const [phonePaymentScriptReady, setPhonePaymentScriptReady] = useState(false);
+  const [phonePaymentKeyId, setPhonePaymentKeyId] = useState("");
+  const [revealedPhoneNumber, setRevealedPhoneNumber] = useState("");
   const [leadForm, setLeadForm] = useState({
     name: "",
     phone: "",
@@ -96,6 +198,65 @@ export default function VenueDetailPage() {
 
     fetchHall();
   }, [id]);
+
+  useEffect(() => {
+    let mounted = true;
+    const existingScript = document.querySelector(
+      'script[src="https://checkout.razorpay.com/v1/checkout.js"]'
+    );
+    const handleScriptLoad = () => {
+      if (mounted) {
+        setPhonePaymentScriptReady(true);
+      }
+    };
+
+    if (window.Razorpay) {
+      setPhonePaymentScriptReady(true);
+    }
+
+    let script = existingScript;
+
+    if (!existingScript) {
+      script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.async = true;
+      script.addEventListener("load", handleScriptLoad);
+      document.body.appendChild(script);
+    } else {
+      existingScript.addEventListener("load", handleScriptLoad);
+    }
+
+    const fetchPaymentConfig = async () => {
+      try {
+        const response = await fetch(`${getApiBaseUrl()}/api/payment/config`, {
+          cache: "no-store",
+        });
+
+        if (!response.ok) {
+          throw new Error(`Payment config request failed with ${response.status}`);
+        }
+
+        const payload = await response.json().catch(() => ({}));
+
+        if (mounted) {
+          setPhonePaymentKeyId(payload?.keyId || FALLBACK_RAZORPAY_KEY_ID);
+        }
+      } catch (error) {
+        console.error("Failed to load Razorpay config", error);
+
+        if (mounted) {
+          setPhonePaymentKeyId(FALLBACK_RAZORPAY_KEY_ID);
+        }
+      }
+    };
+
+    fetchPaymentConfig();
+
+    return () => {
+      mounted = false;
+      script?.removeEventListener("load", handleScriptLoad);
+    };
+  }, []);
 
   const loadPublicConversation = useCallback(
     async (accessToken, options = {}) => {
@@ -348,6 +509,12 @@ export default function VenueDetailPage() {
   const pricePerEvent = Number(hall.pricePerEvent || 0);
   const pricePerDay = Number(hall.pricePerDay || 0);
   const pricePerPlate = Number(hall.pricePerPlate || 0);
+  const formatCount = (value) => {
+    const numericValue = Number(value);
+    return Number.isFinite(numericValue) && numericValue >= 0
+      ? numericValue.toLocaleString("en-IN")
+      : "0";
+  };
   const icons = {
     location: "\uD83D\uDCCD",
     capacity: "\uD83D\uDC65",
@@ -411,6 +578,303 @@ export default function VenueDetailPage() {
         ? `${hall.hallName || "This venue"} was added to your cart.`
         : `${hall.hallName || "This venue"} is already in your cart.`
     );
+  };
+
+  const handleUnauthorizedPhoneAccess = () => {
+    clearUserSession();
+    alert("Please login or register first to view the hall phone number.");
+    router.push(`/login?redirect=${encodeURIComponent(getCurrentPagePath())}`);
+  };
+
+  const triggerPhoneReveal = async (token) => {
+    const response = await fetch(`${getApiBaseUrl()}/api/halls/${hall._id}/reveal-phone`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const payload = await response.json().catch(() => ({}));
+
+    return {
+      response,
+      payload,
+    };
+  };
+
+  const applyPhoneRevealSuccess = (payload) => {
+    setPhoneAccessPricing(getPhoneAccessPricing(payload));
+    setRevealedPhoneNumber(payload?.phone || "");
+    setPhoneAccessMessage(payload?.message || "Phone number unlocked.");
+    setPhoneAccessRequiresPayment(false);
+
+    if (payload?.phone) {
+      alert(`${icons.phone} Phone Number: ${payload.phone}`);
+      return;
+    }
+
+    alert(payload?.message || "Phone number unlocked.");
+  };
+
+  const startPhoneAccessPayment = async (token, initialPricing) => {
+    if (!phonePaymentScriptReady || !window.Razorpay) {
+      alert("Payment gateway is still loading. Please try again in a moment.");
+      return;
+    }
+
+    if (!phonePaymentKeyId) {
+      alert("Payment gateway is not configured correctly yet.");
+      return;
+    }
+
+    try {
+      setPhoneAccessLoading(true);
+
+      const orderResponse = await fetch(
+        `${getApiBaseUrl()}/api/payment/phone-reveal/create-order`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            hallId: hall._id,
+          }),
+        }
+      );
+      const orderPayload = await orderResponse.json().catch(() => ({}));
+
+      if (orderResponse.status === 401) {
+        setPhoneAccessLoading(false);
+        handleUnauthorizedPhoneAccess();
+        return;
+      }
+
+      if (orderResponse.status === 409 && orderPayload?.alreadyUnlocked) {
+        const { response, payload } = await triggerPhoneReveal(token);
+
+        if (response.status === 401) {
+          setPhoneAccessLoading(false);
+          handleUnauthorizedPhoneAccess();
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error(
+            payload?.message || "Hall phone access is already unlocked."
+          );
+        }
+
+        applyPhoneRevealSuccess(payload);
+        setPhoneAccessLoading(false);
+        return;
+      }
+
+      if (!orderResponse.ok || !orderPayload?.id) {
+        throw new Error(orderPayload?.message || "Failed to create payment order");
+      }
+
+      const resolvedPricing = getPhoneAccessPricing({
+        ...initialPricing,
+        ...orderPayload,
+      });
+      const storedUser = parseStoredUser();
+      const prefillName =
+        storedUser?.name ||
+        [storedUser?.firstName, storedUser?.lastName].filter(Boolean).join(" ");
+
+      setPhoneAccessPricing(resolvedPricing);
+
+      const razorpay = new window.Razorpay({
+        key: phonePaymentKeyId,
+        amount: orderPayload.amount,
+        currency: orderPayload.currency || resolvedPricing.currency,
+        name: "UTSAVAS",
+        description: `Unlock hall phone numbers for ${formatCurrency(
+          resolvedPricing.unlockAmount
+        )} + GST`,
+        order_id: orderPayload.id,
+        prefill: {
+          name: prefillName,
+          email: storedUser?.email || "",
+          contact: storedUser?.phone || "",
+        },
+        theme: {
+          color: "#3f6fb6",
+        },
+        modal: {
+          ondismiss: () => {
+            setPhoneAccessLoading(false);
+          },
+        },
+        handler: async (paymentResponse) => {
+          try {
+            const verifyResponse = await fetch(
+              `${getApiBaseUrl()}/api/payment/phone-reveal/verify`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(paymentResponse),
+              }
+            );
+            const verifyPayload = await verifyResponse.json().catch(() => ({}));
+
+            if (verifyResponse.status === 401) {
+              handleUnauthorizedPhoneAccess();
+              return;
+            }
+
+            if (!verifyResponse.ok) {
+              throw new Error(
+                verifyPayload?.message || "Payment verification failed"
+              );
+            }
+
+            updateStoredUserPhoneAccess(verifyPayload?.user);
+
+            const { response, payload } = await triggerPhoneReveal(token);
+
+            if (response.status === 401) {
+              handleUnauthorizedPhoneAccess();
+              return;
+            }
+
+            if (!response.ok) {
+              const message =
+                verifyPayload?.message ||
+                "Payment successful. Tap View phone number again to continue.";
+
+              setPhoneAccessRequiresPayment(false);
+              setPhoneAccessMessage(message);
+              alert(message);
+              return;
+            }
+
+            applyPhoneRevealSuccess(payload);
+          } catch (error) {
+            console.error("Phone access payment verification error", error);
+            alert(error.message || "Payment verification failed.");
+          } finally {
+            setPhoneAccessLoading(false);
+          }
+        },
+      });
+
+      razorpay.on("payment.failed", () => {
+        setPhoneAccessLoading(false);
+        alert("Payment failed. Please try again.");
+      });
+
+      razorpay.open();
+    } catch (error) {
+      console.error("Phone access payment error", error);
+      setPhoneAccessLoading(false);
+      alert(error.message || "Unable to start payment right now.");
+    }
+  };
+
+  const handleRevealPhoneNumber = async () => {
+    if (!hall?._id || phoneAccessLoading) {
+      return;
+    }
+
+    if (revealedPhoneNumber) {
+      alert(`${icons.phone} Phone Number: ${revealedPhoneNumber}`);
+      return;
+    }
+
+    const token = getStoredUserToken();
+
+    if (!token) {
+      alert("Please login or register first to view the hall phone number.");
+      router.push(`/login?redirect=${encodeURIComponent(getCurrentPagePath())}`);
+      return;
+    }
+
+    let paymentPrompt = null;
+    let shouldStop = false;
+
+    try {
+      setPhoneAccessLoading(true);
+      setPhoneAccessMessage("");
+      setPhoneAccessRequiresPayment(false);
+
+      const { response, payload } = await triggerPhoneReveal(token);
+
+      if (response.status === 401) {
+        handleUnauthorizedPhoneAccess();
+        shouldStop = true;
+      } else if (!response.ok) {
+        const message =
+          payload?.message || "Unable to reveal the hall phone number right now.";
+        const requiresPayment = Boolean(
+          payload?.requiresPayment || payload?.requiresSubscription
+        );
+        const pricing = getPhoneAccessPricing(payload);
+
+        setPhoneAccessPricing(pricing);
+        setPhoneAccessMessage(message);
+        setPhoneAccessRequiresPayment(requiresPayment);
+
+        if (requiresPayment) {
+          paymentPrompt = {
+            message,
+            pricing,
+          };
+        } else {
+          alert(message);
+        }
+      } else {
+        applyPhoneRevealSuccess(payload);
+      }
+    } catch (error) {
+      console.error("Failed to reveal hall phone number", error);
+      const message = "Unable to reveal the hall phone number right now.";
+      setPhoneAccessMessage(message);
+      setPhoneAccessRequiresPayment(false);
+      alert(message);
+    } finally {
+      setPhoneAccessLoading(false);
+    }
+
+    if (shouldStop || !paymentPrompt) {
+      return;
+    }
+
+    const confirmed = await confirm({
+      title: "Unlock Hall Phone Numbers",
+      message: `${paymentPrompt.message}\n\nPayable now: ${formatCurrency(
+        paymentPrompt.pricing.unlockAmount
+      )} + GST\nTotal: ${formatCurrency(paymentPrompt.pricing.totalAmount)}`,
+      confirmLabel: "Buy Now",
+      cancelLabel: "Maybe Later",
+    });
+
+    if (!confirmed) {
+      return;
+    }
+
+    const paymentSummaryConfirmed = await confirm({
+      title: "Payment Summary",
+      message: `Unlock hall phone numbers\n\nAccess fee: ${formatCurrency(
+        paymentPrompt.pricing.unlockAmount
+      )}\nGST (${formatPercentage(paymentPrompt.pricing.gstRate)}): ${formatCurrency(
+        paymentPrompt.pricing.gstAmount
+      )}\nTotal payable: ${formatCurrency(
+        paymentPrompt.pricing.totalAmount
+      )}\n\nClick Proceed to Payment to continue.`,
+      confirmLabel: "Proceed to Payment",
+      cancelLabel: "Back",
+    });
+
+    if (!paymentSummaryConfirmed) {
+      return;
+    }
+
+    await startPhoneAccessPayment(token, paymentPrompt.pricing);
   };
 
   const venueOwnerLabel = hall?.vendor?.businessName || "Venue Owner";
@@ -721,21 +1185,67 @@ export default function VenueDetailPage() {
           </div>
 
           <div className="meta">
-            <span>{`${icons.capacity} ${hall.capacity || "N/A"} Capacity`}</span>
-            <span>{`${icons.parking} ${hall.parkingCapacity || "N/A"} Parking`}</span>
+            <span>{`${icons.capacity} ${formatCount(hall.capacity)} Capacity`}</span>
+            <span>{`${icons.parking} ${formatCount(hall.parkingCapacity)} Parking`}</span>
             {hall.rooms ? <span>{`${icons.rooms} ${hall.rooms} Rooms`}</span> : null}
           </div>
 
-          {hall.vendor?.phone && (
+          {hall.vendor && (
+            <>
             <button
               className="contact-btn"
-              onClick={() => {
-                void trackHallPhoneView(hall._id);
-                alert(`${icons.phone} Phone Number: ${hall.vendor.phone}`);
-              }}
+              onClick={handleRevealPhoneNumber}
             >
-              View phone number
+              {phoneAccessLoading
+                ? phoneAccessRequiresPayment
+                  ? "Opening payment..."
+                  : "Checking access..."
+                : phoneAccessRequiresPayment
+                ? "Buy Now to Unlock"
+                : "View phone number"}
             </button>
+            {revealedPhoneNumber ? (
+              <p
+                style={{
+                  margin: "10px 0 0",
+                  color: "#30402f",
+                  fontWeight: 600,
+                  lineHeight: 1.6,
+                }}
+              >
+                {`${icons.phone} Phone Number: ${revealedPhoneNumber}`}
+              </p>
+            ) : null}
+            {phoneAccessMessage && !revealedPhoneNumber ? (
+              <p
+                style={{
+                  margin: "10px 0 0",
+                  color: phoneAccessRequiresPayment ? "#8c2f2f" : "#5e5551",
+                  lineHeight: 1.6,
+                  maxWidth: "420px",
+                }}
+              >
+                {phoneAccessMessage}
+              </p>
+            ) : null}
+            {phoneAccessRequiresPayment && !revealedPhoneNumber ? (
+              <p
+                style={{
+                  margin: "6px 0 0",
+                  color: "#30402f",
+                  fontWeight: 600,
+                  lineHeight: 1.6,
+                  maxWidth: "420px",
+                }}
+              >
+                {`Payable now: ${formatCurrency(
+                  phoneAccessPricing.unlockAmount
+                )} + GST (Total ${formatCurrency(
+                  phoneAccessPricing.totalAmount
+                )})`}
+              </p>
+            ) : null}
+            </>
           )}
         </div>
       </div>
