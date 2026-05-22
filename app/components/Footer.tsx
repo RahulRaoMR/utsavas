@@ -151,6 +151,11 @@ export default function Footer() {
               </Link>
             </li>
             <li>
+              <Link href="/account-deletion" className={styles.footerNavLink}>
+                Account Deletion
+              </Link>
+            </li>
+            <li>
               <Link href="/security" className={styles.footerNavLink}>
                 Security
               </Link>
