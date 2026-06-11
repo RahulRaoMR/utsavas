@@ -146,8 +146,8 @@ export default function Footer() {
           <h5>Learn More</h5>
           <ul>
             <li>
-              <Link href="/privacy" className={styles.footerNavLink}>
-                Privacy
+              <Link href="/privacy-policy" className={styles.footerNavLink}>
+                Privacy Policy
               </Link>
             </li>
             <li>

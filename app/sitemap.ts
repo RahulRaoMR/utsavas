@@ -23,7 +23,7 @@ const STATIC_ROUTES = [
     priority:
       path === "/contact" || path === "/faqs"
         ? 0.7
-        : path === "/privacy" || path === "/security" || path === "/terms"
+        : path === "/privacy-policy" || path === "/security" || path === "/terms"
         ? 0.62
         : 0.68,
     changeFrequency:

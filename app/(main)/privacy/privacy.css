@@ -72,6 +72,28 @@
   line-height: 1.8;
 }
 
+.privacy-card ul {
+  margin: 0 0 16px;
+  padding-left: 24px;
+  color: #30402f;
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.privacy-card li {
+  margin: 0 0 6px;
+}
+
+.privacy-card a {
+  color: #7a2433;
+  font-weight: 700;
+}
+
+.privacy-updated {
+  font-weight: 700;
+  color: #7a2433;
+}
+
 .privacy-contact {
   margin-top: 16px;
   padding: 20px 22px;
@@ -119,6 +141,10 @@
   }
 
   .privacy-card p {
+    font-size: 14px;
+  }
+
+  .privacy-card ul {
     font-size: 14px;
   }
 }
