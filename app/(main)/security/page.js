@@ -3,6 +3,7 @@
 import "./security.css";
 import Footer from "../../components/Footer";
 import {
+  SUPPORT_ADDRESS,
   SUPPORT_EMAIL,
   SUPPORT_PHONE_DISPLAY,
 } from "../../../lib/siteContact";
@@ -56,8 +57,7 @@ export default function SecurityPage() {
               <strong>Support number:</strong> {SUPPORT_PHONE_DISPLAY}
             </p>
             <p>
-              <strong>Address:</strong> 285/A, 14th Main Rd, Siddanna Layout,
-              Banashankari Stage II, Banashankari, Bengaluru, Karnataka 560070
+              <strong>Address:</strong> {SUPPORT_ADDRESS}
             </p>
           </div>
         </div>

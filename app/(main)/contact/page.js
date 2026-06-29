@@ -3,6 +3,7 @@
 import "./contact.css";
 import Footer from "../../components/Footer";
 import {
+  SUPPORT_ADDRESS,
   SUPPORT_EMAIL,
   SUPPORT_PHONE_DISPLAY,
   SUPPORT_PHONE_E164,
@@ -36,10 +37,7 @@ export default function ContactPage() {
 
           <div className="contact-item">
             <span>Address</span>
-            <p>
-              285/A, 14th Main Rd, Siddanna Layout, Banashankari Stage II,
-              Bengaluru, Karnataka 560070
-            </p>
+            <p>{SUPPORT_ADDRESS}</p>
           </div>
         </div>
       </div>

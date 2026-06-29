@@ -79,6 +79,12 @@
   margin-top: 6px;
 }
 
+.row > select,
+.row > .premium-select {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
 /* ===== INPUTS & SELECT ===== */
 select,
 input[type="date"] {
@@ -268,6 +274,12 @@ input[type="date"]:focus {
 
 .react-select__menu {
   z-index: 9999 !important;
+  border-radius: 12px !important;
+  overflow: hidden;
+}
+
+.react-select__menu-list {
+  max-height: 220px !important;
 }
 
 .react-select__control--is-focused {

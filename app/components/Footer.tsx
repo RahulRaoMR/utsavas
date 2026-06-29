@@ -4,6 +4,7 @@ import styles from "./Footer.module.css";
 import Image from "next/image";
 import Link from "next/link";
 import {
+  SUPPORT_ADDRESS,
   SUPPORT_EMAIL,
   SUPPORT_PHONE_DISPLAY,
 } from "../../lib/siteContact";
@@ -202,10 +203,7 @@ export default function Footer() {
             </Link>
           </p>
 
-          <p>
-            285/A, 14th Main Rd, Siddanna Layout, Banashankari Stage II,
-            Banashankari, Bengaluru, Karnataka 560070
-          </p>
+          <p>{SUPPORT_ADDRESS}</p>
 
           <h5 className={styles.socialTitle}>Social Links</h5>
           <div className={styles.socials}>

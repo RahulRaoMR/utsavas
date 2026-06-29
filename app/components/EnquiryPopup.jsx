@@ -2,55 +2,30 @@
 
 import { useState } from "react";
 import Select from "react-select";
+import { karnatakaSearchCities } from "./karnatakaSearchCities";
 import "./enquiryPopup.css";
 
 export default function EnquiryPopup({ onClose }) {
-  // 🔹 STATES
-  const [city, setCity] = useState("Bangalore");
+  const [city, setCity] = useState("Bengaluru");
   const [area, setArea] = useState("");
   const [guests, setGuests] = useState("");
   const [budget, setBudget] = useState("");
   const [date, setDate] = useState("");
 
-  // 🔥 PREMIUM BANGALORE OPTIONS (clean + no duplicates)
-  const bangaloreAreaOptions = [
-    { value: "Devanahalli", label: "Devanahalli" },
-    { value: "Yelahanka", label: "Yelahanka" },
-    { value: "Hebbal", label: "Hebbal" },
-    { value: "Jakkur", label: "Jakkur" },
-    { value: "Thanisandra", label: "Thanisandra" },
-    { value: "Hennur", label: "Hennur" },
-    { value: "RT Nagar", label: "RT Nagar" },
-    { value: "Whitefield", label: "Whitefield" },
-    { value: "KR Puram", label: "KR Puram" },
-    { value: "Marathahalli", label: "Marathahalli" },
-    { value: "Brookefield", label: "Brookefield" },
-    { value: "Varthur", label: "Varthur" },
-    { value: "Bellandur", label: "Bellandur" },
-    { value: "Mahadevapura", label: "Mahadevapura" },
-    { value: "Indiranagar", label: "Indiranagar" },
-    { value: "Domlur", label: "Domlur" },
-    { value: "Jayanagar", label: "Jayanagar" },
-    { value: "JP Nagar", label: "JP Nagar" },
-    { value: "Banashankari", label: "Banashankari" },
-    { value: "Basavanagudi", label: "Basavanagudi" },
-    { value: "BTM Layout", label: "BTM Layout" },
-    { value: "Electronic City", label: "Electronic City" },
-    { value: "HSR Layout", label: "HSR Layout" },
-    { value: "Bannerghatta Road", label: "Bannerghatta Road" },
-    { value: "Rajajinagar", label: "Rajajinagar" },
-    { value: "Malleshwaram", label: "Malleshwaram" },
-    { value: "Yeshwanthpur", label: "Yeshwanthpur" },
-    { value: "Vijayanagar", label: "Vijayanagar" },
-    { value: "Nagarbhavi", label: "Nagarbhavi" },
-    { value: "Kengeri", label: "Kengeri" },
-    { value: "Koramangala", label: "Koramangala" },
-    { value: "Sarjapur Road", label: "Sarjapur Road" },
-  ];
+  const cityOptions = karnatakaSearchCities;
+  const selectedCity = cityOptions.find((option) => option.value === city);
+  const areaOptions = (selectedCity?.locations || []).map((location) => ({
+    value: location,
+    label: location,
+  }));
 
-  // 🔹 SUBMIT HANDLER
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleCityChange = (event) => {
+    setCity(event.target.value);
+    setArea("");
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
 
     if (!city || !area || !guests || !budget || !date) {
       alert("Please fill all details");
@@ -76,29 +51,28 @@ export default function EnquiryPopup({ onClose }) {
   return (
     <div className="popup-overlay">
       <div className="popup-box">
-        <button className="close-btn" onClick={onClose}>
-          ✕
+        <button className="close-btn" type="button" onClick={onClose}>
+          X
         </button>
 
         <h2>Enquiry Form</h2>
         <p>Help us suggest suitable venues for you</p>
 
-        {/* LOCATION */}
         <label>Wedding Location</label>
         <div className="row">
-          <select value={city} onChange={(e) => setCity(e.target.value)}>
-            <option>Bangalore</option>
-            <option>Chennai</option>
+          <select value={city} onChange={handleCityChange}>
+            {cityOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
           </select>
 
-          {/* ⭐ PREMIUM SEARCHABLE DROPDOWN */}
           <Select
-            options={bangaloreAreaOptions}
-            value={bangaloreAreaOptions.find(
-              (opt) => opt.value === area
-            )}
+            options={areaOptions}
+            value={areaOptions.find((option) => option.value === area) || null}
             onChange={(selected) => setArea(selected?.value || "")}
-            placeholder="Search Bangalore area..."
+            placeholder={`Search ${selectedCity?.label || "Karnataka"} area...`}
             isSearchable
             className="premium-select"
             classNamePrefix="react-select"
@@ -109,50 +83,46 @@ export default function EnquiryPopup({ onClose }) {
           />
         </div>
 
-        {/* GUESTS */}
         <label>Total Guests</label>
         <div className="options">
-          {["Upto 100", "100–250", "250–500", "500–750", "1000+ Above"].map(
-            (g) => (
+          {["Upto 100", "100-250", "250-500", "500-750", "1000+ Above"].map(
+            (guestOption) => (
               <button
                 type="button"
-                key={g}
-                className={guests === g ? "active" : ""}
-                onClick={() => setGuests(g)}
+                key={guestOption}
+                className={guests === guestOption ? "active" : ""}
+                onClick={() => setGuests(guestOption)}
               >
-                {g}
+                {guestOption}
               </button>
             )
           )}
         </div>
 
-        {/* BUDGET */}
         <label>Budget</label>
         <div className="options">
-          {["₹25k", "₹50k", "₹1L+", "₹2L+", "₹3L+", "₹4L+", "₹5L+ Above"].map(
-            (b) => (
+          {["Rs 25k", "Rs 50k", "Rs 1L+", "Rs 2L+", "Rs 3L+", "Rs 4L+", "Rs 5L+ Above"].map(
+            (budgetOption) => (
               <button
                 type="button"
-                key={b}
-                className={budget === b ? "active" : ""}
-                onClick={() => setBudget(b)}
+                key={budgetOption}
+                className={budget === budgetOption ? "active" : ""}
+                onClick={() => setBudget(budgetOption)}
               >
-                {b}
+                {budgetOption}
               </button>
             )
           )}
         </div>
 
-        {/* DATE */}
         <label>Wedding Date</label>
         <input
           type="date"
           value={date}
-          onChange={(e) => setDate(e.target.value)}
+          onChange={(event) => setDate(event.target.value)}
         />
 
-        {/* SUBMIT */}
-        <button className="submit-btn" onClick={handleSubmit}>
+        <button className="submit-btn" type="button" onClick={handleSubmit}>
           Submit
         </button>
       </div>
