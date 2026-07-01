@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { toAbsoluteImageUrl } from "../../../../lib/imageUrl";
 import {
-  formatBookingGstLabel,
+  TALME_INVOICE_COMPANY,
   resolveStoredBookingInvoiceBreakdown,
 } from "../../../../lib/bookingInvoice";
 import {
@@ -372,15 +372,12 @@ export default function MyBookingDetailPage() {
               <span>Taxable value</span>
               <strong>{formatCurrency(summary.invoice.taxableAmount)}</strong>
             </div>
-            <div className={styles.summaryRow}>
-              <span>
-                {formatBookingGstLabel({
-                  gstRate: summary.invoice.gstRate,
-                  hsnCode: summary.invoice.gstHsnCode,
-                })}
-              </span>
-              <strong>{formatCurrency(summary.invoice.gstAmount)}</strong>
-            </div>
+            {summary.invoice.taxRows.map((taxRow) => (
+              <div className={styles.summaryRow} key={taxRow.label}>
+                <span>{taxRow.label}</span>
+                <strong>{formatCurrency(taxRow.amount)}</strong>
+              </div>
+            ))}
             <div className={styles.summaryRow}>
               <span>Total bill</span>
               <strong>{formatCurrency(summary.invoice.totalAmount)}</strong>
@@ -395,8 +392,22 @@ export default function MyBookingDetailPage() {
             </div>
 
             <div className={styles.noteBox}>
+              <strong>Tax invoice details</strong>
+              <p>{TALME_INVOICE_COMPANY.legalName}</p>
+              <p>GSTIN: {TALME_INVOICE_COMPANY.gstin}</p>
+              <p>PAN: {TALME_INVOICE_COMPANY.pan}</p>
+              <p>HSN/SAC: {summary.invoice.gstHsnCode}</p>
+              <p>Place of supply: {summary.invoice.placeOfSupply}</p>
+              <p>{TALME_INVOICE_COMPANY.address}</p>
+            </div>
+
+            <div className={styles.noteBox}>
               <strong>Payment note</strong>
               <p>{getPaymentNote(booking)}</p>
+              <p>
+                Tax applied: {summary.invoice.taxModeLabel} on the taxable
+                value after coupon discount.
+              </p>
             </div>
           </section>
         </aside>

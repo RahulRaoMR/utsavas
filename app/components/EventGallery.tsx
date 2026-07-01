@@ -17,11 +17,11 @@ const galleryItems = [
 
 const carouselItems = [
   { src: "/gallery/g13.jpg", label: "Venue Atmosphere" },
-  { src: "/gallery/g14.jpg", label: "Dining Layout" },
+  { src: "/gallery/g18.jpg", label: "Cocktail Hour" },
   { src: "/gallery/g15.jpg", label: "Decor Styling" },
   { src: "/gallery/g16.jpg", label: "Ceremony Details" },
   { src: "/gallery/g17.jpg", label: "Night Ambience" },
-  { src: "/gallery/g18.jpg", label: "Private Events" },
+  { src: "/gallery/g14.jpg", label: "Dining Layout" },
 ];
 
 export default function EventGallery() {

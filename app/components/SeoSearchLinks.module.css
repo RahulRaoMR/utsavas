@@ -30,12 +30,20 @@
   margin: 0 0 12px;
   color: #183b63;
   font-size: clamp(1.5rem, 2.2vw, 2.3rem);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 
 .copy p {
   margin: 0;
   color: #5e5551;
   line-height: 1.8;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 
 .grid {
@@ -66,6 +74,12 @@
 .card strong {
   color: #183b63;
   font-size: 1rem;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  min-height: calc(1em * 1.45 * 2);
 }
 
 .card span {
