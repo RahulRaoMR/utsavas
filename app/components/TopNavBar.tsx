@@ -383,29 +383,27 @@ export default function TopNavBar() {
 
         try {
           const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`
+            `/api/reverse-geocode?lat=${encodeURIComponent(
+              lat
+            )}&lon=${encodeURIComponent(lon)}`,
+            { cache: "no-store" }
           );
           const data = await res.json();
-          const address = data?.address || {};
+          const liveLocation = String(data?.location || "").trim();
 
-          const liveLocation =
-            address.city ||
-            address.town ||
-            address.village ||
-            address.suburb ||
-            address.county ||
-            data?.display_name?.split(",")?.[0] ||
-            "";
-
-          if (!liveLocation) {
-            setLocationError("Could not detect your current destination.");
+          if (!res.ok || !liveLocation) {
+            setLocationError(
+              data?.message || "Could not detect your current destination."
+            );
             return;
           }
 
           saveLocationAndGo(liveLocation);
         } catch (err) {
           console.error("Live location fetch failed:", err);
-          setLocationError("Failed to detect your destination from GPS.");
+          setLocationError(
+            "GPS found your position, but we could not match it to a destination. Please search your area or PIN code."
+          );
         } finally {
           setDetectingLocation(false);
         }
